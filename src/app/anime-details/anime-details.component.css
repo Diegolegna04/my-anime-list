@@ -1,0 +1,24 @@
+.anime-details {
+  display: flex;
+}
+
+.anime-details img {
+  width: 200px; /* Larghezza fissa per tutte le immagini */
+  height: 300px; /* Altezza fissa per tutte le immagini */
+  object-fit: cover; /* Ritaglia l'immagine per adattarsi alle dimensioni */
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.text {
+  display: flex;
+  margin: 1rem;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.aaa {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}

@@ -1,0 +1,30 @@
+.genres-container{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.genres-card {
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  width: 150px;
+  text-align: center;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.genres-card:hover {
+  transform: scale(1.05);
+  background-color: #f4f4f4;
+  cursor: pointer;
+}
+
+h1 {
+  margin-left: 4rem;
+}

@@ -1,0 +1,9 @@
+<h1>Risultati</h1>
+<div class="anime-container">
+  <div *ngFor="let anime of searchResults"
+       class="anime-card"
+       (click)="goToDetails(anime.mal_id)">
+    <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}"/>
+    <h3>{{ anime.title }}</h3>
+  </div>
+</div>

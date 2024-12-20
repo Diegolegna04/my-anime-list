@@ -1,0 +1,6 @@
+<h1>Generi</h1>
+<div class="genres-container">
+  <div *ngFor="let genre of genres">
+    <h3 class="genres-card" (click)="viewAnimeByGenre(genre.mal_id)">{{ genre.name }}</h3>
+  </div>
+</div>

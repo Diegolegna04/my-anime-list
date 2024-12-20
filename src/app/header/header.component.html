@@ -1,0 +1,12 @@
+<div class="nav">
+  <button (click)="toggleSearchBar()">🔎</button>
+  <div *ngIf="showSearchBar" class="search-bar">
+    <input
+      type="text"
+      [(ngModel)]="query"
+      placeholder="Cerca un anime"
+    />
+    <button (click)="searchAnime()">Search</button>
+  </div>
+  <button (click)="goToGenres()">Filtra per genere</button>
+</div>

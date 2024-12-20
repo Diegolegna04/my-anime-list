@@ -1,0 +1,22 @@
+<div *ngIf="animeDetails">
+  <h1>{{ animeDetails.title }}</h1>
+  <div class="anime-details">
+    <img [src]="animeDetails.images.jpg.large_image_url" alt="{{ animeDetails.title }}"/>
+    <div class="text">
+      <p>{{ animeDetails.synopsis }}</p>
+      <div class="aaa">
+        <p><strong>Episodes:</strong> {{ animeDetails.episodes }}</p>
+        <p><strong>Score:</strong> {{ animeDetails.score }}</p>
+        <p><strong>Status:</strong> {{ animeDetails.status }}</p>
+        <p><strong>Genres:</strong>
+          <span *ngFor="let genre of animeDetails.genres; let last = last">
+            {{ genre.name }}<span *ngIf="!last">, </span>
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="!animeDetails" class="loading">
+  <p>Loading anime details...</p>
+</div>

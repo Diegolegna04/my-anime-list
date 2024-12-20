@@ -1,12 +1,31 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component} from '@angular/core';
+import {RouterLink, RouterOutlet} from '@angular/router';
+import {FormsModule} from '@angular/forms';
+import {NgForOf, NgIf} from '@angular/common';
+import {AnimeListComponent} from './components/anime-list/anime-list.component';
+import {HomeComponent} from './home/home.component';
+import {HeaderComponent} from './header/header.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css'],
+  imports: [
+    FormsModule,
+    NgForOf,
+    NgIf,
+    RouterLink,
+    AnimeListComponent,
+    RouterOutlet,
+    HomeComponent,
+    HeaderComponent
+  ],
 })
 export class AppComponent {
-  title = 'clone-cruncyroll';
+  isDarkTheme: boolean = false; // Variabile per il tema
+
+  toggleTheme(): void {
+    this.isDarkTheme = !this.isDarkTheme; // Cambia stato del tema
+  }
 }

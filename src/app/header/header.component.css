@@ -1,0 +1,65 @@
+.nav {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f4f4f4;
+  padding: 1rem;
+  gap: 1rem;
+  border-bottom: 2px solid #ddd;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0167d4;
+}
+
+input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.anime-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 1rem;
+  margin: 1rem;
+}
+
+.anime-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  width: 200px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.anime-card img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+.anime-card img:hover {
+  cursor: pointer;
+}
+h3:hover {
+  cursor: pointer;
+}
+h1 {
+  text-align: center;
+  font-size: 2rem;
+}
+.search-bar {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+}

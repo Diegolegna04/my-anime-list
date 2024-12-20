@@ -1,0 +1,6 @@
+<div class="anime-container">
+  <div *ngFor="let anime of animeList" class="anime-card" (click)="goToDetails(anime.mal_id)">
+    <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}" />
+    <h3>{{ anime.title }}</h3>
+  </div>
+</div>
