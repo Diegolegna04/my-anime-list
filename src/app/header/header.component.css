@@ -1,7 +1,7 @@
 .nav {
   display: flex;
+  flex-direction: row-reverse;
   justify-content: space-between;
-  background-color: #f4f4f4;
   padding: 1rem;
   gap: 1rem;
   border-bottom: 2px solid #ddd;

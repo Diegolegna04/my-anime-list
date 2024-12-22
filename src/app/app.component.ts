@@ -5,6 +5,7 @@ import {NgForOf, NgIf} from '@angular/common';
 import {AnimeListComponent} from './components/anime-list/anime-list.component';
 import {HomeComponent} from './home/home.component';
 import {HeaderComponent} from './header/header.component';
+import {AnimeService} from './services/anime.service';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +26,10 @@ import {HeaderComponent} from './header/header.component';
 export class AppComponent {
   isDarkTheme: boolean = false; // Variabile per il tema
 
-  toggleTheme(): void {
-    this.isDarkTheme = !this.isDarkTheme; // Cambia stato del tema
+  constructor(private animeService: AnimeService) {
+  }
+
+  goToLoginRegister(): void{
+    this.animeService.goToLoginRegister();
   }
 }

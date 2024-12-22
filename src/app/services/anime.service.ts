@@ -24,4 +24,8 @@ export class AnimeService {
   goToDetails(id: number): void {
     this.router.navigate(['/anime', id]);
   }
+
+  goToLoginRegister(): void {
+    this.router.navigate(['/register-login']);
+  }
 }
