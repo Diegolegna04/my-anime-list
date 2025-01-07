@@ -1,22 +1,41 @@
-<div *ngIf="animeDetails">
-  <h1>{{ animeDetails.title }}</h1>
-  <div class="anime-details">
-    <img [src]="animeDetails.images.jpg.large_image_url" alt="{{ animeDetails.title }}"/>
-    <div class="text">
-      <p>{{ animeDetails.synopsis }}</p>
-      <div class="aaa">
-        <p><strong>Episodes:</strong> {{ animeDetails.episodes }}</p>
-        <p><strong>Score:</strong> {{ animeDetails.score }}</p>
-        <p><strong>Status:</strong> {{ animeDetails.status }}</p>
-        <p><strong>Genres:</strong>
-          <span *ngFor="let genre of animeDetails.genres; let last = last">
-            {{ genre.name }}<span *ngIf="!last">, </span>
-          </span>
-        </p>
+<div *ngIf="animeDetails" class="anime">
+  <!-- Dettagli principali -->
+  <div class="main-content">
+    <h1 class="anime-title">{{ animeDetails.title }}</h1>
+    <div class="anime-details">
+      <img [src]="animeDetails.images.jpg.large_image_url" alt="{{ animeDetails.title }}" />
+      <div class="text">
+        <p class="synopsis">{{ animeDetails.synopsis }}</p>
+        <div class="details-info">
+          <p><strong>Episodes:</strong> {{ animeDetails.episodes }}</p>
+          <p><strong>Score:</strong> {{ animeDetails.score }}</p>
+          <p><strong>Status:</strong> {{ animeDetails.status }}</p>
+          <p><strong>Genres:</strong>
+            <span *ngFor="let genre of animeDetails.genres; let last = last">
+              {{ genre.name }}<span *ngIf="!last">, </span>
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<div *ngIf="!animeDetails" class="loading">
-  <p>Loading anime details...</p>
+
+  <!-- Sezione consigliati -->
+  <div class="recommended-section">
+    <h2>Recommended Anime</h2>
+    <div class="recommended-list">
+      <!-- Ogni card è cliccabile -->
+      <div *ngFor="let anime of displayedRecommendedAnime"
+           class="recommended-card"
+           (click)="viewAnimeDetails(anime.mal_id)">
+        <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}" />
+        <h4>{{ anime.title }}</h4>
+      </div>
+    </div>
+    <button *ngIf="displayedRecommendedAnime.length < recommendedAnime.length"
+            (click)="loadMoreAnime()"
+            class="load-more-btn">
+      Load More
+    </button>
+  </div>
 </div>

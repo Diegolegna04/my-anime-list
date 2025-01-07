@@ -1,30 +1,11 @@
-.nav {
-  display: flex;
-  align-items: center;
-  background-color: #f4f4f4;
-  padding: 1rem;
-  gap: 1rem;
-  border-bottom: 2px solid #ddd;
+.search-results {
+  padding: 2rem;
 }
 
-.nav button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.nav button:hover {
-  background-color: #0167d4;
-}
-
-.nav input {
-  flex: 1;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+.title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
 }
 
 .anime-container {
@@ -32,32 +13,37 @@
   flex-wrap: wrap;
   justify-content: space-around;
   gap: 1rem;
-  margin: 1rem;
+  margin-top: 2rem;
 }
 
 .anime-card {
+  background-color: white;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
   width: 200px;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .anime-card:hover {
   transform: scale(1.05);
-  background-color: #f4f4f4;
-  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .anime-card img {
-  width: 150px; /* Uniforma la larghezza */
-  height: 200px; /* Uniforma l'altezza */
-  object-fit: cover; /* Garantisce immagini equilibrate */
+  width: 150px;
+  height: 200px;
+  object-fit: cover;
   border-radius: 8px;
   margin-bottom: 0.5rem;
 }
-h1 {
-  margin-left: 4rem;
+
+.no-results {
+  text-align: center;
+  color: #555;
+  font-size: 1.2rem;
+  margin-top: 2rem;
 }

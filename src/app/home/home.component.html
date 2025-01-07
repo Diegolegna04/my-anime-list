@@ -1,6 +1,17 @@
+<!-- Sezione Introduttiva -->
+<div class="intro">
+  <div class="intro-content">
+    <h1>Benvenuto su Anime World!</h1>
+    <p>
+      La tua guida definitiva agli anime! Esplora la nostra classifica con i migliori titoli
+      e scopri cosa guardare dopo. Entra nel mondo degli anime oggi!
+    </p>
+  </div>
+</div>
+
 <!-- Lista degli Anime Popolari -->
-<div *ngIf="currentView === 'list'" class="div">
-  <h1>Top Anime</h1>
+<div *ngIf="currentView === 'list'">
+  <h2 class="section-title">Top Anime</h2>
   <div class="anime-container">
     <div
       *ngFor="let anime of animeList"
@@ -8,12 +19,12 @@
       (click)="goToDetails(anime.mal_id)"
     >
       <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}" />
-      <h3>{{ anime.title }}</h3>
+      <h3 class="anime-title">{{ anime.title }}</h3>
     </div>
   </div>
 
   <!-- Messaggio di caricamento -->
-  <p *ngIf="isLoading" class="loading-text">Caricamento altri anime...</p>
+  <p *ngIf="isLoading" class="loading-text">Caricamento anime...</p>
 
   <!-- Bottone per caricare altri anime -->
   <button

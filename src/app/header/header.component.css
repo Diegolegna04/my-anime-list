@@ -22,6 +22,7 @@ button:hover {
 
 input {
   flex: 1;
+  margin-left: 1rem;
   padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -62,4 +63,18 @@ h1 {
   display: flex;
   flex: 1;
   gap: 1rem;
+}
+.nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center; /* Center vertically */
+  padding: 1rem;
+  gap: 1rem;
+  border-bottom: 2px solid #ddd;
+}
+
+.search-container {
+  display: flex;
+  align-items: center; /* Center vertically */
 }

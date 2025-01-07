@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -8,12 +8,8 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-anime-search',
   templateUrl: './anime-search.component.html',
   styleUrls: ['./anime-search.component.css'],
-  imports: [
-    FormsModule,
-    NgIf,
-    NgForOf
-  ],
-  standalone: true
+  imports: [FormsModule, NgIf, NgForOf],
+  standalone: true,
 })
 export class AnimeSearchComponent implements OnInit {
   searchResults: any[] = [];
@@ -23,8 +19,7 @@ export class AnimeSearchComponent implements OnInit {
   constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
-    // Recupera il termine di ricerca dalla query string
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.query = params['q'] || '';
       if (this.query) {
         this.performSearch(this.query);
@@ -32,15 +27,13 @@ export class AnimeSearchComponent implements OnInit {
     });
   }
 
-  // Esegue la ricerca tramite API
   performSearch(query: string): void {
     const url = `${this.apiUrl}?q=${query}`;
-    this.http.get<any>(url).subscribe(response => {
+    this.http.get<any>(url).subscribe((response) => {
       this.searchResults = response.data;
     });
   }
 
-  // Naviga alla pagina dei dettagli
   goToDetails(id: number): void {
     this.router.navigate(['/anime', id]);
   }
