@@ -1,80 +1,88 @@
+/* Generale per la navigazione */
 .nav {
   display: flex;
-  flex-direction: row-reverse;
   justify-content: space-between;
-  padding: 1rem;
-  gap: 1rem;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #f9f9f9;
   border-bottom: 2px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-button {
-  background-color: #007bff;
+/* Bottone "Filtra per genere" */
+.genre-btn {
+  background-color: #0077ff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.genre-btn:hover {
+  background-color: #005fcc;
+  transform: scale(1.05);
+}
+
+/* Contenitore barra di ricerca */
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Bottone per mostrare la barra di ricerca */
+.toggle-search-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.toggle-search-btn:hover {
+  color: #0077ff;
+  transform: scale(1.2);
+}
+
+/* Barra di ricerca */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.5rem;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Campo di input */
+.search-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Bottone "Cerca" */
+.search-btn {
+  background-color: #0077ff;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-button:hover {
-  background-color: #0167d4;
-}
-
-input {
-  flex: 1;
-  margin-left: 1rem;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.anime-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  gap: 1rem;
-  margin: 1rem;
-}
-
-.anime-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-  width: 200px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.anime-card img {
-  max-width: 100%;
-  border-radius: 8px;
-}
-.anime-card img:hover {
-  cursor: pointer;
-}
-h3:hover {
-  cursor: pointer;
-}
-h1 {
-  text-align: center;
-  font-size: 2rem;
-}
-.search-bar {
-  display: flex;
-  flex: 1;
-  gap: 1rem;
-}
-.nav {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center; /* Center vertically */
-  padding: 1rem;
-  gap: 1rem;
-  border-bottom: 2px solid #ddd;
-}
-
-.search-container {
-  display: flex;
-  align-items: center; /* Center vertically */
+.search-btn:hover {
+  background-color: #005fcc;
+  transform: scale(1.05);
 }

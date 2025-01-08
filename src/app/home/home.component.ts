@@ -18,6 +18,7 @@ export class HomeComponent implements OnInit {
   query: string = '';
   currentView: 'list' | 'search' = 'list';
   isLoading: boolean = false; // Variabile per gestire il caricamento
+  isGridView: boolean = true;
   private topAnimeUrl = 'https://api.jikan.moe/v4/top/anime';
   private currentPage: number = 1; // Traccia la pagina corrente
 
@@ -39,6 +40,10 @@ export class HomeComponent implements OnInit {
   // Naviga alla pagina dei dettagli
   goToDetails(id: number): void {
     this.animeService.goToDetails(id);
+  }
+
+  toggleView(): void {
+    this.isGridView = !this.isGridView; // Cambia la modalità di visualizzazione
   }
 
   // Carica altri anime

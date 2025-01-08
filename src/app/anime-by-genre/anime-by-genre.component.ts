@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgForOf } from '@angular/common';
-import {AnimeService} from '../services/anime.service';
+import { AnimeService } from '../services/anime.service';
 
 @Component({
   selector: 'app-anime-by-genre',
@@ -14,9 +14,14 @@ import {AnimeService} from '../services/anime.service';
 export class AnimeByGenreComponent implements OnInit {
   animeList: any[] = [];
   genreId: number | null = null;
+  isGridView: boolean = true; // Variabile per alternare tra griglia e lista
   private animeByGenreUrl = 'https://api.jikan.moe/v4/anime';
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private animeService: AnimeService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private animeService: AnimeService
+  ) {}
 
   ngOnInit(): void {
     this.genreId = Number(this.route.snapshot.paramMap.get('id'));
@@ -30,6 +35,10 @@ export class AnimeByGenreComponent implements OnInit {
         this.animeList = response.data;
       });
     }
+  }
+
+  toggleView(): void {
+    this.isGridView = !this.isGridView; // Cambia la modalità di visualizzazione
   }
 
   goToDetails(id: number): void {

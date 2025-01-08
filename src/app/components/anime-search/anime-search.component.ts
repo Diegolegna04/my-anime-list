@@ -1,24 +1,27 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { AnimeService } from '../../services/anime.service';
 import { NgForOf, NgIf } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-anime-search',
   templateUrl: './anime-search.component.html',
   styleUrls: ['./anime-search.component.css'],
-  imports: [FormsModule, NgIf, NgForOf],
+  imports: [NgForOf, NgIf],
   standalone: true,
 })
 export class AnimeSearchComponent implements OnInit {
   searchResults: any[] = [];
   query: string = '';
-  private apiUrl = 'https://api.jikan.moe/v4/anime';
+  isGridView: boolean = true;
 
-  constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private animeService: AnimeService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
+    // Recupera il termine di ricerca dalla query string
     this.route.queryParams.subscribe((params) => {
       this.query = params['q'] || '';
       if (this.query) {
@@ -27,14 +30,24 @@ export class AnimeSearchComponent implements OnInit {
     });
   }
 
+  // Esegue la ricerca tramite il servizio
   performSearch(query: string): void {
-    const url = `${this.apiUrl}?q=${query}`;
-    this.http.get<any>(url).subscribe((response) => {
+    this.animeService.searchAnime(query).subscribe((response: { data: any[]; }) => {
       this.searchResults = response.data;
     });
   }
 
+  // Naviga alla pagina dei dettagli
   goToDetails(id: number): void {
-    this.router.navigate(['/anime', id]);
+    this.animeService.goToDetails(id);
+  }
+
+  toggleView(): void {
+    this.isGridView = !this.isGridView; // Cambia la modalità di visualizzazione
+  }
+
+  // Torna alla home tramite il servizio
+  goBackToHome(): void {
+    this.animeService.goToHome();
   }
 }

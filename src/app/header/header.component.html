@@ -1,14 +1,22 @@
 <div class="nav">
-  <button (click)="goToGenres()">Filtra per genere</button>
+  <!-- Bottone per filtrare per genere -->
+  <button (click)="goToGenres()" class="genre-btn">Filtra per genere</button>
+
+  <!-- Contenitore per la barra di ricerca -->
   <div class="search-container">
-    <button (click)="toggleSearchBar()">🔎</button>
+    <!-- Bottone per mostrare/nascondere la barra di ricerca -->
+    <button (click)="toggleSearchBar()" class="toggle-search-btn">🔎</button>
+
+    <!-- Barra di ricerca -->
     <div *ngIf="showSearchBar" class="search-bar">
       <input
         type="text"
         [(ngModel)]="query"
-        placeholder="Cerca un anime"
+        (keyup.enter)="searchAnime()"
+      placeholder="Cerca un anime..."
+      class="search-input"
       />
-      <button (click)="searchAnime()">Search</button>
+      <button (click)="searchAnime()" class="search-btn">Cerca</button>
     </div>
   </div>
 </div>

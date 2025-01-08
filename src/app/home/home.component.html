@@ -1,24 +1,31 @@
-<!-- Sezione Introduttiva -->
-<div class="intro">
-  <div class="intro-content">
-    <h1>Benvenuto su Anime World!</h1>
-    <p>
-      La tua guida definitiva agli anime! Esplora la nostra classifica con i migliori titoli
-      e scopri cosa guardare dopo. Entra nel mondo degli anime oggi!
-    </p>
+<div>
+  <!-- Sezione introduttiva -->
+  <div class="intro">
+    <div class="intro-content">
+      <h1>Benvenuto su My Anime List!</h1>
+      <p>
+        Esplora la nostra classifica con i migliori titoli e scopri cosa guardare dopo.
+        Entra nel mondo degli anime oggi stesso!
+      </p>
+    </div>
   </div>
-</div>
 
-<!-- Lista degli Anime Popolari -->
-<div *ngIf="currentView === 'list'">
-  <h2 class="section-title">Top Anime</h2>
-  <div class="anime-container">
+  <!-- Lista degli anime popolari -->
+  <div class="div">
+    <h2 class="section-title">Anime Popolari</h2>
+    <div class="view-toggle">
+      <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
+        <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th'"></i>
+      </button>
+    </div>
+  </div>
+  <div [class.grid]="isGridView" [class.list]="!isGridView" class="anime-container">
     <div
       *ngFor="let anime of animeList"
       class="anime-card"
       (click)="goToDetails(anime.mal_id)"
     >
-      <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}" />
+      <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}"/>
       <h3 class="anime-title">{{ anime.title }}</h3>
     </div>
   </div>

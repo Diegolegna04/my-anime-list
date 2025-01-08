@@ -1,7 +1,16 @@
-<h1>Anime: </h1>
-<div class="anime-container">
-  <div *ngFor="let anime of animeList" class="anime-card">
-    <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}" class="img" (click)="goToDetails(anime.mal_id)" />
-    <h3 (click)="goToDetails(anime.mal_id)">{{ anime.title }}</h3>
+<div class="view-toggle">
+  <button (click)="toggleView()">
+    {{ isGridView ? 'Visualizza come Lista' : 'Visualizza come Griglia' }}
+  </button>
+</div>
+
+<div [class.grid]="isGridView" [class.list]="!isGridView" class="anime-container">
+  <div *ngFor="let anime of animeList" class="anime-card" (click)="goToDetails(anime.mal_id)">
+    <img
+      [src]="anime.images.jpg.image_url"
+      alt="{{ anime.title }}"
+      class="anime-img"
+    />
+    <h3>{{ anime.title }}</h3>
   </div>
 </div>
