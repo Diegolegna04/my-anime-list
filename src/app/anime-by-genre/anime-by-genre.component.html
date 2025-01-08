@@ -1,9 +1,8 @@
 <div class="view-toggle">
-  <button (click)="toggleView()">
-    {{ isGridView ? 'Visualizza come Lista' : 'Visualizza come Griglia' }}
+  <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
+    <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th'"></i>
   </button>
 </div>
-
 <div [class.grid]="isGridView" [class.list]="!isGridView" class="anime-container">
   <div *ngFor="let anime of animeList" class="anime-card" (click)="goToDetails(anime.mal_id)">
     <img

@@ -8,7 +8,7 @@
 /* Visualizzazione a griglia */
 .grid {
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: center;
 }
 
 /* Visualizzazione a lista */
@@ -19,6 +19,7 @@
 
 /* Card degli anime */
 .anime-card {
+  width: 150px;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
@@ -34,8 +35,9 @@
 .list .anime-card {
   display: flex;
   align-items: center;
+  align-content: center;
   gap: 1rem;
-  width: 100%;
+  width: 80%;
 }
 
 .list .anime-img {
@@ -57,25 +59,28 @@
   transform: scale(1.05);
 }
 
+.list .anime-card:hover {
+  cursor: pointer;
+  transform: scale(1.02);
+}
+
 /* Bottone per alternare la vista */
 .view-toggle {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   margin: 1rem 0;
 }
 
 .view-toggle button {
-  background-color: #0077ff;
-  color: white;
+  background-color: transparent;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.5rem;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .view-toggle button:hover {
-  background-color: #005fcc;
   transform: scale(1.05);
 }
