@@ -63,6 +63,10 @@ button:hover {
   padding: 1rem;
 }
 
+.he h1:hover{
+  cursor: pointer;
+}
+
 .dx {
   display: flex;
   flex-direction: row;

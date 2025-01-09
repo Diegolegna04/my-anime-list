@@ -1,6 +1,7 @@
 /* Sezione Risultati di Ricerca */
 .search-results {
-  padding: 2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
 /* Titolo della pagina */
@@ -138,4 +139,46 @@
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+}
+
+.sort-select select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.view-toggle {
+  margin-left: auto;
+}
+
+.view-toggle button {
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem 1rem;
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .sort-select {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .sort-select label {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.view-toggle button:hover {
+  transform: scale(1.05);
 }

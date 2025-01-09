@@ -35,4 +35,20 @@ export class AnimeService {
   goToHome(): void {
     this.router.navigate(['/']);
   }
+
+  // Ordina la lista degli anime
+  sortAnime(animeList: any[], criteria: string): any[] {
+    if (criteria === 'members') {
+      return animeList.sort((a, b) => b.members - a.members);
+    } else if (criteria === 'score') {
+      return animeList.sort((a, b) => (b.score || 0) - (a.score || 0));
+    } else if (criteria === 'date') {
+      return animeList.sort((a, b) => {
+        const dateA = new Date(a.aired.from).getTime();
+        const dateB = new Date(b.aired.from).getTime();
+        return dateB - dateA;
+      });
+    }
+    return animeList; // Ritorna la lista originale se il criterio non è valido
+  }
 }

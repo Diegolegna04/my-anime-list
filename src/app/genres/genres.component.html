@@ -1,14 +1,65 @@
 <div class="genres-page">
-  <h1 class="title">Anime Genres</h1>
-  <p class="subtitle">Explore anime by genre. Click on a genre to view all related anime.</p>
-
-  <!-- Contenitore dei generi -->
-  <div class="genres-container">
-    <div *ngFor="let genre of genres" class="genres-card" (click)="viewAnimeByGenre(genre.mal_id)">
-      <h3>{{ genre.name }}</h3>
+  <div class="intro">
+    <div class="intro-content">
+      <h1 class="title">Anime Genres</h1>
+      <p class="subtitle">Explore anime by genre. Click on a genre to view all related anime.</p>
     </div>
   </div>
+  <!-- Loading -->
+  <p *ngIf="isLoading" class="loading-text">Loading genres...</p>
 
-  <!-- Messaggio di caricamento -->
-  <p *ngIf="genres.length === 0" class="loading-text">Loading genres...</p>
+  <!-- Categorie principali -->
+  <div *ngIf="!isLoading">
+    <div class="category">
+      <h2 class="category-title">Generi:</h2>
+      <div class="genres-container">
+        <div
+          class="genres-card"
+          *ngFor="let genre of mainGenres"
+          (click)="viewAnimeByGenre(genre.mal_id)"
+        >
+          <h3>{{ genre.name }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="category">
+      <h2 class="category-title">Generi Espliciti:</h2>
+      <div class="genres-container">
+        <div
+          class="genres-card"
+          *ngFor="let genre of explicitGenres"
+          (click)="viewAnimeByGenre(genre.mal_id)"
+        >
+          <h3>{{ genre.name }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="category">
+      <h2 class="category-title">Temi:</h2>
+      <div class="genres-container">
+        <div
+          class="genres-card"
+          *ngFor="let genre of themes"
+          (click)="viewAnimeByGenre(genre.mal_id)"
+        >
+          <h3>{{ genre.name }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="category">
+      <h2 class="category-title">Demographics:</h2>
+      <div class="genres-container">
+        <div
+          class="genres-card"
+          *ngFor="let genre of demographics"
+          (click)="viewAnimeByGenre(genre.mal_id)"
+        >
+          <h3>{{ genre.name }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

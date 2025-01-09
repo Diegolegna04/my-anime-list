@@ -1,6 +1,6 @@
-<div [class.dark-theme]="isDarkTheme">
+<div>
   <div class="he">
-    <h1>Anime List</h1>
+    <h1 (click)="goToHome()">Anime List</h1>
     <button (click)="goToLoginRegister()">Login/Registrati</button>
   </div>
   <app-header></app-header>

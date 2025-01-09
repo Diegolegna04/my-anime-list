@@ -50,4 +50,11 @@ export class AnimeSearchComponent implements OnInit {
   goBackToHome(): void {
     this.animeService.goToHome();
   }
+
+  sortAnime(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const criteria = target.value;
+
+    this.searchResults = this.animeService.sortAnime(this.searchResults, criteria);
+  }
 }

@@ -32,4 +32,8 @@ export class AppComponent {
   goToLoginRegister(): void{
     this.animeService.goToLoginRegister();
   }
+
+  goToHome(): void{
+    this.animeService.goToHome();
+  }
 }

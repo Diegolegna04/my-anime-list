@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { NgForOf } from '@angular/common';
-import { AnimeService } from '../services/anime.service';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {HttpClient} from '@angular/common/http';
+import {NgForOf} from '@angular/common';
+import {AnimeService} from '../services/anime.service';
 
 @Component({
   selector: 'app-anime-by-genre',
@@ -21,7 +21,8 @@ export class AnimeByGenreComponent implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private animeService: AnimeService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.genreId = Number(this.route.snapshot.paramMap.get('id'));
@@ -43,5 +44,12 @@ export class AnimeByGenreComponent implements OnInit {
 
   goToDetails(id: number): void {
     this.animeService.goToDetails(id);
+  }
+
+  sortAnime(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const criteria = target.value;
+
+    this.animeList = this.animeService.sortAnime(this.animeList, criteria);
   }
 }

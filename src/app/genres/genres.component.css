@@ -1,17 +1,55 @@
 .genres-page {
-  padding: 2rem;
   text-align: center;
+}
+
+.intro {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-bottom: 2px solid #e5e5e5;
+  margin-bottom: 2rem;
+}
+
+.intro-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.intro h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.intro p {
+  font-size: 1.1rem;
+  color: #555;
+  line-height: 1.5;
 }
 
 .title {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
+  color: #222;
+  font-weight: bold;
 }
 
 .subtitle {
   font-size: 1.2rem;
   color: #555;
   margin-bottom: 2rem;
+}
+
+.category {
+  margin-bottom: 2rem;
+}
+
+.category-title {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1rem;
+  text-align: left;
+  margin-left: 2rem;
 }
 
 .genres-container {
@@ -22,7 +60,7 @@
 }
 
 .genres-card {
-  background-color: white;
+  background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
@@ -34,7 +72,7 @@
 }
 
 .genres-card:hover {
-  transform: scale(1.05);
+  transform: translateY(-5px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -42,10 +80,11 @@
   width: 50px;
   height: 50px;
   margin-bottom: 0.5rem;
-}
-
-.loading-text {
-  font-size: 1.2rem;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
   color: #555;
-  margin-top: 2rem;
 }

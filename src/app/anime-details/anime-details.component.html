@@ -18,6 +18,13 @@
         </div>
       </div>
     </div>
+    <br />
+    <label>Visto? </label>
+    <select [value]="visto" (change)="onChangeVisti($event)">
+      <option value="">Seleziona una risposta</option>
+      <option value="no">No</option>
+      <option value="si">Sì</option>
+    </select>
   </div>
 
   <!-- Sezione consigliati -->
