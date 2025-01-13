@@ -67,35 +67,15 @@
 }
 
 /* Sezione "Preferito" */
-/* Sezione "Preferito" */
-.preferito-section {
-  display: flex; /* Usa flexbox per una migliore allineamento */
-  flex-direction: column; /* Disporre i bottoni in colonna */
-  gap: 1rem; /* Spazio verticale tra i bottoni */
-  max-width: 200px; /* Imposta una larghezza massima per allineare i bottoni */
-  margin: 0 auto; /* Centra la sezione */
-}
-
-.preferito-section button {
-  width: 100%; /* Imposta la larghezza del bottone al 100% del contenitore */
-  padding: 0.8rem 1.2rem; /* Aumenta il padding per una migliore spaziatura */
-  font-size: 1rem;
-  border: 1px solid #ccc; /* Aggiungi un bordo */
-  border-radius: 4px; /* Aggiungi angoli arrotondati */
+.star-icon {
+  font-size: 2rem; /* Dimensione dell'icona */
+  color: #ccc; /* Colore grigio per la stella non attiva */
   cursor: pointer;
-  background-color: #007bff; /* Colore di default del bottone */
-  color: white; /* Colore del testo */
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: color 0.2s ease; /* Transizione per il colore */
 }
 
-.preferito-section button:hover {
-  background-color: #0056b3; /* Ombra più scura al passaggio del mouse */
-  transform: scale(1.05); /* Leggermente ingrandito al passaggio del mouse */
-}
-
-.preferito-section button:disabled {
-  background-color: #ccc; /* Colore del bottone disabilitato */
-  cursor: not-allowed; /* Cambia il cursore per il disabilitato */
+.star-icon.active {
+  color: gold; /* Colore dorato per la stella attiva */
 }
 
 /* Sezione consigliati */

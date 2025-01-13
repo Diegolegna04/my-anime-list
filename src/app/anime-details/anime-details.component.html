@@ -38,10 +38,9 @@
     </div>
 
     <!-- Sezione "Preferito" -->
-    <div *ngIf="visto === 'si'" class="preferito-section">
+    <div class="preferito-section">
       <label>Preferito?</label>
-      <button (click)="setPreferito(true)" [disabled]="preferito">Sì</button>
-      <button (click)="setPreferito(false)" [disabled]="!preferito">No</button>
+      <span (click)="togglePreferito()" [class.active]="preferito" class="star-icon">&#9733;</span>
     </div>
   </div>
 

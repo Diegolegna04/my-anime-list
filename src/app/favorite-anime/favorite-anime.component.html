@@ -1,0 +1,18 @@
+<div class="intro">
+  <div class="intro-content">
+    <h1>Anime Preferiti</h1>
+    <p>Qui puoi trovare tutti gli anime che hai contrassegnato come preferiti.</p>
+  </div>
+</div>
+
+<div *ngIf="favoriteAnime.length > 0; else noFavorites">
+  <div class="anime-container">
+    <div *ngFor="let anime of favoriteAnime" class="anime-card" (click)="goToDetails(anime.mal_id)">
+      <img [src]="anime.images.jpg.large_image_url" alt="{{ anime.title }}" />
+      <h3>{{ anime.title }}</h3>
+    </div>
+  </div>
+</div>
+<ng-template #noFavorites>
+  <h2>Nessun anime preferito trovato.</h2>
+</ng-template>

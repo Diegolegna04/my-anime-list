@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgForOf, NgIf } from '@angular/common';
 import { AnimeService } from '../services/anime.service';
-import {FormsModule} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-anime-details',
@@ -124,5 +124,9 @@ export class AnimeDetailsComponent implements OnInit {
 
     localStorage.setItem('elencoPreferiti', JSON.stringify(elencoPreferiti));
     this.preferito = isPreferred;
+  }
+
+  togglePreferito(): void {
+    this.setPreferito(!this.preferito); // Inverte lo stato attuale
   }
 }
