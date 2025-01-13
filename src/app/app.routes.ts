@@ -7,6 +7,7 @@ import { AnimeByGenreComponent } from './anime-by-genre/anime-by-genre.component
 import {LoginRegisterComponent} from './login-register/login-register.component';
 import {NotFoundComponent} from './not-found/not-found.component';
 import {FavoriteAnimeComponent} from './favorite-anime/favorite-anime.component';
+import {WatchedAnimeComponent} from './watched-anime/watched-anime.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Home
@@ -16,6 +17,7 @@ export const routes: Routes = [
   { path: 'anime-by-genre/:id', component: AnimeByGenreComponent }, // Anime per Genere
   { path: 'register-login', component: LoginRegisterComponent },
   { path: 'favorite-anime', component: FavoriteAnimeComponent },
+  { path: 'watched-anime', component: WatchedAnimeComponent },
   { path: '**', component: NotFoundComponent }
 ];
 

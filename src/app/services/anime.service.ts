@@ -51,4 +51,8 @@ export class AnimeService {
     }
     return animeList; // Ritorna la lista originale se il criterio non è valido
   }
+
+  getAnimeById(id: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/anime/${id}`);
+  }
 }
