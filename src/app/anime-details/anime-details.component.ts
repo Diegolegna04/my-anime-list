@@ -3,12 +3,13 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgForOf, NgIf } from '@angular/common';
 import { AnimeService } from '../services/anime.service';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-anime-details',
   templateUrl: './anime-details.component.html',
   styleUrls: ['./anime-details.component.css'],
-  imports: [NgIf, NgForOf],
+  imports: [NgIf, NgForOf, FormsModule],
   standalone: true,
 })
 export class AnimeDetailsComponent implements OnInit {
@@ -18,6 +19,7 @@ export class AnimeDetailsComponent implements OnInit {
   displayedRecommendedAnime: any[] = [];
   animeToShow = 5;
   visto: string = "";
+  voto: number | null = null;
   preferito: boolean = false;
 
   private animeDetailUrl = 'https://api.jikan.moe/v4/anime';
@@ -34,23 +36,18 @@ export class AnimeDetailsComponent implements OnInit {
       if (this.animeId) {
         this.loadAnimeDetails();
         this.loadRecommendedAnime();
-        var elencoVisti = localStorage.getItem('elencoVisti');
-        if (elencoVisti) {
-          var elencoVisti2: string[] = JSON.parse(elencoVisti)
-          var res = elencoVisti2.indexOf(this.animeId.toString());
-          if (res != -1) {
-            this.visto = "si";
-          }
-          else {
-            this.visto = "no";
-          }
-          console.log(res);
-          console.log(elencoVisti2)
-        }
-        var elencoPreferiti = localStorage.getItem('elencoPreferiti');
-        if (elencoPreferiti) {
-          this.preferito = true;
-        }
+
+        // Controlla stato "visto"
+        const elencoVisti = JSON.parse(localStorage.getItem('elencoVisti') || '[]');
+        this.visto = elencoVisti.includes(this.animeId.toString()) ? 'si' : 'no';
+
+        // Controlla voto
+        const elencoVoti = JSON.parse(localStorage.getItem('elencoVoti') || '{}');
+        this.voto = elencoVoti[this.animeId] || null;
+
+        // Controlla preferito
+        const elencoPreferiti = JSON.parse(localStorage.getItem('elencoPreferiti') || '[]');
+        this.preferito = elencoPreferiti.includes(this.animeId.toString());
       }
     });
   }
@@ -88,35 +85,44 @@ export class AnimeDetailsComponent implements OnInit {
     this.animeService.goToDetails(animeId);
   }
 
-  onChangeVisti(event: any) {
-    const target = event.target as HTMLSelectElement;
-    const criteria = target.value;
+  onChangeVisti(event: any): void {
+    const value = event.target.value;
+    this.visto = value;
 
-    if (criteria == "si") {
-      var elencoVisti = localStorage.getItem('elencoVisti');
-      if (elencoVisti) {
-        var elencoVisti2: string[] = JSON.parse(elencoVisti);
-        var res = elencoVisti2.indexOf(this.animeId.toString());
-        if (res == -1) {
-          elencoVisti2.push(this.animeId.toString());
-          localStorage.setItem('elencoVisti', JSON.stringify(elencoVisti2));
-        }
+    const elencoVisti = JSON.parse(localStorage.getItem('elencoVisti') || '[]');
+
+    if (value === 'si') {
+      if (!elencoVisti.includes(this.animeId.toString())) {
+        elencoVisti.push(this.animeId.toString());
+        localStorage.setItem('elencoVisti', JSON.stringify(elencoVisti));
       }
-      else {
-        localStorage.setItem('elencoVisti', JSON.stringify([this.animeId.toString()]));
-      }
-    }
-    else if (criteria == "no") {
-      var elencoVisti = localStorage.getItem('elencoVisti');
-      if (elencoVisti) {
-        var elencoVisti2: string[] = JSON.parse(elencoVisti);
-        var res = elencoVisti2.indexOf(this.animeId.toString());
-        if (res != -1) {
-          elencoVisti2.splice(res, 1);
-          localStorage.setItem('elencoVisti', JSON.stringify(elencoVisti2));
-        }
+    } else {
+      const index = elencoVisti.indexOf(this.animeId.toString());
+      if (index !== -1) {
+        elencoVisti.splice(index, 1);
+        localStorage.setItem('elencoVisti', JSON.stringify(elencoVisti));
       }
     }
-    console.log(criteria)
+  }
+
+  setVoto(value: number | null): void {
+    this.voto = value;
+    const elencoVoti = JSON.parse(localStorage.getItem('elencoVoti') || '{}');
+    elencoVoti[this.animeId] = value;
+    localStorage.setItem('elencoVoti', JSON.stringify(elencoVoti));
+  }
+
+  setPreferito(isPreferred: boolean): void {
+    const elencoPreferiti = JSON.parse(localStorage.getItem('elencoPreferiti') || '[]');
+
+    if (isPreferred && !elencoPreferiti.includes(this.animeId.toString())) {
+      elencoPreferiti.push(this.animeId.toString());
+    } else if (!isPreferred) {
+      const index = elencoPreferiti.indexOf(this.animeId.toString());
+      if (index !== -1) elencoPreferiti.splice(index, 1);
+    }
+
+    localStorage.setItem('elencoPreferiti', JSON.stringify(elencoPreferiti));
+    this.preferito = isPreferred;
   }
 }

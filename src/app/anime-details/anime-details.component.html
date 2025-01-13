@@ -3,7 +3,7 @@
   <div class="main-content">
     <h1 class="anime-title">{{ animeDetails.title }}</h1>
     <div class="anime-details">
-      <img [src]="animeDetails.images.jpg.large_image_url" alt="{{ animeDetails.title }}" />
+      <img [src]="animeDetails.images.jpg.large_image_url" alt="{{ animeDetails.title }}"/>
       <div class="text">
         <p class="synopsis">{{ animeDetails.synopsis }}</p>
         <div class="details-info">
@@ -18,24 +18,41 @@
         </div>
       </div>
     </div>
-    <br />
-    <label>Visto? </label>
-    <select [value]="visto" (change)="onChangeVisti($event)">
-      <option value="">Seleziona una risposta</option>
-      <option value="no">No</option>
-      <option value="si">Sì</option>
-    </select>
+    <br/>
+    <div class="visti-section">
+      <!-- Selezione "Visto" -->
+      <label>Visto? </label>
+      <select [value]="visto" (change)="onChangeVisti($event)">
+        <option value="">Seleziona una risposta</option>
+        <option value="no">No</option>
+        <option value="si">Sì</option>
+      </select>
+    </div>
+    <!-- Sezione per scegliere il voto -->
+    <div *ngIf="visto === 'si'" class="voto-section">
+      <label for="voto">Voto:</label>
+      <select id="voto" [(ngModel)]="voto" (change)="setVoto(voto)">
+        <option [value]="null">Seleziona un voto</option>
+        <option *ngFor="let n of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]" [value]="n">{{ n }}</option>
+      </select>
+    </div>
+
+    <!-- Sezione "Preferito" -->
+    <div *ngIf="visto === 'si'" class="preferito-section">
+      <label>Preferito?</label>
+      <button (click)="setPreferito(true)" [disabled]="preferito">Sì</button>
+      <button (click)="setPreferito(false)" [disabled]="!preferito">No</button>
+    </div>
   </div>
 
   <!-- Sezione consigliati -->
   <div class="recommended-section">
     <h2>Recommended Anime</h2>
     <div class="recommended-list">
-      <!-- Ogni card è cliccabile -->
       <div *ngFor="let anime of displayedRecommendedAnime"
            class="recommended-card"
            (click)="viewAnimeDetails(anime.mal_id)">
-        <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}" />
+        <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}"/>
         <h4>{{ anime.title }}</h4>
       </div>
     </div>

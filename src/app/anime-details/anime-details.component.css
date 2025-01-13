@@ -35,6 +35,69 @@
   border-radius: 8px;
 }
 
+/* Sezione visti e voto */
+.visti-section, .voto-section, .preferito-section {
+  margin-top: 1rem; /* Add some top margin for spacing */
+}
+
+.visti-section label,
+.voto-section label,
+.preferito-section label {
+  font-size: 1.2rem;
+  display: inline-block; /* Align label with select/button */
+  margin-right: 0.5rem; /* Space between label and select/button */
+}
+
+/* Styles for select elements */
+.visti-section select,
+.voto-section select {
+  padding: 0.8rem 1.2rem; /* Increase padding for better spacing */
+  font-size: 1rem;
+  border: 1px solid #ccc; /* Add a border */
+  border-radius: 4px; /* Add rounded corners */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin: 0.5rem 0; /* Vertical margin for spacing */
+}
+
+.visti-section select:hover,
+.voto-section select:hover {
+  background-color: #f2f2f2; /* Add a hover effect */
+  transform: scale(1.02); /* Add a slight hover transformation */
+}
+
+/* Sezione "Preferito" */
+/* Sezione "Preferito" */
+.preferito-section {
+  display: flex; /* Usa flexbox per una migliore allineamento */
+  flex-direction: column; /* Disporre i bottoni in colonna */
+  gap: 1rem; /* Spazio verticale tra i bottoni */
+  max-width: 200px; /* Imposta una larghezza massima per allineare i bottoni */
+  margin: 0 auto; /* Centra la sezione */
+}
+
+.preferito-section button {
+  width: 100%; /* Imposta la larghezza del bottone al 100% del contenitore */
+  padding: 0.8rem 1.2rem; /* Aumenta il padding per una migliore spaziatura */
+  font-size: 1rem;
+  border: 1px solid #ccc; /* Aggiungi un bordo */
+  border-radius: 4px; /* Aggiungi angoli arrotondati */
+  cursor: pointer;
+  background-color: #007bff; /* Colore di default del bottone */
+  color: white; /* Colore del testo */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.preferito-section button:hover {
+  background-color: #0056b3; /* Ombra più scura al passaggio del mouse */
+  transform: scale(1.05); /* Leggermente ingrandito al passaggio del mouse */
+}
+
+.preferito-section button:disabled {
+  background-color: #ccc; /* Colore del bottone disabilitato */
+  cursor: not-allowed; /* Cambia il cursore per il disabilitato */
+}
+
 /* Sezione consigliati */
 .recommended-section {
   flex: 1;
