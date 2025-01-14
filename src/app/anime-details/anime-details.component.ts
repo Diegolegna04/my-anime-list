@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-anime-details',
   templateUrl: './anime-details.component.html',
   styleUrls: ['./anime-details.component.css'],
-  imports: [NgIf, NgForOf, FormsModule],
+  imports: [FormsModule, NgIf, NgForOf],
   standalone: true,
 })
 export class AnimeDetailsComponent implements OnInit {
@@ -18,7 +18,7 @@ export class AnimeDetailsComponent implements OnInit {
   recommendedAnime: any[] = [];
   displayedRecommendedAnime: any[] = [];
   animeToShow = 5;
-  visto: string = "";
+  visto: boolean = false; // Modificato per essere un booleano
   voto: number | null = null;
   preferito: boolean = false;
 
@@ -39,7 +39,7 @@ export class AnimeDetailsComponent implements OnInit {
 
         // Controlla stato "visto"
         const elencoVisti = JSON.parse(localStorage.getItem('elencoVisti') || '[]');
-        this.visto = elencoVisti.includes(this.animeId.toString()) ? 'si' : 'no';
+        this.visto = elencoVisti.includes(this.animeId.toString());
 
         // Controlla voto
         const elencoVoti = JSON.parse(localStorage.getItem('elencoVoti') || '{}');
@@ -85,24 +85,21 @@ export class AnimeDetailsComponent implements OnInit {
     this.animeService.goToDetails(animeId);
   }
 
-  onChangeVisti(event: any): void {
-    const value = event.target.value;
-    this.visto = value;
-
+  // Funzione per contrassegnare come visto
+  toggleVisto(): void {
     const elencoVisti = JSON.parse(localStorage.getItem('elencoVisti') || '[]');
 
-    if (value === 'si') {
-      if (!elencoVisti.includes(this.animeId.toString())) {
-        elencoVisti.push(this.animeId.toString());
-        localStorage.setItem('elencoVisti', JSON.stringify(elencoVisti));
-      }
-    } else {
+    if (this.visto) {
       const index = elencoVisti.indexOf(this.animeId.toString());
       if (index !== -1) {
         elencoVisti.splice(index, 1);
-        localStorage.setItem('elencoVisti', JSON.stringify(elencoVisti));
       }
+    } else {
+      elencoVisti.push(this.animeId.toString());
     }
+
+    localStorage.setItem('elencoVisti', JSON.stringify(elencoVisti));
+    this.visto = !this.visto; // Inverte lo stato
   }
 
   setVoto(value: number | null): void {

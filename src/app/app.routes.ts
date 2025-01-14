@@ -16,8 +16,8 @@ export const routes: Routes = [
   { path: 'genres', component: GenresComponent }, // Lista Generi
   { path: 'anime-by-genre/:id', component: AnimeByGenreComponent }, // Anime per Genere
   { path: 'register-login', component: LoginRegisterComponent },
-  { path: 'favorite-anime', component: FavoriteAnimeComponent },
-  { path: 'watched-anime', component: WatchedAnimeComponent },
+  /*{ path: 'favorite-anime', component: FavoriteAnimeComponent },
+  { path: 'watched-anime', component: WatchedAnimeComponent },*/
   { path: '**', component: NotFoundComponent }
 ];
 

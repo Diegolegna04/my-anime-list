@@ -1,5 +1,4 @@
 <div *ngIf="animeDetails" class="anime">
-  <!-- Dettagli principali -->
   <div class="main-content">
     <h1 class="anime-title">{{ animeDetails.title }}</h1>
     <div class="anime-details">
@@ -19,22 +18,19 @@
       </div>
     </div>
     <br/>
+
     <div class="visti-section">
-      <!-- Selezione "Visto" -->
-      <label>Visto? </label>
-      <select [value]="visto" (change)="onChangeVisti($event)">
-        <option value="">Seleziona una risposta</option>
-        <option value="no">No</option>
-        <option value="si">Sì</option>
-      </select>
+      <!-- Bottone "Visto" -->
+      <button (click)="toggleVisto()">
+        {{ visto ? 'Segnala come Non Visto' : 'Segnala come Visto' }}
+      </button>
     </div>
+
     <!-- Sezione per scegliere il voto -->
-    <div *ngIf="visto === 'si'" class="voto-section">
+    <div class="voto-section">
       <label for="voto">Voto:</label>
-      <select id="voto" [(ngModel)]="voto" (change)="setVoto(voto)">
-        <option [value]="null">Seleziona un voto</option>
-        <option *ngFor="let n of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]" [value]="n">{{ n }}</option>
-      </select>
+      <input type="range" id="voto" min="1" max="10" [(ngModel)]="voto" (change)="setVoto(voto)" />
+      <span>{{ voto }}</span> <!-- Mostra il punteggio selezionato -->
     </div>
 
     <!-- Sezione "Preferito" -->
