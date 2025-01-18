@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AnimeService } from '../services/anime.service';
+import { ChangeDetectorRef } from '@angular/core';
+import {NgForOf, NgIf} from '@angular/common';
 import {RouterLink} from '@angular/router';
-import {NgForOf, NgIf} from '@angular/common'; // Assicurati che il percorso sia corretto
 
 @Component({
   selector: 'app-watched-anime',
@@ -10,14 +11,16 @@ import {NgForOf, NgIf} from '@angular/common'; // Assicurati che il percorso sia
   imports: [
     RouterLink,
     NgIf,
-    NgForOf
+    NgForOf,
+    RouterLink
   ],
   styleUrls: ['./watched-anime.component.css']
 })
 export class WatchedAnimeComponent implements OnInit {
   watchedAnime: any[] = [];
+  isLoading: boolean = true;
 
-  constructor(private animeService: AnimeService) {}
+  constructor(private animeService: AnimeService, private cdr: ChangeDetectorRef) {} // Inietta ChangeDetectorRef
 
   ngOnInit(): void {
     this.loadWatchedAnime();
@@ -25,25 +28,31 @@ export class WatchedAnimeComponent implements OnInit {
 
   loadWatchedAnime(): void {
     const elencoVisti = JSON.parse(localStorage.getItem('elencoVisti') || '[]');
-    const elencoVoti = JSON.parse(localStorage.getItem('elencoVoti') || '{}');
 
     this.watchedAnime = elencoVisti.map((id: string) => {
-      return {
-        id,
-        score: elencoVoti[id] || null,
-        details: null // Inizializza i dettagli a null
-      };
+      return { id, details: null };
     });
 
-    // Carica i dettagli per ogni anime
+    let remaining = this.watchedAnime.length;
+
     this.watchedAnime.forEach(anime => {
       this.getAnimeDetailsById(anime.id).then(details => {
-        anime.details = details; // Assegna i dettagli all'anime
+        anime.details = details;
+        remaining--;
+
+        if (remaining === 0) {
+          this.isLoading = false;
+          this.cdr.detectChanges(); // Forza il rilevamento delle modifiche
+        }
       });
     });
   }
 
   async getAnimeDetailsById(id: string): Promise<any> {
-    return this.animeService.getAnimeById(id).toPromise(); // Usa il metodo del servizio
+    return this.animeService.getAnimeById(id).toPromise();
+  }
+
+  goToDetails(id: number): void {
+    this.animeService.goToDetails(id);
   }
 }

@@ -125,3 +125,11 @@
 .view-toggle button:hover {
   transform: scale(1.05);
 }
+
+.section-title {
+  text-align: center;
+  font-weight: bold;
+  margin-left: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}

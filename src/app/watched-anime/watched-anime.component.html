@@ -1,7 +1,7 @@
 <div class="intro">
   <div class="intro-content">
     <h1>Anime Visti</h1>
-    <p>Qui puoi trovare tutti gli anime che hai visto e il punteggio che hai assegnato.</p>
+    <p>Qui puoi trovare tutti gli anime che hai visto.</p>
   </div>
 </div>
 
@@ -9,10 +9,14 @@
 
 <div *ngIf="watchedAnime.length > 0; else noWatchedAnime">
   <div class="anime-container">
-    <div *ngFor="let anime of watchedAnime" class="anime-card">
-      <img *ngIf="anime.details?.images.jpg.large_image_url" [src]="anime.details.images.jpg.large_image_url" alt="{{ anime.details?.title }}" />
-      <h3>{{ anime.details?.title }}</h3>
-      <p>Punteggio: {{ anime.score }}</p>
+    <div *ngFor="let anime of watchedAnime" class="anime-card" (click)="goToDetails(anime.details?.data?.mal_id)">
+      <img
+        *ngIf="anime.details?.data?.images?.jpg?.large_image_url"
+        [src]="anime.details.data.images.jpg.large_image_url"
+        alt="{{ anime.details?.data?.title }}"
+        class="anime-image"
+      />
+      <h3>{{ anime.details?.data?.title || 'Titolo non disponibile' }}</h3>
     </div>
   </div>
 </div>

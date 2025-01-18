@@ -37,41 +37,63 @@
 
 /* Sezione visti e voto */
 .visti-section, .voto-section, .preferito-section {
-  margin-top: 1rem; /* Add some top margin for spacing */
+  margin-top: 1rem;
 }
 
-.visti-section label,
-.voto-section label,
-.preferito-section label {
+/* Bottone "Visto" */
+.visto-btn {
+  padding: 0.8rem 1.5rem;
   font-size: 1.2rem;
-  display: inline-block; /* Align label with select/button */
-  margin-right: 0.5rem; /* Space between label and select/button */
-}
-
-/* Styles for select elements */
-.visti-section select,
-.voto-section select {
-  padding: 0.8rem 1.2rem; /* Increase padding for better spacing */
-  font-size: 1rem;
-  border: 1px solid #ccc; /* Add a border */
-  border-radius: 4px; /* Add rounded corners */
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  margin: 0.5rem 0; /* Vertical margin for spacing */
 }
 
-.visti-section select:hover,
-.voto-section select:hover {
-  background-color: #f2f2f2; /* Add a hover effect */
-  transform: scale(1.02); /* Add a slight hover transformation */
+.visto-btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+/* Slider del voto */
+.voto-slider {
+  width: 50%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px; /* Reduced height of the slider track */
+  background: #ddd; /* Background of the slider track */
+  border-radius: 5px; /* Rounded corners */
+  outline: none; /* Remove outline */
+}
+
+.voto-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px; /* Reduced width of the slider thumb */
+  height: 15px; /* Reduced height of the slider thumb */
+  border-radius: 50%;
+  background: #007bff;
+  cursor: pointer;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.voto-slider::-moz-range-thumb {
+  width: 15px; /* Reduced width of the slider thumb */
+  height: 15px; /* Reduced height of the slider thumb */
+  border-radius: 50%;
+  background: #007bff;
+  cursor: pointer;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Sezione "Preferito" */
 .star-icon {
-  font-size: 2rem; /* Dimensione dell'icona */
-  color: #ccc; /* Colore grigio per la stella non attiva */
+  font-size: 2rem;
+  color: #ccc;
   cursor: pointer;
-  transition: color 0.2s ease; /* Transizione per il colore */
+  transition: color 0.2s ease;
 }
 
 .star-icon.active {

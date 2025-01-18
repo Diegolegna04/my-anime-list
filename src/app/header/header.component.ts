@@ -10,7 +10,7 @@ import { AnimeService } from '../services/anime.service';
   imports: [NgIf, ReactiveFormsModule, FormsModule],
   templateUrl: './header.component.html',
   standalone: true,
-  styleUrl: './header.component.css',
+  styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
   animeList: any[] = [];
@@ -44,6 +44,7 @@ export class HeaderComponent implements OnInit {
   searchAnime(): void {
     if (this.query.trim()) {
       this.router.navigate(['/search'], { queryParams: { q: this.query } });
+      this.showSearchBar = false; // Chiude la barra di ricerca dopo la ricerca
     }
   }
 
