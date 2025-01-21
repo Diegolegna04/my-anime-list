@@ -19,11 +19,32 @@
     </div>
     <br/>
 
-    <div class="visti-section">
-      <!-- Bottone "Visto" -->
-      <button class="btn visto-btn" (click)="toggleVisto()">
-        {{ visto ? 'Segnala come Non Visto' : 'Segnala come Visto' }}
+    <div class="stato-section">
+      <button class="btn stato-btn" (click)="setAnimeState('non visto')" [disabled]="animeState === 'non visto'">
+        Segnala come Non Visto
       </button>
+      <button class="btn stato-btn" (click)="setAnimeState('in visione')"
+              [disabled]="animeState === 'in visione' || animeState === 'completato'">
+        Segnala come In Visione
+      </button>
+      <button class="btn stato-btn" (click)="setAnimeState('completato')"
+              [disabled]="animeState === 'completato' || animeState === 'in visione'">
+        Segnala come Completato
+      </button>
+    </div>
+
+    <!-- Episodi visti -->
+    <div *ngIf="animeState === 'in visione'" class="episodi-section">
+      <label for="episodiVisti">Episodi visti:</label>
+      <input
+        type="number"
+        id="episodiVisti"
+        [(ngModel)]="episodiVisti"
+        [min]="0"
+        [max]="animeDetails.episodes"
+        (change)="updateEpisodiVisti()"
+      />
+      <p>{{ episodiVisti }}/{{ animeDetails.episodes }} episodi visti</p>
     </div>
 
     <!-- Sezione per scegliere il voto -->
@@ -55,7 +76,7 @@
     <button *ngIf="displayedRecommendedAnime.length < recommendedAnime.length"
             (click)="loadMoreAnime()"
             class="load-more-btn">
-      Load More
+      Carica Altri
     </button>
   </div>
 </div>

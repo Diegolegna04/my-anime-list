@@ -168,3 +168,42 @@
   background-color: #0056b3;
   transform: scale(1.05);
 }
+
+/* Pulsanti degli stati */
+.stato-btn {
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.stato-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.stato-btn:hover:enabled {
+  background-color: #0056b3;
+}
+
+/* Sezione episodi */
+.episodi-section {
+  margin-top: 1rem;
+}
+
+.episodi-section label {
+  font-size: 1rem;
+}
+
+.episodi-section input {
+  margin-left: 0.5rem;
+  padding: 0.4rem;
+  width: 60px;
+  font-size: 1rem;
+  text-align: center;
+}

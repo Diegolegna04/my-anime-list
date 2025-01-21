@@ -1,15 +1,36 @@
 <div class="intro">
   <div class="intro-content">
     <h1>Anime Visti</h1>
-    <p>Qui puoi trovare tutti gli anime che hai visto.</p>
+    <p>Qui puoi trovare tutti gli anime che hai visto o che stai guardando.</p>
   </div>
 </div>
 
 <button routerLink="/favorite-anime" class="favorite-button">Visualizza Anime Preferiti</button>
 
-<div *ngIf="watchedAnime.length > 0; else noWatchedAnime">
+<div class="filter-section">
+  <button
+    class="filter-button"
+    [class.active]="filter === 'all'"
+    (click)="setFilter('all')">
+    Tutti
+  </button>
+  <button
+    class="filter-button"
+    [class.active]="filter === 'completato'"
+    (click)="setFilter('completato')">
+    Completati
+  </button>
+  <button
+    class="filter-button"
+    [class.active]="filter === 'in visione'"
+    (click)="setFilter('in visione')">
+    In Visione
+  </button>
+</div>
+
+<div *ngIf="filteredAnime.length > 0; else noWatchedAnime">
   <div class="anime-container">
-    <div *ngFor="let anime of watchedAnime" class="anime-card" (click)="goToDetails(anime.details?.data?.mal_id)">
+    <div *ngFor="let anime of filteredAnime" class="anime-card" (click)="goToDetails(anime.details?.data?.mal_id)">
       <img
         *ngIf="anime.details?.data?.images?.jpg?.large_image_url"
         [src]="anime.details.data.images.jpg.large_image_url"
@@ -22,5 +43,5 @@
 </div>
 
 <ng-template #noWatchedAnime>
-  <h2>Nessun anime visto trovato.</h2>
+  <h2>Nessun anime trovato per questa categoria.</h2>
 </ng-template>

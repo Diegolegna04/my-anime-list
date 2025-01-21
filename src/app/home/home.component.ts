@@ -21,11 +21,13 @@ export class HomeComponent implements OnInit {
   isGridView: boolean = true;
   private topAnimeUrl = 'https://api.jikan.moe/v4/top/anime';
   private currentPage: number = 1; // Traccia la pagina corrente
+  titleLanguage: 'english' | 'original' = 'original'; // Variabile per la lingua del titolo
 
   constructor(private http: HttpClient, private router: Router, private animeService: AnimeService) {}
 
   ngOnInit(): void {
     this.loadTopAnime();
+    this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
   }
 
   // Carica la lista dei Top Anime
@@ -50,5 +52,20 @@ export class HomeComponent implements OnInit {
   loadMoreAnime(): void {
     this.currentPage++; // Incrementa il numero di pagina
     this.loadTopAnime(); // Chiama il metodo per caricare altri anime
+  }
+
+  // Cambia la lingua del titolo e salva la scelta in localStorage
+  toggleTitleLanguage(): void {
+    this.titleLanguage = this.titleLanguage === 'english' ? 'original' : 'english';
+    localStorage.setItem('titleLanguage', this.titleLanguage);
+  }
+
+  // Restituisce il titolo nella lingua selezionata
+  getTitle(anime: any): string {
+    if (this.titleLanguage === 'english') {
+      return anime.title_english || anime.title;
+    } else {
+      return anime.title || anime.title_english;
+    }
   }
 }

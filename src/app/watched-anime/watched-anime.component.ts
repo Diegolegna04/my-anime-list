@@ -18,31 +18,37 @@ import {RouterLink} from '@angular/router';
 })
 export class WatchedAnimeComponent implements OnInit {
   watchedAnime: any[] = [];
+  filteredAnime: any[] = [];
   isLoading: boolean = true;
+  filter: string = 'all'; // Può essere 'all', 'completato', o 'in visione'
 
-  constructor(private animeService: AnimeService, private cdr: ChangeDetectorRef) {} // Inietta ChangeDetectorRef
+  constructor(private animeService: AnimeService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadWatchedAnime();
   }
 
   loadWatchedAnime(): void {
-    const elencoVisti = JSON.parse(localStorage.getItem('elencoVisti') || '[]');
+    const elencoVisti = JSON.parse(localStorage.getItem('animeStates') || '{}');
 
-    this.watchedAnime = elencoVisti.map((id: string) => {
-      return { id, details: null };
-    });
+    // Convertiamo l'elenco salvato in un array di anime con i dettagli
+    this.watchedAnime = Object.keys(elencoVisti).map((id) => ({
+      id,
+      state: elencoVisti[id].state,
+      details: null,
+    }));
 
     let remaining = this.watchedAnime.length;
 
-    this.watchedAnime.forEach(anime => {
-      this.getAnimeDetailsById(anime.id).then(details => {
+    this.watchedAnime.forEach((anime) => {
+      this.getAnimeDetailsById(anime.id).then((details) => {
         anime.details = details;
         remaining--;
 
         if (remaining === 0) {
           this.isLoading = false;
-          this.cdr.detectChanges(); // Forza il rilevamento delle modifiche
+          this.applyFilter(); // Applichiamo il filtro iniziale
+          this.cdr.detectChanges();
         }
       });
     });
@@ -50,6 +56,21 @@ export class WatchedAnimeComponent implements OnInit {
 
   async getAnimeDetailsById(id: string): Promise<any> {
     return this.animeService.getAnimeById(id).toPromise();
+  }
+
+  setFilter(filter: string): void {
+    this.filter = filter;
+    this.applyFilter();
+  }
+
+  applyFilter(): void {
+    if (this.filter === 'all') {
+      this.filteredAnime = this.watchedAnime;
+    } else {
+      this.filteredAnime = this.watchedAnime.filter(
+        (anime) => anime.state === this.filter
+      );
+    }
   }
 
   goToDetails(id: number): void {

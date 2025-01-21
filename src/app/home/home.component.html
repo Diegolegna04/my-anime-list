@@ -10,8 +10,13 @@
     </div>
   </div>
 
-  <button class="favorite-button" routerLink="/watched-anime">Vai agli anime visti</button>
-
+  <div class="bottoni">
+    <button class="favorite-button" routerLink="/watched-anime">Vai agli anime visti</button>
+    <!-- Bottone per cambiare la lingua del titolo -->
+    <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
+      Cambia Lingua Titolo
+    </button>
+  </div>
   <!-- Lista degli anime popolari -->
   <div class="div">
     <h2 class="section-title">Anime Popolari</h2>
@@ -28,7 +33,7 @@
       (click)="goToDetails(anime.mal_id)"
     >
       <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}"/>
-      <h3 class="anime-title">{{ anime.title }}</h3>
+      <h3 class="anime-title">{{ getTitle(anime) }}</h3>
     </div>
   </div>
 

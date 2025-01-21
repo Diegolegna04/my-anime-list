@@ -6,6 +6,7 @@ import {AnimeListComponent} from './components/anime-list/anime-list.component';
 import {HomeComponent} from './home/home.component';
 import {HeaderComponent} from './header/header.component';
 import {AnimeService} from './services/anime.service';
+import {FooterComponent} from './footer/footer.component';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,8 @@ import {AnimeService} from './services/anime.service';
     AnimeListComponent,
     RouterOutlet,
     HomeComponent,
-    HeaderComponent
+    HeaderComponent,
+    FooterComponent
   ],
 })
 export class AppComponent {
