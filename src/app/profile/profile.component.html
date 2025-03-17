@@ -1,0 +1,40 @@
+<div class="bottoni">
+  <button class="favorite-button" routerLink="/watched-anime">Vai agli anime visti</button>
+</div>
+
+<div class="profile-container">
+  <!-- Immagine del profilo + Username -->
+  <div class="profile-header">
+    <input type="file" id="profileImageInput" (change)="uploadProfileImage($event)" hidden/>
+    <img [src]="profileImage" class="profile-pic" alt="Profile Image" (click)="changeProfileImage()">
+    <h2>{{ username }}</h2>
+  </div>
+
+  <!-- Statistiche -->
+  <div class="stats">
+    <p><strong>Anime Visti:</strong> {{ watchedAnimeCount }}</p>
+    <p><strong>Anime Preferiti:</strong> {{ animePreferiti }}</p>
+    <p><strong>Anime in evidenza:</strong> {{ inEvidenza.length }}</p>
+  </div>
+</div>
+
+<!-- Bottone "Cambia lingua titolo" spostato a destra -->
+<div class="language-toggle">
+  <button class="favorite-button" (click)="toggleTitleLanguage()">Cambia lingua titolo</button>
+</div>
+
+<!-- Anime Preferiti al centro -->
+<div class="favorites-section">
+  <h3>Anime Preferiti in Evidenza</h3>
+  <div *ngIf="inEvidenza.length > 0; else noFavorites">
+    <div class="anime-container">
+      <div *ngFor="let anime of inEvidenza" class="anime-card" (click)="goToDetails(anime.mal_id)">
+        <img [src]="anime.images.jpg.large_image_url" alt="{{ getTitle(anime) }}"/>
+        <h3>{{ getTitle(anime) }}</h3>
+      </div>
+    </div>
+  </div>
+  <ng-template #noFavorites>
+    <h2>Nessun anime in evidenza.</h2>
+  </ng-template>
+</div>

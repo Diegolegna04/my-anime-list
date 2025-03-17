@@ -4,6 +4,9 @@
     <div class="anime-details">
       <img [src]="animeDetails.images.jpg.large_image_url" alt="{{ animeDetails.title }}"/>
       <div class="text">
+        <button (click)="translateText()" class="translate-btn">
+          🇮🇹 Traduci in Italiano
+        </button>
         <p class="synopsis">{{ animeDetails.synopsis }}</p>
         <div class="details-info">
           <p><strong>Episodes:</strong> {{ animeDetails.episodes }}</p>
@@ -20,7 +23,8 @@
     <br/>
 
     <div class="stato-section">
-      <button class="btn stato-btn" (click)="setAnimeState('non visto')" [disabled]="animeState === 'non visto'">
+      <button class="btn stato-btn" (click)="setAnimeState('non visto')"
+              [disabled]="animeState === 'non visto'">
         Segnala come Non Visto
       </button>
       <button class="btn stato-btn" (click)="setAnimeState('in visione')"
@@ -51,14 +55,22 @@
     <div class="voto-section" *ngIf="visto">
       <label for="voto">Voto:</label>
       <br />
-      <input type="range" id="voto" class="voto-slider" min="1" max="10" [(ngModel)]="voto" (change)="setVoto(voto)" />
+      <input type="range" id="voto" class="voto-slider" min="1" max="10" [(ngModel)]="voto"
+             (change)="setVoto(voto)" />
       <span class="voto-display">&nbsp;{{ voto }}</span> <!-- Mostra il punteggio selezionato -->
     </div>
 
     <!-- Sezione "Preferito" -->
-    <div class="preferito-section" *ngIf="visto">
+    <div class="preferito-section" *ngIf="visto || episodiVisti > 5">
       <label>Preferito?</label>
       <span (click)="togglePreferito()" [class.active]="preferito" class="star-icon">&#9733;</span>
+    </div>
+
+    <div class="evidenza-section" *ngIf="visto || episodiVisti > 5">
+      <label>
+        <input type="checkbox" [(ngModel)]="inEvidenza" (change)="toggleInEvidenza()" />
+        Mostra in evidenza sul profilo
+      </label>
     </div>
   </div>
 

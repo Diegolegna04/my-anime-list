@@ -63,6 +63,6 @@ export class GenresComponent implements OnInit {
 
   // Navigazione alla pagina degli anime per genere
   viewAnimeByGenre(genreId: number): void {
-    this.router.navigate(['/anime-by-genre', genreId]);
+    this.router.navigate(['/genres/anime-by-genre', genreId]);
   }
 }

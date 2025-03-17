@@ -8,16 +8,18 @@ import {LoginRegisterComponent} from './login-register/login-register.component'
 import {NotFoundComponent} from './not-found/not-found.component';
 import {FavoriteAnimeComponent} from './favorite-anime/favorite-anime.component';
 import {WatchedAnimeComponent} from './watched-anime/watched-anime.component';
+import {ProfileComponent} from './profile/profile.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Home
   { path: 'anime/:id', component: AnimeDetailsComponent }, // Dettagli Anime
   { path: 'search', component: AnimeSearchComponent }, // Ricerca Anime
   { path: 'genres', component: GenresComponent }, // Lista Generi
-  { path: 'anime-by-genre/:id', component: AnimeByGenreComponent }, // Anime per Genere
+  { path: 'genres/anime-by-genre/:id', component: AnimeByGenreComponent },
   { path: 'register-login', component: LoginRegisterComponent },
-  { path: 'favorite-anime', component: FavoriteAnimeComponent },
   { path: 'watched-anime', component: WatchedAnimeComponent },
+  { path: 'watched-anime/favourites', component: FavoriteAnimeComponent },
+  { path: 'profile', component: ProfileComponent },
   { path: '**', component: NotFoundComponent }
 ];
 

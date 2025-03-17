@@ -1,12 +1,12 @@
-import {Component} from '@angular/core';
-import {RouterLink, RouterOutlet} from '@angular/router';
-import {FormsModule} from '@angular/forms';
-import {NgForOf, NgIf} from '@angular/common';
-import {AnimeListComponent} from './components/anime-list/anime-list.component';
-import {HomeComponent} from './home/home.component';
-import {HeaderComponent} from './header/header.component';
-import {AnimeService} from './services/anime.service';
-import {FooterComponent} from './footer/footer.component';
+import { Component, OnInit } from '@angular/core';
+import { RouterLink, RouterOutlet } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { NgForOf, NgIf } from '@angular/common';
+import { AnimeListComponent } from './components/anime-list/anime-list.component';
+import { HomeComponent } from './home/home.component';
+import { HeaderComponent } from './header/header.component';
+import { AnimeService } from './services/anime.service';
+import { FooterComponent } from './footer/footer.component';
 
 @Component({
   selector: 'app-root',
@@ -22,20 +22,33 @@ import {FooterComponent} from './footer/footer.component';
     RouterOutlet,
     HomeComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
   ],
 })
-export class AppComponent {
-  isDarkTheme: boolean = false; // Variabile per il tema
+export class AppComponent implements OnInit {
+  isDarkTheme: boolean = false;
+  accessoEffettuato: boolean = false;
+  profileImage: string = 'assets/default-profile.png';
+  username: string = 'Username';
 
   constructor(private animeService: AnimeService) {
+    this.accessoEffettuato = true;
   }
 
-  goToLoginRegister(): void{
+  ngOnInit(): void {
+    this.loadProfile();
+  }
+
+  loadProfile(): void {
+    const savedImage = localStorage.getItem('profileImage');
+    if (savedImage) this.profileImage = savedImage;
+  }
+
+  goToLoginRegister(): void {
     this.animeService.goToLoginRegister();
   }
 
-  goToHome(): void{
+  goToHome(): void {
     this.animeService.goToHome();
   }
 }

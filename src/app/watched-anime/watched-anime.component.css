@@ -119,3 +119,9 @@ body {
 .filter-button:hover:not(.active) {
   background-color: #e0e0e0;
 }
+
+.div {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0;
+}

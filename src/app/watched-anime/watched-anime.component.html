@@ -1,3 +1,4 @@
+<router-outlet/>
 <div class="intro">
   <div class="intro-content">
     <h1>Anime Visti</h1>
@@ -5,7 +6,10 @@
   </div>
 </div>
 
-<button routerLink="/favorite-anime" class="favorite-button">Visualizza Anime Preferiti</button>
+<div class="div">
+  <button routerLink="/watched-anime/favourites" class="favorite-button">Visualizza Anime Preferiti</button>
+  <button class="favorite-button" (click)="toggleTitleLanguage()">Cambia lingua titolo</button>
+</div>
 
 <div class="filter-section">
   <button
@@ -28,7 +32,11 @@
   </button>
 </div>
 
-<div *ngIf="filteredAnime.length > 0; else noWatchedAnime">
+<div *ngIf="isLoading">
+  <p>Caricamento in corso...</p>
+</div>
+
+<div *ngIf="!isLoading && filteredAnime.length > 0; else noWatchedAnime">
   <div class="anime-container">
     <div *ngFor="let anime of filteredAnime" class="anime-card" (click)="goToDetails(anime.details?.data?.mal_id)">
       <img
@@ -37,7 +45,7 @@
         alt="{{ anime.details?.data?.title }}"
         class="anime-image"
       />
-      <h3>{{ anime.details?.data?.title || 'Titolo non disponibile' }}</h3>
+      <h3>{{ getTitle(anime.details?.data) || 'Titolo non disponibile' }}</h3>
     </div>
   </div>
 </div>

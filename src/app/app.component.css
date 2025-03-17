@@ -73,3 +73,41 @@ button:hover {
   flex-wrap: wrap;
   justify-content: flex-end;
 }
+
+.profile-pic {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.profile-pic img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 0.5rem;
+  z-index: 1000;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 0.5rem;
+  text-decoration: none;
+  color: #333;
+}
+
+.dropdown-menu a:hover {
+  background-color: #f0f0f0;
+}

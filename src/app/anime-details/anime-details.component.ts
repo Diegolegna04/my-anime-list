@@ -24,6 +24,7 @@ export class AnimeDetailsComponent implements OnInit {
   watching: boolean = false;
   episodiVisti: number = 0;
   animeState: string = 'non visto';
+  inEvidenza: boolean = false;
 
   private animeDetailUrl = 'https://api.jikan.moe/v4/anime';
 
@@ -40,6 +41,7 @@ export class AnimeDetailsComponent implements OnInit {
         this.loadAnimeDetails();
         this.loadRecommendedAnime();
         this.loadAnimeState();
+        this.loadInEvidenza();
 
         const statoWatching = JSON.parse(localStorage.getItem('statoWatching') || '{}');
         const elencoVisti = JSON.parse(localStorage.getItem('elencoVisti') || '[]');
@@ -169,5 +171,79 @@ export class AnimeDetailsComponent implements OnInit {
       episodiVisti: this.episodiVisti,
     };
     localStorage.setItem('animeStates', JSON.stringify(savedState));
+  }
+
+  translateText(): void {
+    const apiUrl = 'https://api.mymemory.translated.net/get';
+    const maxLength = 500;
+
+    if (!this.animeDetails) return;
+
+    // Funzione per tradurre un testo con MyMemory
+    const translate = (text: string, callback: (translated: string) => void) => {
+      if (!text) return;
+
+      const parts: string[] = [];
+      for (let i = 0; i < text.length; i += maxLength) {
+        parts.push(text.substring(i, i + maxLength));
+      }
+
+      const translatedParts: string[] = [];
+      let completedRequests = 0;
+
+      parts.forEach((part, index) => {
+        const params = { q: part, langpair: 'en|it' };
+
+        this.http.get<any>(apiUrl, { params }).subscribe(
+          (response) => {
+            translatedParts[index] = response.responseData.translatedText;
+            completedRequests++;
+
+            // Se tutte le parti sono state tradotte, chiamiamo la callback
+            if (completedRequests === parts.length) {
+              callback(translatedParts.join(' '));
+            }
+          },
+          (error) => {
+            console.error('Errore nella traduzione:', error);
+          }
+        );
+      });
+    };
+
+    // Traduzione del titolo
+    translate(this.animeDetails.title, (translatedTitle) => {
+      this.animeDetails.title = translatedTitle;
+    });
+
+    // Traduzione della sinossi
+    translate(this.animeDetails.synopsis, (translatedSynopsis) => {
+      this.animeDetails.synopsis = translatedSynopsis;
+    });
+  }
+
+  loadInEvidenza(): void {
+    const inEvidenza = localStorage.getItem('inEvidenza');
+    if (inEvidenza) {
+      this.inEvidenza = JSON.parse(inEvidenza).includes(this.animeId.toString());
+    } else {
+      this.inEvidenza = false;
+    }
+  }
+
+  toggleInEvidenza(): void {
+    const inEvidenza = JSON.parse(localStorage.getItem('inEvidenza') || '[]');
+    const animeIdString = this.animeId.toString();
+    const index = inEvidenza.indexOf(animeIdString);
+
+    if (index === -1) {
+      // L'ID dell'anime non è presente, quindi aggiungilo
+      inEvidenza.push(animeIdString);
+    } else {
+      // L'ID dell'anime è presente, quindi rimuovilo
+      inEvidenza.splice(index, 1);
+    }
+    this.inEvidenza = !this.inEvidenza;
+    localStorage.setItem('inEvidenza', JSON.stringify(inEvidenza));
   }
 }

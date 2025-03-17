@@ -1,0 +1,138 @@
+.bottoni {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin: 10px 0;
+  align-items: center;
+}
+
+/* Contenitore principale del profilo */
+.profile-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 20px 32px;
+  text-align: center;
+}
+
+/* Header del profilo con immagine e username */
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  max-width: 200px;
+}
+
+.profile-pic {
+  width: 225px;
+  height: 225px;
+  object-fit: cover;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  margin: 20px 0;
+  position: relative;
+  right: 750px;
+}
+
+@media (max-width: 1219px) {
+  .stats {
+    right: 600px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .stats {
+    right: 300px;
+  }
+}
+
+@media (max-width: 780px) {
+  .stats {
+    right: 150px;
+  }
+}
+
+@media (max-width: 616px) {
+  .profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .profile-header {
+    align-items: center;
+  }
+  .stats {
+    right: 0;
+  }
+}
+
+.language-toggle {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.favorite-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.favorite-button:hover {
+  background-color: #0056b3;
+}
+
+/* Contenitore Anime Preferiti */
+.favorites-section {
+  text-align: center;
+  margin-top: 30px;
+}
+
+/* Contenitore anime */
+.anime-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1rem;
+}
+
+/* Card degli anime */
+.anime-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  width: 200px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.anime-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.anime-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}

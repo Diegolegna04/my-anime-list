@@ -1,20 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { AnimeService } from '../services/anime.service';
 import { ChangeDetectorRef } from '@angular/core';
-import {NgForOf, NgIf} from '@angular/common';
-import {RouterLink} from '@angular/router';
+import { NgForOf, NgIf } from '@angular/common';
+import {RouterLink, RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-watched-anime',
   templateUrl: './watched-anime.component.html',
   standalone: true,
-  imports: [
-    RouterLink,
-    NgIf,
-    NgForOf,
-    RouterLink
-  ],
-  styleUrls: ['./watched-anime.component.css']
+  imports: [RouterLink, NgIf, NgForOf, RouterOutlet],
+  styleUrls: ['./watched-anime.component.css'],
 })
 export class WatchedAnimeComponent implements OnInit {
   watchedAnime: any[] = [];
@@ -22,9 +17,12 @@ export class WatchedAnimeComponent implements OnInit {
   isLoading: boolean = true;
   filter: string = 'all'; // Può essere 'all', 'completato', o 'in visione'
 
+  titleLanguage: 'english' | 'original' = 'original'; // Aggiunto per la lingua del titolo
+
   constructor(private animeService: AnimeService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
+    this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
     this.loadWatchedAnime();
   }
 
@@ -38,19 +36,21 @@ export class WatchedAnimeComponent implements OnInit {
       details: null,
     }));
 
-    let remaining = this.watchedAnime.length;
+    if (this.watchedAnime.length === 0) {
+      this.isLoading = false; // Nessun anime salvato
+      return;
+    }
 
-    this.watchedAnime.forEach((anime) => {
+    const requests = this.watchedAnime.map((anime) =>
       this.getAnimeDetailsById(anime.id).then((details) => {
         anime.details = details;
-        remaining--;
+      })
+    );
 
-        if (remaining === 0) {
-          this.isLoading = false;
-          this.applyFilter(); // Applichiamo il filtro iniziale
-          this.cdr.detectChanges();
-        }
-      });
+    Promise.all(requests).then(() => {
+      this.isLoading = false;
+      this.applyFilter();
+      this.cdr.detectChanges(); // Assicura che l'interfaccia si aggiorni correttamente
     });
   }
 
@@ -65,11 +65,26 @@ export class WatchedAnimeComponent implements OnInit {
 
   applyFilter(): void {
     if (this.filter === 'all') {
-      this.filteredAnime = this.watchedAnime;
+      this.filteredAnime = this.watchedAnime.filter((anime) => anime.details);
     } else {
       this.filteredAnime = this.watchedAnime.filter(
         (anime) => anime.state === this.filter
       );
+    }
+  }
+
+  toggleTitleLanguage(): void {
+    this.titleLanguage = this.titleLanguage === 'english' ? 'original' : 'english';
+    localStorage.setItem('titleLanguage', this.titleLanguage);
+    this.cdr.detectChanges(); // Forza l'aggiornamento della vista
+  }
+
+  getTitle(anime: any): string {
+    if (!anime) return '';
+    if (this.titleLanguage === 'english') {
+      return anime.title_english || anime.title;
+    } else {
+      return anime.title || anime.title_english;
     }
   }
 
