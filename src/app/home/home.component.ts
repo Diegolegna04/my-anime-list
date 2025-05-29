@@ -20,7 +20,7 @@ export class HomeComponent implements OnInit {
   isLoading: boolean = false; // Variabile per gestire il caricamento
   isGridView: boolean = true;
   private topAnimeUrl = 'https://api.jikan.moe/v4/top/anime';
-  private currentPage: number = 1; // Traccia la pagina corrente
+  currentPage: number = 1; // Traccia la pagina corrente
   titleLanguage: 'english' | 'original' = 'original'; // Variabile per la lingua del titolo
 
   constructor(private http: HttpClient, private router: Router, private animeService: AnimeService) {}

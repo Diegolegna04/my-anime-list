@@ -20,6 +20,7 @@ export class AnimeByGenreComponent implements OnInit {
   private currentPage: number = 1; // Traccia la pagina corrente
   titleLanguage: 'english' | 'original' = 'original'; // Variabile per la lingua del titolo
   isLoading: boolean = false; // Variabile per gestire il caricamento
+  currentSortCriteria: string = 'score'; // Traccia il criterio di ordinamento corrente
 
   private genreMap: { [key: number]: string } = {
     1: 'Action',
@@ -73,9 +74,14 @@ export class AnimeByGenreComponent implements OnInit {
   loadAnimeByGenre(): void {
     this.isLoading = true;
     if (this.genreId) {
-      const url = `${this.animeByGenreUrl}?genres=${this.genreId}&page=${this.currentPage}`;
+      const url = `${this.animeByGenreUrl}?genres=${this.genreId}&page=${this.currentPage}&order_by=score&sort=desc&limit=25`;
       this.http.get<any>(url).subscribe((response) => {
-        this.animeList = [...this.animeList, ...response.data];
+        const newAnime = response.data;
+        this.animeList = [...this.animeList, ...newAnime];
+
+        if (this.currentSortCriteria !== 'score') {
+          this.animeList = this.animeService.sortAnime(this.animeList, this.currentSortCriteria);
+        }
         this.isLoading = false;
       });
     }
@@ -93,6 +99,9 @@ export class AnimeByGenreComponent implements OnInit {
     const target = event.target as HTMLSelectElement;
     const criteria = target.value;
 
+    // Aggiorna il criterio di ordinamento corrente
+    this.currentSortCriteria = criteria;
+    
     this.animeList = this.animeService.sortAnime(this.animeList, criteria);
   }
 

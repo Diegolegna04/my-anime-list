@@ -1,50 +1,188 @@
-<div>
-  <!-- Sezione introduttiva -->
-  <div class="intro">
-    <div class="intro-content">
+<div class="dashboard-container">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
       <h1>Benvenuto sul mio My Anime List!</h1>
       <p>
         Esplora la nostra classifica con i migliori titoli e scopri cosa guardare dopo.
-        Entra nel mondo degli anime oggi stesso!
+        Immergiti nel mondo fantastico degli anime oggi stesso!
       </p>
+      <div class="hero-buttons">
+        <button class="primary-btn" (click)="currentView = 'list'">Top Anime</button>
+        <button class="secondary-btn" routerLink="/search">Cerca Anime</button>
+      </div>
     </div>
   </div>
 
-  <div class="bottoni">
-    <!-- Bottone per cambiare la lingua del titolo -->
-    <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
-      Cambia Lingua Titolo
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <i class="fas fa-tv"></i>
+      <span class="stat-number">{{animeList.length}}+</span>
+      <span class="stat-label">Anime Popolari</span>
+    </div>
+    <div class="stat-item">
+      <i class="fas fa-star"></i>
+      <span class="stat-number">{{this.titleLanguage === 'english' ? 'EN' : 'JP'}}</span>
+      <span class="stat-label">Lingua Titoli</span>
+    </div>
+    <div class="stat-item">
+      <i class="fas fa-th-large"></i>
+      <span class="stat-number">{{isGridView ? 'Grid' : 'List'}}</span>
+      <span class="stat-label">Visualizzazione</span>
+    </div>
+    <div class="stat-item">
+      <i class="fas fa-newspaper"></i>
+      <span class="stat-number">{{currentPage}}</span>
+      <span class="stat-label">Pagina Corrente</span>
+    </div>
+  </div>
+
+  <!-- Top Anime Section -->
+  <div class="top-anime-section">
+    <div class="section-header">
+      <h2 class="section-title">Top Anime</h2>
+      <div class="section-controls">
+        <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
+          <i class="fas fa-language"></i>
+          {{titleLanguage === 'english' ? 'Mostra titoli originali' : 'Mostra titoli inglesi'}}
+        </button>
+        <div class="view-toggle">
+          <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
+            <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th-large'"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Anime Container -->
+    <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
+      <div
+        *ngFor="let anime of animeList; let i = index"
+        class="anime-card"
+        (click)="goToDetails(anime.mal_id)"
+      >
+        <span class="anime-card-rank">#{{i + 1}}</span>
+        <img [src]="anime.images.jpg.image_url" alt="{{ getTitle(anime) }}"/>
+        <div class="anime-card-content">
+          <h3 class="anime-title">{{ getTitle(anime) }}</h3>
+          <div class="anime-meta">
+            <div class="anime-score" *ngIf="anime.score">
+              <i class="fas fa-star"></i>
+              {{anime.score}}
+            </div>
+            <div class="anime-type">
+              {{anime.type || 'N/A'}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Container -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Caricamento anime in corso...</p>
+    </div>
+
+    <!-- Load More Button -->
+    <button
+      *ngIf="!isLoading && animeList.length > 0"
+      (click)="loadMoreAnime()"
+      class="load-more-btn"
+    >
+      <i class="fas fa-plus-circle"></i> Carica Altri Anime
     </button>
   </div>
-  <!-- Lista degli anime popolari -->
-  <div class="div">
-    <h2 class="section-title">Anime Popolari</h2>
-    <div class="view-toggle">
-      <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
-        <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th'"></i>
-      </button>
+
+  <!-- Seasonal Section -->
+  <div class="seasonal-section">
+    <div class="section-header">
+      <h2 class="section-title">Anime della Stagione</h2>
+      <span class="season-tag">Primavera 2025</span>
     </div>
-  </div>
-  <div [class.grid]="isGridView" [class.list]="!isGridView" class="anime-container">
-    <div
-      *ngFor="let anime of animeList"
-      class="anime-card"
-      (click)="goToDetails(anime.mal_id)"
-    >
-      <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}"/>
-      <h3 class="anime-title">{{ getTitle(anime) }}</h3>
+    <div class="seasonal-slider">
+      <div class="section-header">
+        <div class="slider-controls">
+          <div class="slider-arrow prev-arrow">
+            <i class="fas fa-chevron-left"></i>
+          </div>
+          <div class="slider-arrow next-arrow">
+            <i class="fas fa-chevron-right"></i>
+          </div>
+        </div>
+      </div>
+      <div class="seasonal-anime-container">
+        <!-- Anime stagionali - Saranno popolati dinamicamente -->
+        <ng-container *ngFor="let anime of animeList.slice(0, 5)">
+          <div class="seasonal-anime-card">
+            <span class="seasonal-badge" *ngIf="anime.score && anime.score > 8.5">HOT</span>
+            <img [src]="anime.images.jpg.image_url" alt="{{ getTitle(anime) }}">
+            <div class="seasonal-anime-info">
+              <h3>{{ getTitle(anime) }}</h3>
+              <div class="anime-stats">
+                <span *ngIf="anime.score"><i class="fas fa-star"></i> {{anime.score}}</span>
+                <span>{{anime.type}}</span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
     </div>
   </div>
 
-  <!-- Messaggio di caricamento -->
-  <p *ngIf="isLoading" class="loading-text">Caricamento anime...</p>
+  <!-- Genres Section -->
+  <div class="genres-section">
+    <div class="section-header">
+      <h2 class="section-title">Esplora per Genere</h2>
+    </div>
+    <div class="genres-grid">
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'action'}">
+        <i class="fas fa-fist-raised genre-icon"></i>
+        <h3>Azione</h3>
+      </div>
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'romance'}">
+        <i class="fas fa-heart genre-icon"></i>
+        <h3>Romance</h3>
+      </div>
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'horror'}">
+        <i class="fas fa-ghost genre-icon"></i>
+        <h3>Horror</h3>
+      </div>
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'comedy'}">
+        <i class="fas fa-laugh-beam genre-icon"></i>
+        <h3>Commedia</h3>
+      </div>
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'sci-fi'}">
+        <i class="fas fa-rocket genre-icon"></i>
+        <h3>Sci-Fi</h3>
+      </div>
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'fantasy'}">
+        <i class="fas fa-magic genre-icon"></i>
+        <h3>Fantasy</h3>
+      </div>
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'slice-of-life'}">
+        <i class="fas fa-school genre-icon"></i>
+        <h3>Slice of Life</h3>
+      </div>
+      <div class="genre-card" routerLink="/genres">
+        <i class="fas fa-plus-circle genre-icon"></i>
+        <h3>Altri Generi</h3>
+      </div>
+    </div>
+  </div>
 
-  <!-- Bottone per caricare altri anime -->
-  <button
-    *ngIf="!isLoading"
-    (click)="loadMoreAnime()"
-    class="load-more-btn"
-  >
-    Carica Altri Anime
-  </button>
+  <!-- Newsletter Section -->
+  <div class="newsletter-section">
+    <div class="newsletter-content">
+      <h2>Rimani Aggiornato</h2>
+      <p>
+        Iscriviti alla nostra newsletter per ricevere aggiornamenti sui nuovi anime, eventi esclusivi e suggerimenti personalizzati.
+      </p>
+      <div class="newsletter-form">
+        <input type="email" placeholder="La tua email" class="newsletter-input">
+        <button class="newsletter-btn">Iscriviti</button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -23,8 +23,7 @@
     <div
       *ngFor="let anime of searchResults"
       class="anime-card"
-      (click)="goToDetails(anime.mal_id)"
-    >
+      (click)="goToDetails(anime.mal_id)">
       <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}"/>
       <h3 class="anime-title">{{ anime.title }}</h3>
     </div>

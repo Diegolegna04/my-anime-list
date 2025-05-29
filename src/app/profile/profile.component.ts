@@ -15,12 +15,13 @@ import {AnimeService} from '../services/anime.service';
   standalone: true
 })
 export class ProfileComponent implements OnInit {
-  profileImage: string = 'assets/default-profile.png'; // Default profile image
+  profileImage: string = 'assets/default-profile.png';
   username: string = 'Utente';
   watchedAnimeCount: number = 0;
   inEvidenza: any[] = [];
   animePreferiti: number = 0;
   titleLanguage: 'english' | 'original' = 'original';
+  showOverlay: boolean = false;
 
   constructor(private animeService: AnimeService, private cdr: ChangeDetectorRef) {
   }
@@ -50,13 +51,24 @@ export class ProfileComponent implements OnInit {
 
       Promise.all(requests).then((responses) => {
         this.inEvidenza = responses.map((res) => res.data);
-        this.cdr.detectChanges(); // 🔥 Forza l'aggiornamento della vista
+        this.cdr.detectChanges();
       });
     }
   }
 
   changeProfileImage(): void {
-    document.getElementById('profileImageInput')?.click();
+    const input = document.getElementById('profileImageInput');
+    if (input) input.click();
+  }
+
+  openOverlay(): void {
+    this.showOverlay = true;
+  }
+
+  closeOverlay(): void {
+    this.showOverlay = false;
+    const input = document.getElementById('profileImageInput') as HTMLInputElement;
+    if (input) input.value = '';
   }
 
   uploadProfileImage(event: Event): void {
