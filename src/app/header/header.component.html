@@ -1,24 +1,54 @@
-<div class="nav">
-  <!-- Bottone per filtrare per genere -->
-  <button (click)="goToGenres()" class="genre-btn">Filtra per genere</button>
+<header class="app-header">
+  <div class="header-left">
+    <a routerLink="/" class="app-logo" (click)="goToHome()">Anime List</a>
+  </div>
 
-  <!-- Contenitore per la barra di ricerca -->
-  <div class="search-container">
-    <!-- Bottone per mostrare/nascondere la barra di ricerca -->
-    <button (click)="toggleSearchBar()" class="toggle-search-btn">🔎</button>
+  <div class="header-center"> </div>
 
-    <!-- Barra di ricerca -->
-    @if (showSearchBar) {
-      <div class="search-bar">
-        <input
-          type="text"
-          [(ngModel)]="query"
-          (keyup.enter)="searchAnime()"
-          placeholder="Cerca un anime..."
-          class="search-input"
-          />
-        <button (click)="searchAnime()" class="search-btn">Cerca</button>
+  <div class="header-right">
+    <button (click)="goToGenres()" class="action-button secondary">
+      <i class="fas fa-filter"></i>
+      <span>Generi</span>
+    </button>
+
+    <div class="search-section">
+      <button (click)="toggleSearchBar()" class="action-button secondary toggle-search-btn">
+        <i class="fas fa-search"></i>
+      </button>
+      @if (showSearchBar) {
+        <div class="search-bar">
+          <input
+            type="text"
+            [(ngModel)]="query"
+            (keyup.enter)="searchAnime()"
+            placeholder="Cerca un anime..."
+            class="search-input"
+            />
+          <button (click)="searchAnime()" class="action-button primary search-btn">
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      }
+    </div>
+
+    @if (!accessoEffettuato) {
+      <button (click)="goToLoginRegister()" class="action-button primary">
+        <i class="fas fa-user-circle"></i>
+        <span>Login / Registrati</span>
+      </button>
+    } @else {
+      <div class="profile-menu-container" [ngClass]="{'show-dropdown': showDropdown}">
+        <div class="profile-pic-area" (click)="toggleDropdown()">
+          <img [src]="profileImage" alt="Profile Image" class="profile-pic-thumb">
+          <span class="profile-username">{{ username }}</span>
+          <i class="fas fa-caret-down dropdown-arrow" [class.rotated]="showDropdown"></i>
+        </div>
+
+        <div class="dropdown-menu">
+          <a (click)="goToProfile()"><i class="fas fa-user"></i> Il mio Profilo</a>
+          <a (click)="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
       </div>
     }
   </div>
-</div>
+</header>

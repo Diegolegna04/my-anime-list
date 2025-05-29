@@ -1,23 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { AnimeService } from '../services/anime.service';
 import { ChangeDetectorRef } from '@angular/core';
-
-import {RouterLink, RouterOutlet} from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-watched-anime',
   templateUrl: './watched-anime.component.html',
   standalone: true,
-  imports: [RouterLink, RouterOutlet],
+  imports: [RouterLink, RouterOutlet, CommonModule],
   styleUrls: ['./watched-anime.component.css'],
 })
 export class WatchedAnimeComponent implements OnInit {
   watchedAnime: any[] = [];
   filteredAnime: any[] = [];
   isLoading: boolean = true;
-  filter: string = 'all'; // Può essere 'all', 'completato', o 'in visione'
+  filter: string = 'all';
 
-  titleLanguage: 'english' | 'original' = 'original'; // Aggiunto per la lingua del titolo
+  titleLanguage: 'english' | 'original' = 'original';
+
+  private readonly REQUEST_CONCURRENCY_LIMIT = 3;
+  private readonly REQUEST_DELAY_MS = 500;
 
   constructor(private animeService: AnimeService, private cdr: ChangeDetectorRef) {}
 
@@ -27,35 +30,70 @@ export class WatchedAnimeComponent implements OnInit {
   }
 
   loadWatchedAnime(): void {
-    const elencoVisti = JSON.parse(localStorage.getItem('animeStates') || '{}');
+    const animeStates = JSON.parse(localStorage.getItem('animeStates') || '{}');
 
-    // Convertiamo l'elenco salvato in un array di anime con i dettagli
-    this.watchedAnime = Object.keys(elencoVisti).map((id) => ({
+    const validAnimeEntries = Object.keys(animeStates).filter(id => {
+      const state = animeStates[id].state;
+      return state === 'completato' || state === 'in visione';
+    });
+
+    this.watchedAnime = validAnimeEntries.map((id) => ({
       id,
-      state: elencoVisti[id].state,
+      state: animeStates[id].state,
+      episodiVisti: animeStates[id].episodiVisti,
       details: null,
     }));
 
     if (this.watchedAnime.length === 0) {
-      this.isLoading = false; // Nessun anime salvato
+      this.isLoading = false;
+      this.filteredAnime = [];
       return;
     }
 
-    const requests = this.watchedAnime.map((anime) =>
-      this.getAnimeDetailsById(anime.id).then((details) => {
-        anime.details = details;
-      })
-    );
+    this.isLoading = true;
 
-    Promise.all(requests).then(() => {
+    this.processAnimeDetailsRequests().then(() => {
       this.isLoading = false;
       this.applyFilter();
-      this.cdr.detectChanges(); // Assicura che l'interfaccia si aggiorni correttamente
+      this.cdr.detectChanges();
+    }).catch(error => {
+      console.error("Errore durante il caricamento dei dettagli degli anime:", error);
+      this.isLoading = false;
     });
   }
 
   async getAnimeDetailsById(id: string): Promise<any> {
-    return this.animeService.getAnimeById(id).toPromise();
+    try {
+      return await this.animeService.getAnimeById(id).toPromise();
+    } catch (error) {
+      console.error(`Errore nel recupero dettagli per ID ${id}:`, error);
+      return null;
+    }
+  }
+
+  private async processAnimeDetailsRequests(): Promise<void> {
+    const totalRequests = this.watchedAnime.length;
+    let completedRequests = 0;
+
+    const requestQueue: (() => Promise<void>)[] = this.watchedAnime.map(anime => async () => {
+      anime.details = await this.getAnimeDetailsById(anime.id);
+      completedRequests++;
+
+      this.applyFilter();
+      this.cdr.detectChanges();
+    });
+
+    const concurrency = this.REQUEST_CONCURRENCY_LIMIT;
+    const delay = this.REQUEST_DELAY_MS;
+
+    for (let i = 0; i < totalRequests; i += concurrency) {
+      const batch = requestQueue.slice(i, i + concurrency);
+      await Promise.all(batch.map(request => request()));
+
+      if (i + concurrency < totalRequests) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
   }
 
   setFilter(filter: string): void {
@@ -64,27 +102,47 @@ export class WatchedAnimeComponent implements OnInit {
   }
 
   applyFilter(): void {
+    let loadedAnime = this.watchedAnime.filter((anime) => anime.details);
+
     if (this.filter === 'all') {
-      this.filteredAnime = this.watchedAnime.filter((anime) => anime.details);
+      this.filteredAnime = loadedAnime;
     } else {
-      this.filteredAnime = this.watchedAnime.filter(
+      this.filteredAnime = loadedAnime.filter(
         (anime) => anime.state === this.filter
       );
     }
+
+    this.filteredAnime.sort((a, b) => {
+      const titleA = this.getTitle(a.details?.data).toLowerCase();
+      const titleB = this.getTitle(b.details?.data).toLowerCase();
+
+      if (titleA < titleB) {
+        return -1;
+      }
+      if (titleA > titleB) {
+        return 1;
+      }
+      return 0;
+    });
+
+    this.cdr.detectChanges();
   }
 
   toggleTitleLanguage(): void {
     this.titleLanguage = this.titleLanguage === 'english' ? 'original' : 'english';
     localStorage.setItem('titleLanguage', this.titleLanguage);
-    this.cdr.detectChanges(); // Forza l'aggiornamento della vista
+    this.cdr.detectChanges();
   }
 
   getTitle(anime: any): string {
     if (!anime) return '';
+    const englishTitle = anime.title_english || '';
+    const originalTitle = anime.title || '';
+
     if (this.titleLanguage === 'english') {
-      return anime.title_english || anime.title;
+      return englishTitle || originalTitle;
     } else {
-      return anime.title || anime.title_english;
+      return originalTitle || englishTitle;
     }
   }
 

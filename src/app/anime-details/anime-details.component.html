@@ -2,100 +2,125 @@
   <div class="anime-detail">
     <div class="main-content">
       <h1 class="anime-title">{{ animeDetails.title }}</h1>
+      
       <div class="anime-info">
         <img [src]="animeDetails.images.jpg.large_image_url" [alt]="animeDetails.title" class="cover-image" />
+        
         <div class="info-text">
           <button class="translate-btn" (click)="translateText()">🇮🇹 Traduci in Italiano</button>
           <p class="synopsis">{{ animeDetails.synopsis }}</p>
+          
           <div class="extra-info">
             <p><strong>Episodi:</strong> {{ animeDetails.episodes }}</p>
             <p><strong>Voto:</strong> {{ animeDetails.score }}</p>
             <p><strong>Status:</strong> {{ animeDetails.status }}</p>
             <p><strong>Generi:</strong>
-            @for (genre of animeDetails.genres; track genre; let last = $last) {
-              <span>
-                {{ genre.name }}@if (!last) {
-                <span>,&nbsp;</span>
+              @for (genre of animeDetails.genres; track genre; let last = $last) {
+                <span>
+                  {{ genre.name }}@if (!last) {
+                    <span>,&nbsp;</span>
+                  }
+                </span>
               }
-            </span>
-          }
-        </p>
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-  <!-- Stato -->
-  <div class="stato-section">
-    <button class="stato-btn" (click)="setAnimeState('non visto')" [disabled]="animeState === 'non visto'">
-      Non Visto
-    </button>
-    <button class="stato-btn" (click)="setAnimeState('in visione')"
-      [disabled]="animeState === 'in visione' || animeState === 'completato'">
-      In Visione
-    </button>
-    <button class="stato-btn" (click)="setAnimeState('completato')"
-      [disabled]="animeState === 'completato' || animeState === 'in visione'">
-      Completato
-    </button>
-  </div>
-  <!-- Episodi visti -->
-  @if (animeState === 'in visione') {
-    <div class="episodi-section">
-      <label for="episodiVisti">Episodi visti:</label>
-      <input
-        type="number"
-        id="episodiVisti"
-        [(ngModel)]="episodiVisti"
-        [min]="0"
-        [max]="animeDetails.episodes"
-        (change)="updateEpisodiVisti()" />
-      <p>{{ episodiVisti }}/{{ animeDetails.episodes }} episodi visti</p>
-    </div>
-  }
-  <!-- Voto -->
-  @if (visto) {
-    <div class="voto-section">
-      <label for="voto">Voto:</label>
-      <input type="range" id="voto" min="1" max="10" [(ngModel)]="voto" (change)="setVoto(voto)" class="voto-slider" />
-      <span class="voto-display">{{ voto }}</span>
-    </div>
-  }
-  <!-- Preferito -->
-  @if (visto || episodiVisti > 5) {
-    <div class="preferito-section">
-      <label>Preferito?</label>
-      <span class="star-icon" [class.active]="preferito" (click)="togglePreferito()">&#9733;</span>
-    </div>
-  }
-  <!-- Evidenza -->
-  @if (visto || episodiVisti > 5) {
-    <div class="evidenza-section">
-      <label>
-        <input type="checkbox" [(ngModel)]="inEvidenza" (change)="toggleInEvidenza()" />
-        Mostra in evidenza sul profilo
-      </label>
-    </div>
-  }
-</div>
-<!-- Sezione consigliati -->
-<aside class="recommended-section">
-  <h2>Anime Consigliati</h2>
-  <div class="recommended-list">
-    @for (anime of displayedRecommendedAnime; track anime) {
-      <div
-        class="recommended-card"
-        (click)="viewAnimeDetails(anime.mal_id)">
-        <img [src]="anime.images.jpg.image_url" [alt]="anime.title" />
-        <h4>{{ anime.title }}</h4>
+
+      <!-- Stato -->
+      <div class="stato-section">
+        <button class="stato-btn" (click)="setAnimeState('non visto')" [disabled]="animeState === 'non visto'">
+          Non Visto
+        </button>
+        <button class="stato-btn" (click)="setAnimeState('in visione')"
+          [disabled]="animeState === 'in visione' || animeState === 'completato'">
+          In Visione
+        </button>
+        <button class="stato-btn" (click)="setAnimeState('completato')"
+          [disabled]="animeState === 'completato' || animeState === 'in visione'">
+          Completato
+        </button>
       </div>
-    }
+      <!-- Episodi visti -->
+      @if (animeState === 'in visione') {
+        <div class="episodi-section">
+          <label for="episodiVisti">Episodi visti:</label>
+          <input
+            type="number"
+            id="episodiVisti"
+            [(ngModel)]="episodiVisti"
+            [min]="0"
+            [max]="animeDetails.episodes"
+            (change)="updateEpisodiVisti()" />
+          <p>{{ episodiVisti }}/{{ animeDetails.episodes }} episodi visti</p>
+        </div>
+      }
+
+      <!-- Voto con sistema a stelle -->
+      @if (visto || animeState === 'in visione') {
+        <div class="voto-section">
+          <label>Il tuo voto:</label>
+          <div class="star-rating-container">
+            <div class="star-rating">
+              @for (star of [1,2,3,4,5,6,7,8,9,10]; track star) {
+                <span 
+                  class="rating-star"
+                  [class.filled]="star <= voto"
+                  [class.half]="star - 0.5 === voto"
+                  (click)="setVoto(star)"
+                  (mouseenter)="onStarHover(star)"
+                  (mouseleave)="onStarLeave()">
+                  ★
+                </span>
+              }
+            </div>
+            <div class="rating-display" [class.active]="voto > 0">
+              <span class="rating-number">{{ voto }}</span>
+              <span class="rating-max">/10</span>
+            </div>
+          </div>
+        </div>
+      }
+      <!-- Preferito -->
+      @if (visto && voto >= 8) {
+        <div class="preferito-section">
+          <label for="preferito-toggle" class="section-label">Aggiungi ai Preferiti:</label>
+          <button id="preferito-toggle" class="favorite-toggle-btn" [class.active]="preferito" (click)="togglePreferito()">
+            <span class="star-icon">&#9733;</span>
+            {{ preferito ? 'Rimuovi dai Preferiti' : 'Aggiungi ai Preferiti' }}
+          </button>
+        </div>
+      }
+      <!-- Evidenza -->
+      @if (visto || episodiVisti >= 5) {
+        <div class="evidenza-section">
+          <label>
+            <input type="checkbox" [(ngModel)]="inEvidenza" (change)="toggleInEvidenza()" />
+            Mostra in evidenza sul profilo
+          </label>
+        </div>
+      }
+    </div>
+    <!-- Sezione consigliati -->
+    <aside class="recommended-section">
+      <h2>Anime Consigliati</h2>
+      <div class="recommended-list">
+        @for (anime of displayedRecommendedAnime; track anime) {
+          <div
+            class="recommended-card"
+            (click)="viewAnimeDetails(anime.mal_id)">
+            <img [src]="anime.images.jpg.image_url" [alt]="anime.title" />
+            <h4>{{ anime.title }}</h4>
+          </div>
+        }
+      </div>
+      @if (displayedRecommendedAnime.length < recommendedAnime.length) {
+        <button
+          class="load-more-btn"
+          (click)="loadMoreAnime()">
+          Carica Altri
+        </button>
+      }
+    </aside>
   </div>
-  @if (displayedRecommendedAnime.length < recommendedAnime.length) {
-    <button
-      class="load-more-btn"
-      (click)="loadMoreAnime()">
-      Carica Altri
-    </button>
-  }
-</aside>
-</div>
 }

@@ -1,87 +1,398 @@
-/* Generale per la navigazione */
-.nav {
+/* Importa Poppins da Google Fonts se non l'hai già fatto nel tuo index.html */
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap'); */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Poppins', 'Arial', sans-serif;
+  color: #333;
+}
+
+/* --- App Header (Navigazione Principale) --- */
+.app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background-color: #f9f9f9;
-  border-bottom: 2px solid #ddd;
+  padding: 1rem 3rem; /* Padding più generoso */
+  background-color: white; /* Sfondo bianco pulito */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Ombra soft e moderna */
+  position: sticky; /* Rende l'header sticky in alto */
+  top: 0;
+  z-index: 999; /* Assicura che sia sopra gli altri contenuti */
+  border-bottom: none; /* Rimuovi il bordo inferiore */
 }
 
-/* Bottone "Filtra per genere" */
-.genre-btn {
-  background-color: #0077ff;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.genre-btn:hover {
-  background-color: #005fcc;
-  transform: scale(1.05);
-}
-
-/* Contenitore barra di ricerca */
-.search-container {
+.header-left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
 }
 
-/* Bottone per mostrare la barra di ricerca */
-.toggle-search-btn {
-  background: none;
+.app-logo {
+  font-size: 1.8rem; /* Dimensione del logo */
+  font-weight: 800; /* Più grassetto */
+  color: #7c4dff; /* Colore primario per il logo */
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  transition: color 0.3s ease;
+}
+
+.app-logo:hover {
+  color: #6a45e5;
+}
+
+.header-center {
+  /* Potrebbe essere usato per link di navigazione principali */
+  flex-grow: 1; /* Permette di occupare spazio centrale */
+  text-align: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* Spazio tra bottoni/ricerca */
+}
+
+/* --- Bottoni Generici (riutilizzati dalle altre pagine) --- */
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.8rem;
   border: none;
-  font-size: 1.5rem;
-  color: #555;
+  border-radius: 30px;
   cursor: pointer;
-  transition: color 0.3s ease, transform 0.2s ease;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  color: white; /* Default per primary */
 }
 
-.toggle-search-btn:hover {
-  color: #0077ff;
-  transform: scale(1.2);
+.action-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
-/* Barra di ricerca */
+.action-button.primary {
+  background-color: #7c4dff;
+  color: white;
+}
+
+.action-button.primary:hover {
+  background-color: #6a45e5;
+}
+
+.action-button.secondary {
+  background-color: #e0e0e0;
+  color: #555;
+}
+
+.action-button.secondary:hover {
+  background-color: #d0d0d0;
+}
+
+/* Specifiche per il bottone di toggle ricerca (solo icona) */
+.action-button.secondary.toggle-search-btn {
+  padding: 0.9rem 1.2rem;
+  box-shadow: none;
+}
+
+.action-button.secondary.toggle-search-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Search Section --- */
+.search-section {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
 .search-bar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0.5rem;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-radius: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%) translateX(60px); /* Inizialmente fuori schermo */
+  width: 300px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Campo di input */
+/* Stile quando la search bar è visibile */
+.search-section .search-bar {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) translateX(0); /* Rientra in posizione */
+}
+
 .search-input {
-  flex: 1;
-  padding: 0.5rem;
+  flex-grow: 1;
+  padding: 0.9rem 1.5rem;
   border: none;
   outline: none;
   font-size: 1rem;
   color: #333;
+  background-color: transparent;
 }
 
-/* Bottone "Cerca" */
+.search-input::placeholder {
+  color: #888;
+  opacity: 0.8;
+}
+
 .search-btn {
-  background-color: #0077ff;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 0.9rem 1.2rem;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: none;
+  margin-left: -5px;
 }
 
-.search-btn:hover {
-  background-color: #005fcc;
-  transform: scale(1.05);
+/* --- Profile Menu (Login/Registrazione / Profilo) --- */
+.profile-menu-container {
+  position: relative;
+  height: 100%; /* Permette al dropdown di posizionarsi */
+  display: flex;
+  align-items: center;
+}
+
+.profile-pic-area {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.5rem 0.8rem; /* Padding leggero per l'area cliccabile */
+  border-radius: 30px;
+  transition: background-color 0.2s ease;
+}
+
+.profile-pic-area:hover {
+  background-color: #f0f0f0;
+}
+
+.profile-pic-thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%; /* Immagine tonda */
+  border: 2px solid #7c4dff; /* Bordo colorato */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-username {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.dropdown-arrow {
+  font-size: 0.8rem;
+  color: #555;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  padding: 1rem 0;
+  z-index: 1001;
+  min-width: 180px;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: all 0.2s ease-out;
+}
+
+.profile-menu-container.show-dropdown .dropdown-menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.dropdown-menu a {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.5rem;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-menu a i {
+  color: #7c4dff; /* Colore primario per le icone del dropdown */
+}
+
+.dropdown-menu a:hover {
+  background-color: #f5f5f5;
+  color: #222;
+}
+
+/* Media Queries per il Responsive Design */
+@media (max-width: 992px) {
+  .app-header {
+    padding: 1rem 2rem;
+  }
+  .app-logo {
+    font-size: 1.6rem;
+  }
+  .action-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.95rem;
+  }
+  .action-button.secondary.toggle-search-btn {
+    padding: 0.8rem 1.1rem;
+  }
+  .search-bar {
+    width: 250px;
+    transform: translateY(-50%) translateX(50px);
+  }
+  .search-section .search-bar {
+    transform: translateY(-50%) translateX(0);
+  }
+  .profile-username {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 1.5rem;
+    gap: 1rem;
+  }
+  .header-left, .header-right {
+    width: 100%;
+  }
+  .header-left {
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+  .header-right {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+  .action-button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
+    gap: 0.6rem;
+  }
+  .action-button.secondary.toggle-search-btn {
+    padding: 0.7rem 1.2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .search-section {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .search-bar {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) translateX(0); /* Rientra in posizione */
+    width: calc(100% - 50px); /* Adatta la larghezza */
+    max-width: none; /* Rimuovi max-width */
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+  }
+  /* Quando la search bar è visibile, la posizioni correttamente */
+  .search-section .search-bar.active-search { /* Aggiungeremo una classe active-search in TS */
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
+  }
+  .search-input {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  .search-btn {
+    padding: 0.7rem 1rem;
+  }
+  .profile-menu-container {
+    width: 100%;
+  }
+  .profile-pic-area {
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+    border-radius: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  .dropdown-menu {
+    top: calc(100% + 5px); /* Più vicino in mobile */
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    width: 95%; /* Quasi tutta la larghezza */
+    max-width: 250px; /* Limita un po' */
+  }
+  .profile-menu-container.show-dropdown .dropdown-menu {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: 0.8rem 1rem;
+  }
+  .app-logo {
+    font-size: 1.5rem;
+  }
+  .action-button {
+    font-size: 0.85rem;
+  }
+  .search-bar {
+    width: calc(100% - 50px);
+  }
+  .search-input {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+  .search-btn {
+    padding: 0.6rem 0.8rem;
+  }
+  .profile-pic-thumb {
+    width: 35px;
+    height: 35px;
+  }
+  .profile-username {
+    font-size: 0.85rem;
+  }
+  .dropdown-menu {
+    padding: 0.8rem 0;
+  }
+  .dropdown-menu a {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    gap: 0.6rem;
+  }
 }

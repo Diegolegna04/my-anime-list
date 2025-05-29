@@ -1,4 +1,6 @@
-/* Profile Page Styles */
+/* Importa un font più moderno da Google Fonts se non l'hai già fatto nel tuo index.html */
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap'); */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,358 +8,468 @@
 }
 
 body {
-  font-family: 'Nunito', 'Arial', sans-serif;
-  background-color: #f6f8fa;
+  font-family: 'Poppins', 'Nunito', 'Arial', sans-serif; /* Preferisci Poppins, altrimenti Nunito */
+  background-color: #f0f2f5; /* Sfondo più chiaro e moderno */
   color: #333;
 }
 
-/* Contenitore principale del profilo */
-.profile-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin: 2rem auto;
-  max-width: 1200px;
-  padding: 2rem;
-  text-align: center;
-}
-
-/* Header del profilo con immagine e username */
-.profile-header {
+/* --- Layout Generale --- */
+.profile-page {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  max-width: 1300px; /* Larghezza massima aumentata leggermente */
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 16px; /* Bordi più arrotondati */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); /* Ombra più pronunciata ma soft */
+}
+
+/* --- Top Bar --- */
+.top-bar {
+  display: flex;
+  justify-content: flex-end;
   margin-bottom: 2rem;
-  max-width: 225px;
+}
+
+/* --- Overlay Immagine Profilo --- */
+.profile-overlay {
+  position: fixed; /* Usa fixed per coprire l'intera viewport */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Sfondo più scuro per l'overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Assicura che sia sopra ogni altro elemento */
+  backdrop-filter: blur(5px); /* Effetto sfocato per lo sfondo */
+}
+
+.overlay-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  transform: translateY(-20px); /* Piccola animazione all'apertura */
+  animation: fadeInDown 0.3s ease-out forwards;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.overlay-profile-pic {
+  width: 120px; /* Dimensione leggermente più grande */
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  border: 4px solid #7c4dff; /* Bordo colorato */
+  box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
+}
+
+.overlay-username {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+/* --- Bottoni Generici --- */
+.action-button {
+  display: inline-flex; /* Per allineare testo e icona */
+  align-items: center;
+  gap: 0.75rem; /* Spazio tra icona e testo */
+  padding: 0.9rem 1.8rem; /* Padding generoso */
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 600; /* Peso del font aumentato */
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transizione più fluida */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-decoration: none; /* Per i button che sono anche RouterLink */
+  color: white; /* Default white per i primary */
+}
+
+.action-button:hover {
+  transform: translateY(-3px); /* Effetto di sollevamento */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.action-button.primary {
+  background-color: #7c4dff; /* Colore primario */
+  color: white;
+}
+
+.action-button.primary:hover {
+  background-color: #6a45e5;
+}
+
+.action-button.secondary {
+  background-color: #e0e0e0; /* Colore secondario */
+  color: #555;
+}
+
+.action-button.secondary:hover {
+  background-color: #d0d0d0;
+}
+
+/* --- Header Profilo e Statistiche --- */
+.profile-header-container {
+  display: flex;
+  flex-direction: row; /* Flex per affiancare immagine/nome e stats */
+  align-items: flex-start; /* Allineamento in alto */
+  gap: 3rem; /* Spazio maggiore tra i blocchi */
+  margin-bottom: 3rem; /* Spazio sotto l'header complessivo */
+}
+
+.profile-header-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Allinea a sinistra immagine e username */
 }
 
 .profile-pic {
-  width: 225px;
-  height: 225px;
+  width: 200px; /* Dimensione leggermente ridotta per più equilibrio */
+  height: 200px;
   object-fit: cover;
   border-radius: 12px;
   cursor: pointer;
-  margin-bottom: 1rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); /* Ombra più definita */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 4px solid #7c4dff; /* Bordo colorato */
 }
 
 .profile-pic:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+  transform: scale(1.03); /* Effetto di ingrandimento sottile */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
 }
 
 .username {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #333;
-  margin: 0.5rem 0;
+  font-size: 2.2rem; /* Dimensione aumentata */
+  font-weight: 800; /* Più spesso */
+  color: #222;
+  margin: 0; /* Rimuovi margin per un controllo migliore */
+  line-height: 1.2;
 }
 
-/* Bottoni e controlli */
-.bottoni {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-  margin: 1rem 0;
-  align-items: center;
-}
-
-.language-toggle {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-}
-
-.language-toggle-btn {
-  background-color: #7c4dff;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 30px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(124, 77, 255, 0.2);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.language-toggle-btn:hover {
-  background-color: #6a45e5;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(124, 77, 255, 0.3);
-}
-
-.favorite-button {
-  padding: 0.75rem 1.5rem;
-  background-color: #7c4dff;
-  color: white;
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: bold;
-  box-shadow: 0 4px 8px rgba(124, 77, 255, 0.2);
-}
-
-.favorite-button:hover {
-  background-color: #6a45e5;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(124, 77, 255, 0.3);
-}
-
-/* Stats section */
-.stats {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: flex-start;
-  margin: 2rem 0;
-  position: relative;
-  right: 750px;
-  background-color: white;
+.stats-card { /* Renamed from .stats */
+  background-color: #f8f8fa; /* Sfondo leggermente diverso per la card */
   border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 2rem; /* Padding generoso */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  flex-grow: 1; /* Permette alla card di riempire lo spazio rimanente */
+}
+
+.stats-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center; /* Centra il titolo delle statistiche */
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Layout flessibile */
+  gap: 1.5rem; /* Spazio tra le statistiche */
 }
 
 .stat-item {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1rem;
+  align-items: center; /* Centra icona, valore e label */
+  text-align: center;
+  background-color: white;
+  border-radius: 10px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
 }
 
-.stat-title {
-  font-weight: 600;
-  color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 0.3rem;
-}
-
-.stat-value {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #333;
+.stat-item:hover {
+  transform: translateY(-5px); /* Effetto leggero al passaggio del mouse */
 }
 
 .stat-item i {
-  font-size: 1.5rem;
+  font-size: 2.2rem; /* Icona più grande */
   color: #7c4dff;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
 }
 
-/* Contenitore Anime Preferiti */
+.stat-value {
+  font-size: 1.8rem; /* Valore più grande e leggibile */
+  font-weight: 800;
+  color: #222;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.95rem; /* Label leggermente più grande */
+  color: #666;
+  margin-top: 0.3rem;
+  font-weight: 500;
+}
+
+/* --- Sezione Preferiti in Evidenza --- */
+.main-content {
+  /* Nessuna modifica significativa qui, è più un contenitore */
+}
+
 .favorites-section {
   text-align: center;
-  margin: 3rem auto;
-  max-width: 1200px;
-  padding: 0 2rem;
+  margin-bottom: 3rem;
 }
 
 .section-title {
-  font-size: 2rem;
+  font-size: 2.2rem; /* Titolo sezione più grande */
   font-weight: 800;
-  color: #333;
-  margin-bottom: 2rem;
+  color: #222;
+  margin-bottom: 2.5rem;
   text-align: center;
 }
 
-/* Contenitore anime */
 .anime-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin: 2rem 0;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Riadatta le colonne */
+  gap: 1.8rem; /* Spazio maggiore tra le card */
+  margin: 0; /* Rimuovi margin per un controllo migliore */
 }
 
-/* Card degli anime */
 .anime-card {
   background-color: white;
-  border-radius: 10px;
+  border-radius: 12px; /* Bordi più arrotondati */
   overflow: hidden;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); /* Ombra più evidente */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  cursor: pointer;
-  padding-bottom: 1rem;
+  cursor: grab; /* Indica che l'elemento è trascinabile */
+  padding-bottom: 1.2rem; /* Padding interno */
 }
 
 .anime-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-8px); /* Effetto sollevamento più marcato */
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.18);
 }
 
 .anime-card img {
   width: 100%;
-  height: 250px;
+  height: 280px; /* Altezza immagine aumentata */
   object-fit: cover;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
 }
 
 .anime-title {
-  font-size: 1rem;
-  font-weight: bold;
+  font-size: 1.05rem; /* Leggermente più grande */
+  font-weight: 700; /* Più grassetto */
   color: #333;
   padding: 0 1rem;
   margin-bottom: 0.5rem;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  height: 2.5rem;
+  height: 2.6em; /* Altezza fissa per due righe */
 }
 
-.anime-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.85rem;
-  color: #666;
-  padding: 0 1rem;
+/* Stili Drag-and-Drop */
+.cdk-drag-placeholder {
+  opacity: 0.4;
+  background-color: #e2e2e2;
+  border: 2px dashed #7c4dff;
+  border-radius: 12px;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  box-shadow: none; /* Rimuovi l'ombra dall'elemento placeholder */
 }
 
-.anime-score i {
-  color: #ffc107;
-  margin-right: 4px;
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.anime-type {
-  background-color: #f0f0f0;
-  padding: 0.2rem 0.5rem;
-  border-radius: 3px;
+.anime-container {
+  user-select: none; /* Evita la selezione del testo durante il drag */
 }
 
-/* Empty state */
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Stato vuoto */
 .empty-state {
-  padding: 3rem;
+  padding: 4rem; /* Padding maggiore */
   text-align: center;
-  color: #666;
+  color: #888;
+  font-size: 1.2rem;
+  font-weight: 500;
 }
 
 .empty-state i {
-  font-size: 3rem;
+  font-size: 4rem; /* Icona più grande */
   color: #ccc;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  display: block; /* Per centrare l'icona */
 }
 
-.empty-state p {
-  font-size: 1.2rem;
-}
-
-/* Stili per l'overlay del profilo */
-.profile-overview {
-  position: relative; /* Necessario per posizionare l'overlay in modo assoluto al suo interno */
-  display: inline-block; /* O il tipo di display desiderato */
-}
-
-.profile-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Sfondo semi-trasparente */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10; /* Assicura che sia sopra altri elementi */
-}
-
-.overlay-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
+/* --- Bottoni in fondo --- */
+.bottom-buttons {
+  margin-top: 3rem;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.overlay-profile-pic {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 50%;
-  margin-bottom: 10px;
-}
-
-.overlay-username {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
-.change-image-button {
-  margin-bottom: 10px;
-}
-
-.close-overlay-button {
-  background-color: #f44336; /* Rosso */
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 30px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.close-overlay-button:hover {
-  background-color: #d32f2f;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-.profile-pic {
-  cursor: pointer;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 1219px) {
-  .stats {
-    right: 600px;
-  }
-}
-
-@media (max-width: 1080px) {
-  .stats {
-    right: 300px;
-  }
-}
-
-@media (max-width: 780px) {
-  .stats {
-    right: 150px;
-  }
-  
-  .anime-container {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  }
-}
-
-@media (max-width: 616px) {
-  .profile-container {
-    display: flex;
-    flex-direction: column;
+/* --- Responsive Adjustments --- */
+@media (max-width: 992px) {
+  .profile-header-container {
+    flex-direction: column; /* Impila su schermi medi */
     align-items: center;
+    gap: 2rem;
+  }
+  .profile-header-details {
+    align-items: center; /* Centra immagine e username */
+  }
+  .profile-pic {
+    width: 180px;
+    height: 180px;
+  }
+  .username {
+    font-size: 2rem;
+  }
+  .stats-card {
+    width: 100%; /* Occupa tutta la larghezza disponibile */
     padding: 1.5rem;
   }
-  
-  .profile-header {
-    align-items: center;
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Riadatta colonne */
   }
-  
-  .stats {
-    right: 0;
-    width: 100%;
-    margin-top: 2rem;
+  .section-title {
+    font-size: 2rem;
   }
-  
   .anime-container {
-    padding: 0;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.5rem;
+  }
+  .anime-card img {
+    height: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-page {
+    padding: 1.5rem;
+    margin: 1.5rem auto;
+  }
+  .profile-pic {
+    width: 150px;
+    height: 150px;
+  }
+  .username {
+    font-size: 1.8rem;
+  }
+  .stats-title {
+    font-size: 1.3rem;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr; /* Una colonna su schermi piccoli */
+    gap: 1rem;
+  }
+  .stat-item i {
+    font-size: 1.8rem;
+  }
+  .stat-value {
+    font-size: 1.5rem;
+  }
+  .stat-label {
+    font-size: 0.9rem;
+  }
+  .section-title {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+  }
+  .anime-container {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+  .anime-card img {
+    height: 200px;
+  }
+  .anime-title {
+    font-size: 0.9rem;
+    -webkit-line-clamp: 3; /* Consenti 3 righe se il titolo è lungo */
+    height: auto; /* Lascia che l'altezza si adatti al contenuto */
+  }
+  .action-button {
+    padding: 0.7rem 1.4rem;
+    font-size: 0.9rem;
+    gap: 0.5rem;
+  }
+  .overlay-profile-pic {
+    width: 100px;
+    height: 100px;
+  }
+  .overlay-username {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-page {
+    padding: 1rem;
+    margin: 1rem auto;
+    border-radius: 12px;
+  }
+  .profile-header-container {
+    gap: 1.5rem;
+  }
+  .profile-pic {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 1rem;
+  }
+  .username {
+    font-size: 1.5rem;
+  }
+  .stats-card {
+    padding: 1rem;
+  }
+  .stats-grid {
+    gap: 0.8rem;
+  }
+  .stat-item {
+    padding: 0.8rem;
+  }
+  .stat-item i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .stat-value {
+    font-size: 1.3rem;
+  }
+  .stat-label {
+    font-size: 0.85rem;
+  }
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .anime-container {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.8rem;
+  }
+  .anime-card img {
+    height: 180px;
+  }
+  .anime-title {
+    font-size: 0.85rem;
+    padding: 0 0.8rem;
+  }
+  .action-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
   }
 }

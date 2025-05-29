@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {RouterLink} from '@angular/router';
-
+import { DragDropModule, moveItemInArray, CdkDragDrop} from '@angular/cdk/drag-drop';
 import {AnimeService} from '../services/anime.service';
 
 @Component({
@@ -8,7 +8,8 @@ import {AnimeService} from '../services/anime.service';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
   imports: [
-    RouterLink
+    RouterLink,
+    DragDropModule
 ],
   standalone: true
 })
@@ -98,5 +99,14 @@ export class ProfileComponent implements OnInit {
     } else {
       return anime.title || anime.title_english || 'Titolo non disponibile';
     }
+  }
+
+  drop(event: CdkDragDrop<any[]>): void {
+    moveItemInArray(this.inEvidenza, event.previousIndex, event.currentIndex);
+
+    const updatedInEvidenzaIds = this.inEvidenza.map(anime => anime.mal_id.toString());
+    localStorage.setItem('inEvidenza', JSON.stringify(updatedInEvidenzaIds));
+
+    this.cdr.detectChanges();
   }
 }

@@ -1,61 +1,89 @@
-<router-outlet/>
-<div class="intro">
-  <div class="intro-content">
-    <h1>Anime Visti</h1>
-    <p>Qui puoi trovare tutti gli anime che hai visto o che stai guardando.</p>
-  </div>
-</div>
-
-<div class="div">
-  <button routerLink="/watched-anime/favourites" class="favorite-button">Visualizza Anime Preferiti</button>
-  <button class="favorite-button" (click)="toggleTitleLanguage()">Cambia lingua titolo</button>
-</div>
-
-<div class="filter-section">
-  <button
-    class="filter-button"
-    [class.active]="filter === 'all'"
-    (click)="setFilter('all')">
-    Tutti
-  </button>
-  <button
-    class="filter-button"
-    [class.active]="filter === 'completato'"
-    (click)="setFilter('completato')">
-    Completati
-  </button>
-  <button
-    class="filter-button"
-    [class.active]="filter === 'in visione'"
-    (click)="setFilter('in visione')">
-    In Visione
-  </button>
-</div>
-
-@if (isLoading) {
-  <div>
-    <p>Caricamento in corso...</p>
-  </div>
-}
-
-@if (!isLoading && filteredAnime.length > 0) {
-  <div>
-    <div class="anime-container">
-      @for (anime of filteredAnime; track anime) {
-        <div class="anime-card" (click)="goToDetails(anime.details?.data?.mal_id)">
-          @if (anime.details?.data?.images?.jpg?.large_image_url) {
-            <img
-              [src]="anime.details.data.images.jpg.large_image_url"
-              alt="{{ anime.details?.data?.title }}"
-              class="anime-image"
-              />
-          }
-          <h3>{{ getTitle(anime.details?.data) || 'Titolo non disponibile' }}</h3>
-        </div>
-      }
+<div class="page-container">
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">La tua Libreria Anime</h1>
+      <p class="hero-subtitle">Esplora tutti gli anime che hai aggiunto alla tua lista, siano essi completati o in corso.</p>
     </div>
   </div>
-} @else {
-  <h2>Nessun anime trovato per questa categoria.</h2>
-}
 
+  <div class="controls-section">
+    <div class="global-buttons">
+      <button routerLink="/watched-anime/favourites" class="action-button primary">
+        <i class="fas fa-heart"></i>
+        <span>Visualizza Anime Preferiti</span>
+      </button>
+      <button class="action-button secondary" (click)="toggleTitleLanguage()">
+        <i class="fas fa-language"></i>
+        <span>Cambia lingua titolo</span>
+      </button>
+    </div>
+
+    <div class="filter-buttons-group">
+      <button
+        class="filter-button"
+        [class.active]="filter === 'all'"
+        (click)="setFilter('all')">
+        Tutti
+      </button>
+      <button
+        class="filter-button"
+        [class.active]="filter === 'completato'"
+        (click)="setFilter('completato')">
+        Completati
+      </button>
+      <button
+        class="filter-button"
+        [class.active]="filter === 'in visione'"
+        (click)="setFilter('in visione')">
+        In Visione
+      </button>
+    </div>
+  </div>
+
+  <div class="main-content">
+    @if (isLoading) {
+      <div class="loading-state">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Caricamento dei tuoi anime...</p>
+      </div>
+    }
+
+    @if (!isLoading && filteredAnime.length > 0) {
+      <div class="anime-grid"> @for (anime of filteredAnime; track anime.id) { <div class="anime-card" (click)="goToDetails(anime.details?.data?.mal_id)">
+            @if (anime.details?.data?.images?.jpg?.large_image_url) {
+              <img
+                [src]="anime.details.data.images.jpg.large_image_url"
+                alt="{{ getTitle(anime.details?.data) }}"
+                class="anime-image"
+              />
+            } @else {
+              <div class="anime-image-placeholder">
+                <i class="fas fa-image"></i>
+                <p>Immagine non disponibile</p>
+              </div>
+            }
+            <div class="card-info">
+              <h3 class="card-title">{{ getTitle(anime.details?.data) || 'Titolo non disponibile' }}</h3>
+              <p class="card-status" [class.status-completato]="anime.state === 'completato'" [class.status-in-visione]="anime.state === 'in visione'">
+                Stato: {{ anime.state | titlecase }} </p>
+              @if (anime.state === 'in visione' && anime.episodiVisti && anime.details?.data?.episodes) {
+                 <div class="progress-bar-container">
+                   <div class="progress-bar" [style.width.%]="(anime.episodiVisti / anime.details.data.episodes) * 100"></div>
+                 </div>
+                 <p class="progress-text">{{ anime.episodiVisti }} / {{ anime.details.data.episodes }} episodi</p>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (!isLoading && filteredAnime.length === 0) {
+      <div class="empty-state">
+        <i class="fas fa-box-open"></i>
+        <p>Nessun anime trovato per questa categoria.</p>
+        <p>Inizia ad aggiungere anime alla tua lista!</p>
+      </div>
+    }
+  </div>
+</div>
+
+<router-outlet/>

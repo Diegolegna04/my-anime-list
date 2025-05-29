@@ -19,12 +19,13 @@ export class AnimeDetailsComponent implements OnInit {
   displayedRecommendedAnime: any[] = [];
   animeToShow = 5;
   visto: boolean = false;
-  voto: number | null = null;
+  voto: number = 0;
   preferito: boolean = false;
   watching: boolean = false;
   episodiVisti: number = 0;
   animeState: string = 'non visto';
   inEvidenza: boolean = false;
+  hoveredRating: number = 0;
 
   private animeDetailUrl = 'https://api.jikan.moe/v4/anime';
 
@@ -53,7 +54,7 @@ export class AnimeDetailsComponent implements OnInit {
           this.episodiVisti = statoWatching[this.animeId];
         }
         this.visto = elencoVisti.includes(this.animeId.toString());
-        this.voto = elencoVoti[this.animeId] || null;
+        this.voto = elencoVoti[this.animeId] || 0; // Default a 0 invece di null
         this.preferito = elencoPreferiti.includes(this.animeId.toString());
       }
     });
@@ -94,24 +95,44 @@ export class AnimeDetailsComponent implements OnInit {
 
   // Funzione per contrassegnare come visto
   toggleVisto(): void {
-    const elencoVisti = JSON.parse(localStorage.getItem('elencoVisti') || '[]');
-
-    if (this.visto) {
-      const index = elencoVisti.indexOf(this.animeId.toString());
-      if (index !== -1) elencoVisti.splice(index, 1);
-    } else {
-      elencoVisti.push(this.animeId.toString());
-    }
-
-    localStorage.setItem('elencoVisti', JSON.stringify(elencoVisti));
     this.visto = !this.visto;
+    this.updateElencoVistiLocalStorage(this.visto);
+  
+    if (this.visto && this.animeState === 'non visto') {
+      this.setAnimeState('in visione');
+    } else if (!this.visto && (this.animeState === 'in visione' || this.animeState === 'completato')) {
+      this.setAnimeState('non visto');
+    }
   }
 
-  setVoto(value: number | null): void {
-    this.voto = value;
+  // Metodo aggiornato per il sistema di voto a stelle
+  setVoto(rating: number): void {
+    this.voto = rating;
     const elencoVoti = JSON.parse(localStorage.getItem('elencoVoti') || '{}');
-    elencoVoti[this.animeId] = value;
+    elencoVoti[this.animeId] = rating;
     localStorage.setItem('elencoVoti', JSON.stringify(elencoVoti));
+    console.log(`Voto impostato a: ${rating}`);
+  }
+
+  // Nuovi metodi per gestire il sistema di voto a stelle
+  onStarHover(rating: number): void {
+    this.hoveredRating = rating;
+  }
+
+  onStarLeave(): void {
+    this.hoveredRating = 0;
+  }
+
+  // Metodo helper per determinare la classe CSS delle stelle
+  getStarClass(starNumber: number): string {
+    const targetRating = this.hoveredRating > 0 ? this.hoveredRating : this.voto;
+    
+    if (starNumber <= targetRating) {
+      return 'filled';
+    } else if (starNumber - 0.5 === targetRating) {
+      return 'half';
+    }
+    return '';
   }
 
   setPreferito(isPreferred: boolean): void {
@@ -141,15 +162,36 @@ export class AnimeDetailsComponent implements OnInit {
   // Aggiorna lo stato dell'anime
   setAnimeState(state: string): void {
     if (state === 'completato') {
-      // Se impostato su "completato", tutti gli episodi sono visti
       this.episodiVisti = this.animeDetails.episodes;
+      this.visto = true;
     } else if (state === 'non visto') {
-      // Se impostato su "non visto", azzera gli episodi
       this.episodiVisti = 0;
+      this.visto = false;
+    } else if (state === 'in visione') {
+      
+      if (!this.visto && this.episodiVisti === 0) {
+          this.visto = true;
+      }
     }
-
+  
     this.animeState = state;
     this.saveAnimeState();
+    this.updateElencoVistiLocalStorage(this.visto);
+  }
+
+  updateElencoVistiLocalStorage(isVisto: boolean): void {
+    const elencoVisti = JSON.parse(localStorage.getItem('elencoVisti') || '[]');
+    const animeIdString = this.animeId.toString();
+  
+    if (isVisto && !elencoVisti.includes(animeIdString)) {
+      elencoVisti.push(animeIdString);
+    } else if (!isVisto && elencoVisti.includes(animeIdString)) {
+      const index = elencoVisti.indexOf(animeIdString);
+      if (index !== -1) {
+        elencoVisti.splice(index, 1);
+      }
+    }
+    localStorage.setItem('elencoVisti', JSON.stringify(elencoVisti));
   }
 
   // Aggiorna gli episodi visti
