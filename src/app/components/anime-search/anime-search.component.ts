@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AnimeService } from '../../services/anime.service';
-import { NgForOf, NgIf } from '@angular/common';
+
 
 @Component({
   selector: 'app-anime-search',
   templateUrl: './anime-search.component.html',
   styleUrls: ['./anime-search.component.css'],
-  imports: [NgForOf, NgIf],
+  imports: [],
   standalone: true,
 })
 export class AnimeSearchComponent implements OnInit {

@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {NgForOf, NgIf} from '@angular/common';
+
 import {AnimeService} from '../services/anime.service';
 
 @Component({
@@ -8,10 +8,8 @@ import {AnimeService} from '../services/anime.service';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
   imports: [
-    RouterLink,
-    NgForOf,
-    NgIf
-  ],
+    RouterLink
+],
   standalone: true
 })
 export class ProfileComponent implements OnInit {

@@ -1,11 +1,15 @@
 <div>
   <div class="he">
     <h1 (click)="goToHome()">Anime List</h1>
-    <button *ngIf="!accessoEffettuato" (click)="goToLoginRegister()">Login/Registrati</button>
-    <div *ngIf="accessoEffettuato" class="profile-pic" routerLink="/profile">
-      <img [src]="profileImage" alt="Profile Image">
-      <span>{{ username }}</span>
-    </div>
+    @if (!accessoEffettuato) {
+      <button (click)="goToLoginRegister()">Login/Registrati</button>
+    }
+    @if (accessoEffettuato) {
+      <div class="profile-pic" routerLink="/profile">
+        <img [src]="profileImage" alt="Profile Image">
+        <span>{{ username }}</span>
+      </div>
+    }
   </div>
   <app-header></app-header>
   <router-outlet></router-outlet>

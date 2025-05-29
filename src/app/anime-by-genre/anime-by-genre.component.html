@@ -25,24 +25,30 @@
 
   <!-- Lista Anime -->
   <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
-    <div *ngFor="let anime of animeList" class="anime-card" (click)="goToDetails(anime.mal_id)">
-      <img [src]="anime.images.jpg.image_url" alt="{{ getTitle(anime) }}" />
-      <div class="anime-card-content">
-        <h3 class="anime-title">{{ getTitle(anime) }}</h3>
-        <div class="anime-meta">
-          <div class="anime-score" *ngIf="anime.score">
-            <i class="fas fa-star"></i> {{anime.score}}
-          </div>
-          <div class="anime-type">
-            {{anime.type || 'N/A'}}
+    @for (anime of animeList; track anime) {
+      <div class="anime-card" (click)="goToDetails(anime.mal_id)">
+        <img [src]="anime.images.jpg.image_url" alt="{{ getTitle(anime) }}" />
+        <div class="anime-card-content">
+          <h3 class="anime-title">{{ getTitle(anime) }}</h3>
+          <div class="anime-meta">
+            @if (anime.score) {
+              <div class="anime-score">
+                <i class="fas fa-star"></i> {{anime.score}}
+              </div>
+            }
+            <div class="anime-type">
+              {{anime.type || 'N/A'}}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    }
   </div>
 
   <!-- Bottone Carica Altri -->
-  <button *ngIf="!isLoading" (click)="loadMoreAnime()" class="load-more-btn">
-    <i class="fas fa-plus-circle"></i> Carica Altri Anime
-  </button>
+  @if (!isLoading) {
+    <button (click)="loadMoreAnime()" class="load-more-btn">
+      <i class="fas fa-plus-circle"></i> Carica Altri Anime
+    </button>
+  }
 </div>

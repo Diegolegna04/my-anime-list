@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {Router, RouterLink} from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NgForOf, NgIf } from '@angular/common';
+
 import { AnimeListComponent } from '../components/anime-list/anime-list.component';
 import { AnimeService } from '../services/anime.service';
 
@@ -11,7 +11,7 @@ import { AnimeService } from '../services/anime.service';
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  imports: [FormsModule, NgForOf, NgIf, AnimeListComponent, RouterLink],
+  imports: [FormsModule, AnimeListComponent, RouterLink],
 })
 export class HomeComponent implements OnInit {
   animeList: any[] = [];

@@ -8,15 +8,17 @@
     <button (click)="toggleSearchBar()" class="toggle-search-btn">🔎</button>
 
     <!-- Barra di ricerca -->
-    <div *ngIf="showSearchBar" class="search-bar">
-      <input
-        type="text"
-        [(ngModel)]="query"
-        (keyup.enter)="searchAnime()"
-        placeholder="Cerca un anime..."
-        class="search-input"
-      />
-      <button (click)="searchAnime()" class="search-btn">Cerca</button>
-    </div>
+    @if (showSearchBar) {
+      <div class="search-bar">
+        <input
+          type="text"
+          [(ngModel)]="query"
+          (keyup.enter)="searchAnime()"
+          placeholder="Cerca un anime..."
+          class="search-input"
+          />
+        <button (click)="searchAnime()" class="search-btn">Cerca</button>
+      </div>
+    }
   </div>
 </div>

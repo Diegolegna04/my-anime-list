@@ -1,17 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import {NgForOf, NgIf} from '@angular/common';
+
 
 @Component({
   selector: 'app-genres',
   standalone: true,
   templateUrl: './genres.component.html',
   styleUrls: ['./genres.component.css'],
-  imports: [
-    NgForOf,
-    NgIf
-  ]
+  imports: []
 })
 export class GenresComponent implements OnInit {
   genres: any[] = [];

@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { NgIf } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AnimeService } from '../services/anime.service';
 
 @Component({
   selector: 'app-header',
-  imports: [NgIf, ReactiveFormsModule, FormsModule],
+  imports: [ReactiveFormsModule, FormsModule],
   templateUrl: './header.component.html',
   standalone: true,
   styleUrls: ['./header.component.css'],

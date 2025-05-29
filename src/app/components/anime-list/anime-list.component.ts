@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {NgForOf} from '@angular/common';
+
 import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-anime-list',
   templateUrl: './anime-list.component.html',
   styleUrls: ['./anime-list.component.css'],
-  imports: [
-    NgForOf
-  ],
+  imports: [],
   standalone: true
 })
 export class AnimeListComponent implements OnInit {

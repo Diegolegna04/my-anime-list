@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
-import {NgForOf, NgIf} from '@angular/common';
+
 import {AnimeService} from '../services/anime.service';
 
 @Component({
@@ -9,7 +9,7 @@ import {AnimeService} from '../services/anime.service';
   standalone: true,
   templateUrl: './anime-by-genre.component.html',
   styleUrls: ['./anime-by-genre.component.css'],
-  imports: [NgForOf, NgIf],
+  imports: [],
 })
 export class AnimeByGenreComponent implements OnInit {
   animeList: any[] = [];

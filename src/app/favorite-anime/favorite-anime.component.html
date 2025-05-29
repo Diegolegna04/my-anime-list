@@ -5,14 +5,17 @@
   </div>
 </div>
 
-<div *ngIf="favoriteAnime.length > 0; else noFavorites">
-  <div class="anime-container">
-    <div *ngFor="let anime of favoriteAnime" class="anime-card" (click)="goToDetails(anime.mal_id)">
-      <img [src]="anime.images.jpg.large_image_url" alt="{{ anime.title }}" />
-      <h3>{{ anime.title }}</h3>
+@if (favoriteAnime.length > 0) {
+  <div>
+    <div class="anime-container">
+      @for (anime of favoriteAnime; track anime) {
+        <div class="anime-card" (click)="goToDetails(anime.mal_id)">
+          <img [src]="anime.images.jpg.large_image_url" alt="{{ anime.title }}" />
+          <h3>{{ anime.title }}</h3>
+        </div>
+      }
     </div>
   </div>
-</div>
-<ng-template #noFavorites>
+} @else {
   <h2>Nessun anime preferito trovato.</h2>
-</ng-template>
+}

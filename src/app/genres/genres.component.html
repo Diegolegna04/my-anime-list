@@ -3,64 +3,69 @@
     <div class="intro-content">
       <h1 class="title">Generi Anime</h1>
       <p class="subtitle">Esplora gli anime per genere. Fai clic su un genere per
-        visualizzare tutti gli anime correlati.</p>
+      visualizzare tutti gli anime correlati.</p>
     </div>
   </div>
   <!-- Loading -->
-  <p *ngIf="isLoading" class="loading-text">Loading genres...</p>
+  @if (isLoading) {
+    <p class="loading-text">Loading genres...</p>
+  }
 
   <!-- Categorie principali -->
-  <div *ngIf="!isLoading">
-    <div class="category">
-      <h2 class="category-title">Generi:</h2>
-      <div class="genres-container">
-        <div
-          class="genres-card"
-          *ngFor="let genre of mainGenres"
-          (click)="viewAnimeByGenre(genre.mal_id)"
-        >
-          <h3>{{ genre.name }}</h3>
+  @if (!isLoading) {
+    <div>
+      <div class="category">
+        <h2 class="category-title">Generi:</h2>
+        <div class="genres-container">
+          @for (genre of mainGenres; track genre) {
+            <div
+              class="genres-card"
+              (click)="viewAnimeByGenre(genre.mal_id)"
+              >
+              <h3>{{ genre.name }}</h3>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="category">
+        <h2 class="category-title">Generi Espliciti:</h2>
+        <div class="genres-container">
+          @for (genre of explicitGenres; track genre) {
+            <div
+              class="genres-card"
+              (click)="viewAnimeByGenre(genre.mal_id)"
+              >
+              <h3>{{ genre.name }}</h3>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="category">
+        <h2 class="category-title">Temi:</h2>
+        <div class="genres-container">
+          @for (genre of themes; track genre) {
+            <div
+              class="genres-card"
+              (click)="viewAnimeByGenre(genre.mal_id)"
+              >
+              <h3>{{ genre.name }}</h3>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="category">
+        <h2 class="category-title">Demografia:</h2>
+        <div class="genres-container">
+          @for (genre of demographics; track genre) {
+            <div
+              class="genres-card"
+              (click)="viewAnimeByGenre(genre.mal_id)"
+              >
+              <h3>{{ genre.name }}</h3>
+            </div>
+          }
         </div>
       </div>
     </div>
-
-    <div class="category">
-      <h2 class="category-title">Generi Espliciti:</h2>
-      <div class="genres-container">
-        <div
-          class="genres-card"
-          *ngFor="let genre of explicitGenres"
-          (click)="viewAnimeByGenre(genre.mal_id)"
-        >
-          <h3>{{ genre.name }}</h3>
-        </div>
-      </div>
-    </div>
-
-    <div class="category">
-      <h2 class="category-title">Temi:</h2>
-      <div class="genres-container">
-        <div
-          class="genres-card"
-          *ngFor="let genre of themes"
-          (click)="viewAnimeByGenre(genre.mal_id)"
-        >
-          <h3>{{ genre.name }}</h3>
-        </div>
-      </div>
-    </div>
-
-    <div class="category">
-      <h2 class="category-title">Demografia:</h2>
-      <div class="genres-container">
-        <div
-          class="genres-card"
-          *ngFor="let genre of demographics"
-          (click)="viewAnimeByGenre(genre.mal_id)"
-        >
-          <h3>{{ genre.name }}</h3>
-        </div>
-      </div>
-    </div>
-  </div>
+  }
 </div>

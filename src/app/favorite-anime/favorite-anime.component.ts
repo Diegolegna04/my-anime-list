@@ -1,16 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {NgForOf, NgIf} from '@angular/common';
+
 import {AnimeService} from '../services/anime.service';
 
 @Component({
   selector: 'app-favorite-anime',
   templateUrl: './favorite-anime.component.html',
   standalone: true,
-  imports: [
-    NgForOf,
-    NgIf
-  ],
+  imports: [],
   styleUrls: ['./favorite-anime.component.css']
 })
 export class FavoriteAnimeComponent implements OnInit {

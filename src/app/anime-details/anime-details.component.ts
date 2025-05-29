@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { NgForOf, NgIf } from '@angular/common';
+
 import { AnimeService } from '../services/anime.service';
 import { FormsModule } from '@angular/forms';
 
@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-anime-details',
   templateUrl: './anime-details.component.html',
   styleUrls: ['./anime-details.component.css'],
-  imports: [FormsModule, NgIf, NgForOf],
+  imports: [FormsModule],
   standalone: true,
 })
 export class AnimeDetailsComponent implements OnInit {

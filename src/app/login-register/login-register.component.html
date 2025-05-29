@@ -1,12 +1,16 @@
 <div class="auth-container">
   <div class="form-wrapper">
     <!-- Form dinamico -->
-    <h2 *ngIf="!isRegistering">Login</h2>
-    <h2 *ngIf="isRegistering">Registrati</h2>
+    @if (!isRegistering) {
+      <h2>Login</h2>
+    }
+    @if (isRegistering) {
+      <h2>Registrati</h2>
+    }
 
     <form (ngSubmit)="isRegistering ? onRegister() : onLogin()">
       <!-- Campi per il login -->
-      <ng-container *ngIf="!isRegistering">
+      @if (!isRegistering) {
         <label for="username">Username:</label>
         <input
           type="text"
@@ -14,8 +18,7 @@
           [(ngModel)]="loginData.username"
           name="username"
           required
-        />
-
+          />
         <label for="password">Password:</label>
         <input
           type="password"
@@ -23,11 +26,11 @@
           [(ngModel)]="loginData.password"
           name="password"
           required
-        />
-      </ng-container>
+          />
+      }
 
       <!-- Campi per la registrazione -->
-      <ng-container *ngIf="isRegistering">
+      @if (isRegistering) {
         <label for="firstname">Nome:</label>
         <input
           type="text"
@@ -35,8 +38,7 @@
           [(ngModel)]="registerData.firstName"
           name="firstname"
           required
-        />
-
+          />
         <label for="lastname">Cognome:</label>
         <input
           type="text"
@@ -44,8 +46,7 @@
           [(ngModel)]="registerData.lastName"
           name="lastname"
           required
-        />
-
+          />
         <label for="username">Username:</label>
         <input
           type="text"
@@ -53,8 +54,7 @@
           [(ngModel)]="registerData.username"
           name="username"
           required
-        />
-
+          />
         <label for="email">Email:</label>
         <input
           type="email"
@@ -62,8 +62,7 @@
           [(ngModel)]="registerData.email"
           name="email"
           required
-        />
-
+          />
         <label for="password">Password:</label>
         <input
           type="password"
@@ -71,8 +70,8 @@
           [(ngModel)]="registerData.password"
           name="password"
           required
-        />
-      </ng-container>
+          />
+      }
 
       <!-- Pulsanti -->
       <button type="submit">
@@ -82,12 +81,12 @@
 
     <!-- Link per cambiare modalità -->
     <p>
-      <ng-container *ngIf="!isRegistering">
+      @if (!isRegistering) {
         Non hai un account? <a (click)="toggleRegister()">Registrati</a>
-      </ng-container>
-      <ng-container *ngIf="isRegistering">
+      }
+      @if (isRegistering) {
         Hai già un account? <a (click)="toggleRegister()">Login</a>
-      </ng-container>
+      }
     </p>
   </div>
 </div>

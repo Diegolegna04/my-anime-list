@@ -3,18 +3,18 @@
     <button class="favorite-button language-toggle-btn" (click)="toggleTitleLanguage()">Cambia lingua titolo</button>
   </div>
 </div>
-<div class="profile-overlay" *ngIf="showOverlay">
-  <div class="overlay-content">
-    <img [src]="profileImage" class="overlay-profile-pic" alt="Profile Image">
-    <p class="overlay-username">{{ username }}</p>
-
-    <button class="change-image-button favorite-button" (click)="changeProfileImage()">Cambia immagine</button>
-    <br/>
-    <input type="file" id="profileImageInput" (change)="uploadProfileImage($event)" hidden />
-
-    <button class="close-overlay-button" (click)="closeOverlay()">Chiudi</button>
+@if (showOverlay) {
+  <div class="profile-overlay">
+    <div class="overlay-content">
+      <img [src]="profileImage" class="overlay-profile-pic" alt="Profile Image">
+      <p class="overlay-username">{{ username }}</p>
+      <button class="change-image-button favorite-button" (click)="changeProfileImage()">Cambia immagine</button>
+      <br/>
+      <input type="file" id="profileImageInput" (change)="uploadProfileImage($event)" hidden />
+      <button class="close-overlay-button" (click)="closeOverlay()">Chiudi</button>
+    </div>
   </div>
-</div>
+}
 <div class="profile-page">
   <div class="profile-header-container">
     <div class="profile-header">
@@ -22,27 +22,32 @@
       <img [src]="profileImage" class="profile-pic" alt="Profile Image" (click)="openOverlay()">
       <h2 class="username">{{ username }}</h2>
     </div>
-    <div class="stats" *ngIf="true">
-      <p class="stat-item"><strong>Anime Visti:</strong> {{ watchedAnimeCount }}</p>
-      <p class="stat-item"><strong>Anime Preferiti:</strong> {{ animePreferiti }}</p>
-      <p class="stat-item"><strong>Anime in evidenza:</strong> {{ inEvidenza.length }}</p>
-    </div>
+    @if (true) {
+      <div class="stats">
+        <p class="stat-item"><strong>Anime Visti:</strong> {{ watchedAnimeCount }}</p>
+        <p class="stat-item"><strong>Anime Preferiti:</strong> {{ animePreferiti }}</p>
+        <p class="stat-item"><strong>Anime in evidenza:</strong> {{ inEvidenza.length }}</p>
+      </div>
+    }
   </div>
 
   <div class="main-content">
     <div class="favorites-section">
       <h3 class="section-title">Anime Preferiti in Evidenza</h3>
-      <div *ngIf="inEvidenza.length > 0; else noFavorites">
-        <div class="anime-container">
-          <div *ngFor="let anime of inEvidenza" class="anime-card" (click)="goToDetails(anime.mal_id)">
-            <img [src]="anime.images.jpg.large_image_url" alt="{{ getTitle(anime) }}" class="anime-image"/>
-            <h3 class="anime-title">{{ getTitle(anime) }}</h3>
+      @if (inEvidenza.length > 0) {
+        <div>
+          <div class="anime-container">
+            @for (anime of inEvidenza; track anime) {
+              <div class="anime-card" (click)="goToDetails(anime.mal_id)">
+                <img [src]="anime.images.jpg.large_image_url" alt="{{ getTitle(anime) }}" class="anime-image"/>
+                <h3 class="anime-title">{{ getTitle(anime) }}</h3>
+              </div>
+            }
           </div>
         </div>
-      </div>
-      <ng-template #noFavorites>
+      } @else {
         <h2 class="empty-state">Nessun anime in evidenza.</h2>
-      </ng-template>
+      }
     </div>
 
     <div class="bottom-buttons">

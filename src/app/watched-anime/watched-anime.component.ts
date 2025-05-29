@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { AnimeService } from '../services/anime.service';
 import { ChangeDetectorRef } from '@angular/core';
-import { NgForOf, NgIf } from '@angular/common';
+
 import {RouterLink, RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-watched-anime',
   templateUrl: './watched-anime.component.html',
   standalone: true,
-  imports: [RouterLink, NgIf, NgForOf, RouterOutlet],
+  imports: [RouterLink, RouterOutlet],
   styleUrls: ['./watched-anime.component.css'],
 })
 export class WatchedAnimeComponent implements OnInit {

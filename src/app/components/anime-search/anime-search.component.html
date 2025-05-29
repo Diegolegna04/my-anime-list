@@ -18,23 +18,25 @@
     </div>
   </div>
   <!-- Contenitore per i risultati della ricerca -->
-  <div [class.grid]="isGridView" [class.list]="!isGridView" *ngIf="searchResults.length > 0; else noResults"
-       class="anime-container">
-    <div
-      *ngFor="let anime of searchResults"
-      class="anime-card"
-      (click)="goToDetails(anime.mal_id)">
-      <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}"/>
-      <h3 class="anime-title">{{ anime.title }}</h3>
+  @if (searchResults.length > 0) {
+    <div [class.grid]="isGridView" [class.list]="!isGridView"
+      class="anime-container">
+      @for (anime of searchResults; track anime) {
+        <div
+          class="anime-card"
+          (click)="goToDetails(anime.mal_id)">
+          <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}"/>
+          <h3 class="anime-title">{{ anime.title }}</h3>
+        </div>
+      }
     </div>
-  </div>
-
-  <!-- Messaggio se non ci sono risultati -->
-  <ng-template #noResults>
+  } @else {
     <div class="no-results">
       <p>Non ci sono risultati per "{{ query }}". Prova una ricerca diversa.</p>
     </div>
-  </ng-template>
+  }
+
+  <!-- Messaggio se non ci sono risultati -->
 
   <!-- Bottone per tornare alla Home -->
   <button class="load-more-btn" (click)="goBackToHome()">Torna alla Home</button>

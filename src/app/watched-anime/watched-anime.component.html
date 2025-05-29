@@ -32,24 +32,30 @@
   </button>
 </div>
 
-<div *ngIf="isLoading">
-  <p>Caricamento in corso...</p>
-</div>
+@if (isLoading) {
+  <div>
+    <p>Caricamento in corso...</p>
+  </div>
+}
 
-<div *ngIf="!isLoading && filteredAnime.length > 0; else noWatchedAnime">
-  <div class="anime-container">
-    <div *ngFor="let anime of filteredAnime" class="anime-card" (click)="goToDetails(anime.details?.data?.mal_id)">
-      <img
-        *ngIf="anime.details?.data?.images?.jpg?.large_image_url"
-        [src]="anime.details.data.images.jpg.large_image_url"
-        alt="{{ anime.details?.data?.title }}"
-        class="anime-image"
-      />
-      <h3>{{ getTitle(anime.details?.data) || 'Titolo non disponibile' }}</h3>
+@if (!isLoading && filteredAnime.length > 0) {
+  <div>
+    <div class="anime-container">
+      @for (anime of filteredAnime; track anime) {
+        <div class="anime-card" (click)="goToDetails(anime.details?.data?.mal_id)">
+          @if (anime.details?.data?.images?.jpg?.large_image_url) {
+            <img
+              [src]="anime.details.data.images.jpg.large_image_url"
+              alt="{{ anime.details?.data?.title }}"
+              class="anime-image"
+              />
+          }
+          <h3>{{ getTitle(anime.details?.data) || 'Titolo non disponibile' }}</h3>
+        </div>
+      }
     </div>
   </div>
-</div>
-
-<ng-template #noWatchedAnime>
+} @else {
   <h2>Nessun anime trovato per questa categoria.</h2>
-</ng-template>
+}
+

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NgForOf, NgIf } from '@angular/common';
+
 import { AnimeListComponent } from './components/anime-list/anime-list.component';
 import { HomeComponent } from './home/home.component';
 import { HeaderComponent } from './header/header.component';
@@ -15,15 +15,13 @@ import { FooterComponent } from './footer/footer.component';
   styleUrls: ['./app.component.css'],
   imports: [
     FormsModule,
-    NgForOf,
-    NgIf,
     RouterLink,
     AnimeListComponent,
     RouterOutlet,
     HomeComponent,
     HeaderComponent,
-    FooterComponent,
-  ],
+    FooterComponent
+],
 })
 export class AppComponent implements OnInit {
   isDarkTheme: boolean = false;

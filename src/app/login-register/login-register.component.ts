@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {NgClass, NgIf} from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-login-register',
   imports: [
     FormsModule,
-    NgClass,
-    NgIf
-  ],
+    NgClass
+],
   templateUrl: './login-register.component.html',
   standalone: true,
   styleUrl: './login-register.component.css'
