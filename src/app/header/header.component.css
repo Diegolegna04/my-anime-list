@@ -129,6 +129,8 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  /* AGGIUNTO: Padding a sinistra per il bottone di chiusura */
+  padding-left: 0.5rem;
 }
 
 /* Stile quando la search bar è visibile */
@@ -136,6 +138,28 @@ body {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(-50%) translateX(0); /* Rientra in posizione */
+}
+
+/* NUOVI STILI PER IL BOTTONE DI CHIUSURA */
+.close-search-btn {
+  background: none;
+  border: none;
+  color: #777;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%; /* Rendi tondo */
+  transition: all 0.2s ease;
+  flex-shrink: 0; /* Impedisce che si rimpicciolisca */
+}
+
+.close-search-btn:hover {
+  color: #333;
+  background-color: #f0f0f0;
+  transform: scale(1.1);
 }
 
 .search-input {
@@ -158,7 +182,7 @@ body {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   box-shadow: none;
-  margin-left: -5px;
+  margin-left: -5px; /* Sovrapponi leggermente */
 }
 
 /* --- Profile Menu (Login/Registrazione / Profilo) --- */
@@ -268,13 +292,16 @@ body {
   }
   .search-bar {
     width: 250px;
-    transform: translateY(-50%) translateX(50px);
-  }
-  .search-section .search-bar {
     transform: translateY(-50%) translateX(0);
+    padding-left: 0.5rem;
   }
+
   .profile-username {
     font-size: 0.95rem;
+  }
+  .close-search-btn {
+    font-size: 1.1rem;
+    padding: 0.4rem;
   }
 }
 
@@ -318,15 +345,22 @@ body {
     position: absolute;
     right: 0;
     top: 50%;
-    transform: translateY(-50%) translateX(0); /* Rientra in posizione */
-    width: calc(100% - 50px); /* Adatta la larghezza */
-    max-width: none; /* Rimuovi max-width */
+    transform: translateY(-50%) translateX(0);
+    width: calc(100% - 50px);
+    max-width: none;
     opacity: 0;
     pointer-events: none;
     transition: all 0.3s ease;
+
+    padding-left: 0.3rem;
+  }
+
+  .close-search-btn {
+    font-size: 1rem;
+    padding: 0.3rem;
   }
   /* Quando la search bar è visibile, la posizioni correttamente */
-  .search-section .search-bar.active-search { /* Aggiungeremo una classe active-search in TS */
+  .search-section .search-bar {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(-50%) translateX(0);
@@ -349,11 +383,11 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
   .dropdown-menu {
-    top: calc(100% + 5px); /* Più vicino in mobile */
+    top: calc(100% + 5px);
     left: 50%;
     transform: translateX(-50%) translateY(-10px);
-    width: 95%; /* Quasi tutta la larghezza */
-    max-width: 250px; /* Limita un po' */
+    width: 95%;
+    max-width: 250px;
   }
   .profile-menu-container.show-dropdown .dropdown-menu {
     transform: translateX(-50%) translateY(0);
@@ -372,6 +406,7 @@ body {
   }
   .search-bar {
     width: calc(100% - 50px);
+    padding-left: 0.2rem;
   }
   .search-input {
     padding: 0.6rem 1rem;
@@ -394,5 +429,9 @@ body {
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
     gap: 0.6rem;
+  }
+  .close-search-btn {
+    font-size: 0.9rem;
+    padding: 0.2rem;
   }
 }

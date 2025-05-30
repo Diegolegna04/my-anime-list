@@ -1,71 +1,93 @@
-<div class="genres-page">
-  <div class="intro">
+<div class="genres-page-container">
+  <section class="intro-section">
     <div class="intro-content">
-      <h1 class="title">Generi Anime</h1>
-      <p class="subtitle">Esplora gli anime per genere. Fai clic su un genere per
-      visualizzare tutti gli anime correlati.</p>
+      <h1 class="intro-title">Esplora i Mondi degli Anime per Genere</h1>
+      <p class="intro-subtitle">
+        Immergiti nella vasta libreria di anime. Ogni genere è una porta verso nuove avventure, risate, drammi o emozioni mozzafiato. Seleziona un genere per scoprire le opere che più ti appassionano.
+      </p>
     </div>
-  </div>
-  <!-- Loading -->
+  </section>
+
   @if (isLoading) {
-    <p class="loading-text">Loading genres...</p>
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p class="loading-text">Caricamento generi...</p>
+    </div>
   }
 
-  <!-- Categorie principali -->
   @if (!isLoading) {
-    <div>
-      <div class="category">
-        <h2 class="category-title">Generi:</h2>
-        <div class="genres-container">
-          @for (genre of mainGenres; track genre) {
+    <div class="genres-content">
+      <section class="genre-category-section">
+        <h2 class="category-heading">
+          <i class="fas fa-bookmark category-icon"></i> Generi Principali
+        </h2>
+        <div class="genres-grid">
+          @for (genre of mainGenres; track genre.mal_id) {
             <div
               class="genres-card"
-              (click)="viewAnimeByGenre(genre.mal_id)"
-              >
-              <h3>{{ genre.name }}</h3>
+              (click)="viewAnimeByGenre(genre.mal_id, genre.name)"
+            >
+              <div class="card-icon">
+                <i class="fas fa-play"></i> </div>
+              <h3 class="card-title">{{ genre.name }}</h3>
             </div>
           }
         </div>
-      </div>
-      <div class="category">
-        <h2 class="category-title">Generi Espliciti:</h2>
-        <div class="genres-container">
-          @for (genre of explicitGenres; track genre) {
+      </section>
+
+      <section class="genre-category-section">
+        <h2 class="category-heading">
+          <i class="fas fa-mask category-icon explicit-icon"></i> Generi Espliciti
+        </h2>
+        <div class="genres-grid">
+          @for (genre of explicitGenres; track genre.mal_id) {
             <div
-              class="genres-card"
-              (click)="viewAnimeByGenre(genre.mal_id)"
-              >
-              <h3>{{ genre.name }}</h3>
+              class="genres-card explicit-card"
+              (click)="viewAnimeByGenre(genre.mal_id, genre.name)"
+            >
+              <div class="card-icon">
+                <i class="fas fa-eye-slash"></i> </div>
+              <h3 class="card-title">{{ genre.name }}</h3>
             </div>
           }
         </div>
-      </div>
-      <div class="category">
-        <h2 class="category-title">Temi:</h2>
-        <div class="genres-container">
-          @for (genre of themes; track genre) {
+      </section>
+
+      <section class="genre-category-section">
+        <h2 class="category-heading">
+          <i class="fas fa-lightbulb category-icon"></i> Temi Anime
+        </h2>
+        <div class="genres-grid">
+          @for (genre of themes; track genre.mal_id) {
             <div
               class="genres-card"
-              (click)="viewAnimeByGenre(genre.mal_id)"
-              >
-              <h3>{{ genre.name }}</h3>
+              (click)="viewAnimeByGenre(genre.mal_id, genre.name)"
+            >
+              <div class="card-icon">
+                <i class="fas fa-star"></i> </div>
+              <h3 class="card-title">{{ genre.name }}</h3>
             </div>
           }
         </div>
-      </div>
-      <div class="category">
-        <h2 class="category-title">Demografia:</h2>
-        <div class="genres-container">
-          @for (genre of demographics; track genre) {
+      </section>
+
+      <section class="genre-category-section">
+        <h2 class="category-heading">
+          <i class="fas fa-users category-icon"></i> Demografia
+        </h2>
+        <div class="genres-grid">
+          @for (genre of demographics; track genre.mal_id) {
             <div
               class="genres-card"
-              (click)="viewAnimeByGenre(genre.mal_id)"
-              >
-              <h3>{{ genre.name }}</h3>
+              (click)="viewAnimeByGenre(genre.mal_id, genre.name)"
+            >
+              <div class="card-icon">
+                <i class="fas fa-child"></i> </div>
+              <h3 class="card-title">{{ genre.name }}</h3>
             </div>
           }
         </div>
-      </div>
+      </section>
     </div>
   }
 </div>

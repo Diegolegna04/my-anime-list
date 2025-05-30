@@ -1,21 +1,59 @@
-<div class="intro">
-  <div class="intro-content">
-    <h1>Anime Preferiti</h1>
-    <p>Qui puoi trovare tutti i tuoi anime preferiti.</p>
+<div class="favorite-anime-page">
+  <!-- Sezione Introduttiva -->
+  <div class="intro">
+    <div class="intro-content">
+      <h1>Anime Preferiti</h1>
+      <p>Qui puoi trovare tutti i tuoi anime preferiti.</p>
+    </div>
   </div>
-</div>
 
-@if (favoriteAnime.length > 0) {
-  <div>
-    <div class="anime-container">
+  @if (favoriteAnime.length > 0) {
+    <!-- Header con Controlli -->
+    <div class="section-header">
+      <h2 class="section-title">I Tuoi Preferiti</h2>
+      <div class="section-controls">
+        <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
+          <i class="fas fa-language"></i>
+          {{titleLanguage === 'english' ? 'Titolo Giapponese' : 'Titolo Inglese'}}
+        </button>
+        <div class="view-toggle">
+          <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
+            <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th-large'"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista Anime -->
+    <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
       @for (anime of favoriteAnime; track anime) {
         <div class="anime-card" (click)="goToDetails(anime.mal_id)">
-          <img [src]="anime.images.jpg.large_image_url" alt="{{ anime.title }}" />
-          <h3>{{ anime.title }}</h3>
+          <div class="favorite-badge">
+            <i class="fas fa-heart"></i>
+          </div>
+          <img [src]="anime.images.jpg.large_image_url" alt="{{ getTitle(anime) }}" />
+          <div class="anime-card-content">
+            <h3 class="anime-title">{{ getTitle(anime) }}</h3>
+            <div class="anime-meta">
+              @if (anime.score) {
+                <div class="anime-score">
+                  <i class="fas fa-star"></i> {{anime.score}}
+                </div>
+              }
+              <div class="anime-type">
+                {{anime.type || 'N/A'}}
+              </div>
+            </div>
+          </div>
         </div>
       }
     </div>
-  </div>
-} @else {
-  <h2>Nessun anime preferito trovato.</h2>
-}
+  } @else {
+    <!-- Messaggio Nessun Anime -->
+    <div class="no-favorites">
+      <i class="fas fa-heart-broken" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+      <h2>Nessun anime preferito trovato</h2>
+      <p>Inizia ad aggiungere alcuni anime ai tuoi preferiti per vederli qui!</p>
+    </div>
+  }
+</div>

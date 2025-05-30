@@ -1,43 +1,73 @@
-<h2 class="section-title">Risultati per "{{ query }}"</h2>
-<div class="search-results">
-  <!-- Titolo della pagina -->
-  <div class="div">
-    <div class="sort-select">
-      <label for="sortCriteria">Ordina per: </label>
-      <select id="sortCriteria" (change)="sortAnime($event)">
-        <option value="members">Membri</option>
-        <option value="score">Voti</option>
-        <option value="date">Novità</option>
-      </select>
-    </div>
-    <!-- Bottone per cambiare visualizzazione -->
-    <div class="view-toggle">
-      <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
-        <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th'"></i>
+<div class="genre-results-page">
+  <!-- Titolo e Controlli -->
+  <div class="section-header">
+    <h2 class="section-title">Risultati per "{{ query }}"</h2>
+    <div class="section-controls">
+      <div class="sort-select">
+        <label for="sortCriteria">Ordina per:</label>
+        <select id="sortCriteria" (change)="onSortChange($event)">
+          <option value="score">Voti</option>
+          <option value="members">Membri</option>
+          <option value="date">Novità</option>
+        </select>
+      </div>
+      <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
+        <i class="fas fa-language"></i>
+        {{titleLanguage === 'english' ? 'Titolo Giapponese' : 'Titolo Inglese'}}
       </button>
+      <div class="view-toggle">
+        <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
+          <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th-large'"></i>
+        </button>
+      </div>
     </div>
   </div>
-  <!-- Contenitore per i risultati della ricerca -->
-  @if (searchResults.length > 0) {
-    <div [class.grid]="isGridView" [class.list]="!isGridView"
-      class="anime-container">
-      @for (anime of searchResults; track anime) {
-        <div
-          class="anime-card"
-          (click)="goToDetails(anime.mal_id)">
-          <img [src]="anime.images.jpg.image_url" alt="{{ anime.title }}"/>
-          <h3 class="anime-title">{{ anime.title }}</h3>
+
+  <!-- Lista Anime -->
+  <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
+    @for (anime of searchResults; track anime.mal_id) {
+      <div class="anime-card" (click)="goToDetails(anime.mal_id)">
+        <img [src]="anime.images?.jpg?.image_url" alt="{{ getTitle(anime) }}" />
+        <div class="anime-card-content">
+          <h3 class="anime-title">{{ getTitle(anime) }}</h3>
+          <div class="anime-meta">
+            @if (anime.score) {
+              <div class="anime-score">
+                <i class="fas fa-star"></i> {{ anime.score.toFixed(1) }}
+              </div>
+            }
+            <div class="anime-type">
+              {{ anime.type || 'N/A' }}
+            </div>
+          </div>
+          @if (!isGridView && anime.synopsis) {
+            <div class="anime-synopsis">
+              {{ anime.synopsis.length > 150 ? (anime.synopsis | slice:0:150) + '...' : anime.synopsis }}
+            </div>
+          }
         </div>
-      }
-    </div>
-  } @else {
+      </div>
+    }
+  </div>
+
+  <!-- Messaggio Nessun Risultato -->
+  @if (searchResults.length === 0) {
     <div class="no-results">
-      <p>Non ci sono risultati per "{{ query }}". Prova una ricerca diversa.</p>
+      <p>
+        <i class="fas fa-frown"></i> Non ci sono risultati per
+        <strong>"{{ query }}"</strong>. Prova una ricerca diversa.
+      </p>
     </div>
   }
 
-  <!-- Messaggio se non ci sono risultati -->
-
-  <!-- Bottone per tornare alla Home -->
-  <button class="load-more-btn" (click)="goBackToHome()">Torna alla Home</button>
+  <!-- Bottone Torna alla Home -->
+  @if (searchResults.length > 0) {
+    <button (click)="goBackToHome()" class="load-more-btn">
+      <i class="fas fa-home"></i> Torna alla Home
+    </button>
+  } @else {
+    <button (click)="goBackToHome()" class="load-more-btn">
+      <i class="fas fa-home"></i> Torna alla Home
+    </button>
+  }
 </div>

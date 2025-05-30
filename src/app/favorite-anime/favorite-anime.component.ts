@@ -13,10 +13,13 @@ import {AnimeService} from '../services/anime.service';
 export class FavoriteAnimeComponent implements OnInit {
   favoriteAnime: any[] = [];
   private animeDetailUrl = 'https://api.jikan.moe/v4/anime';
+  titleLanguage: 'english' | 'original' = 'original';
+  isGridView: boolean = true;
 
   constructor(private http: HttpClient, private animeService: AnimeService) {}
 
   ngOnInit(): void {
+    this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
     this.loadFavoriteAnime();
   }
 
@@ -39,5 +42,23 @@ export class FavoriteAnimeComponent implements OnInit {
 
   goToDetails(id: number): void {
     this.animeService.goToDetails(id);
+  }
+
+  toggleView(): void {
+    this.isGridView = !this.isGridView; // Cambia la modalità di visualizzazione
+  }
+
+  toggleTitleLanguage(): void {
+    this.titleLanguage = this.titleLanguage === 'english' ? 'original' : 'english';
+    localStorage.setItem('titleLanguage', this.titleLanguage);
+  }
+
+  // Restituisce il titolo nella lingua selezionata
+  getTitle(anime: any): string {
+    if (this.titleLanguage === 'english') {
+      return anime.title_english || anime.title;
+    } else {
+      return anime.title || anime.title_english;
+    }
   }
 }

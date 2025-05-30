@@ -40,7 +40,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.accessoEffettuato = true; // Forziamo l'accesso a true
 
-    this.loadProfileDetails(); // Carica i dettagli dell'utente (username e immagine)
+    this.loadProfileDetails();
     /*if (this.authService) { // Assicurati di iniettare authService se lo usi
      this.authStatusSubscription = this.authService.getAuthStatus().subscribe(status => {
          this.accessoEffettuato = status.isLoggedIn;
@@ -71,13 +71,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     const savedUsername = localStorage.getItem('username');
     if (savedUsername) {
-      this.username = savedUsername;
+      this.username = "username";
     } else {
-      this.username = 'AnimeFan'; // Username di default
+      this.username = 'username'; // Username di default
       localStorage.setItem('username', this.username);
     }
   }
-
 
   goToLoginRegister(): void {
     alert('La pagina di Login/Registrazione non è ancora disponibile.');

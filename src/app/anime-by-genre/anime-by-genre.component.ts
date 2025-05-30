@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
-
 import {AnimeService} from '../services/anime.service';
 
 @Component({
@@ -66,6 +65,8 @@ export class AnimeByGenreComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
+    
     this.genreId = Number(this.route.snapshot.paramMap.get('id'));
     this.genreName = this.genreId ? this.genreMap[this.genreId] || 'Sconosciuto' : 'Sconosciuto';
     this.loadAnimeByGenre();

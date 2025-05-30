@@ -1,10 +1,3 @@
-<div class="top-bar">
-  <div class="language-toggle">
-    <button class="action-button primary language-toggle-btn" (click)="toggleTitleLanguage()">
-      <i class="fas fa-language"></i> <span>Cambia lingua titolo</span>
-    </button>
-  </div>
-</div>
 @if (showOverlay) {
   <div class="profile-overlay" (click)="closeOverlay()">
     <div class="overlay-content" (click)="$event.stopPropagation()">
@@ -28,15 +21,16 @@
     </div>
 
     <div class="stats-card"> <h3 class="stats-title">Le tue Statistiche</h3>
-      <div class="stats-grid"> <div class="stat-item">
+      <div class="stats-grid">
+        <div class="stat-item" routerLink="/watched-anime">
           <i class="fas fa-tv"></i> <span class="stat-value">{{ watchedAnimeCount }}</span>
           <span class="stat-label">Anime Visti</span>
         </div>
-        <div class="stat-item">
+        <div class="stat-item" routerLink="/watched-anime/favourites">
           <i class="fas fa-heart"></i> <span class="stat-value">{{ animePreferiti }}</span>
           <span class="stat-label">Anime Preferiti</span>
         </div>
-        <div class="stat-item">
+        <div class="stat-item" (click)="scrollToEvidenzaSection()">
           <i class="fas fa-thumbtack"></i> <span class="stat-value">{{ inEvidenza.length }}</span>
           <span class="stat-label">In Evidenza</span>
         </div>
@@ -46,7 +40,14 @@
 
   <div class="main-content">
     <div class="favorites-section">
-      <h3 class="section-title">Anime Preferiti in Evidenza</h3>
+      <h3 class="section-title" id="inEvidenzaSection">Anime Preferiti in Evidenza</h3>
+      <div class="top-bar">
+        <div class="language-toggle">
+          <button class="action-button primary language-toggle-btn" (click)="toggleTitleLanguage()">
+            <i class="fas fa-language"></i> <span>Cambia lingua titolo</span>
+          </button>
+        </div>
+      </div>
       @if (inEvidenza.length > 0) {
         <div>
           <div
@@ -63,12 +64,6 @@
         </div>
       } @else {
         <h2 class="empty-state"><i class="fas fa-star-half-alt"></i> Nessun anime in evidenza.</h2> }
-    </div>
-
-    <div class="bottom-buttons">
-      <button class="action-button primary" routerLink="/watched-anime">
-        <i class="fas fa-list-ul"></i> Vai agli anime visti
-      </button>
     </div>
   </div>
 </div>

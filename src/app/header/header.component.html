@@ -17,6 +17,9 @@
       </button>
       @if (showSearchBar) {
         <div class="search-bar">
+          <button (click)="toggleSearchBar()" class="close-search-btn">
+            <i class="fas fa-times"></i>
+          </button>
           <input
             type="text"
             [(ngModel)]="query"

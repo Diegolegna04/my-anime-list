@@ -109,4 +109,11 @@ export class ProfileComponent implements OnInit {
 
     this.cdr.detectChanges();
   }
+
+  scrollToEvidenzaSection(): void {
+    const evidenzaSection = document.getElementById('inEvidenzaSection');
+    if (evidenzaSection) {
+      evidenzaSection.scrollIntoView({behavior: 'smooth'});
+    }
+  }
 }
