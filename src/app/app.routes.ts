@@ -4,11 +4,12 @@ import { AnimeDetailsComponent } from './anime-details/anime-details.component';
 import { AnimeSearchComponent } from './components/anime-search/anime-search.component';
 import { GenresComponent } from './genres/genres.component';
 import { AnimeByGenreComponent } from './anime-by-genre/anime-by-genre.component';
-import {LoginRegisterComponent} from './login-register/login-register.component';
-import {NotFoundComponent} from './not-found/not-found.component';
-import {FavoriteAnimeComponent} from './favorite-anime/favorite-anime.component';
-import {WatchedAnimeComponent} from './watched-anime/watched-anime.component';
-import {ProfileComponent} from './profile/profile.component';
+import { LoginRegisterComponent } from './login-register/login-register.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { FavoriteAnimeComponent } from './favorite-anime/favorite-anime.component';
+import { WatchedAnimeComponent } from './watched-anime/watched-anime.component';
+import { ProfileComponent } from './profile/profile.component';
+import { SeasonalAnimeComponent } from './components/seasonal-anime/seasonal-anime.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Home
@@ -17,9 +18,10 @@ export const routes: Routes = [
   { path: 'genres', component: GenresComponent }, // Lista Generi
   { path: 'genres/anime-by-genre/:id', component: AnimeByGenreComponent },
   { path: 'register-login', component: LoginRegisterComponent },
-  { path: 'watched-anime', component: WatchedAnimeComponent },
-  { path: 'watched-anime/favourites', component: FavoriteAnimeComponent },
   { path: 'profile', component: ProfileComponent },
+  { path: 'profile/watched-anime', component: WatchedAnimeComponent },
+  { path: 'profile/watched-anime/favourites', component: FavoriteAnimeComponent },
+  { path: 'seasonal/:season', component: SeasonalAnimeComponent },
   { path: '**', component: NotFoundComponent }
 ];
 

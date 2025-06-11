@@ -11,16 +11,27 @@
           <p class="synopsis">{{ animeDetails.synopsis }}</p>
           
           <div class="extra-info">
-            <p><strong>Episodi:</strong> {{ animeDetails.episodes }}</p>
-            <p><strong>Voto:</strong> {{ animeDetails.score }}</p>
-            <p><strong>Status:</strong> {{ animeDetails.status }}</p>
-            <p><strong>Generi:</strong>
+            <p><strong>Episodi:&nbsp;</strong> {{ animeDetails.episodes }}</p>
+            <p><strong>Voto:&nbsp;</strong> {{ animeDetails.score }}</p>
+            <p><strong>Status:&nbsp;</strong> {{ animeDetails.status }}</p>
+            <p><strong>Generi:&nbsp;</strong>
               @for (genre of animeDetails.genres; track genre; let last = $last) {
                 <span>
                   {{ genre.name }}@if (!last) {
                     <span>,&nbsp;</span>
                   }
                 </span>
+              }
+            </p>
+            <p><strong>Dove vederlo:&nbsp;</strong>
+              @if (animeStreaming.length > 0) {
+                @for (streamingService of animeStreaming; track streamingService.name) {
+                  <a [href]="streamingService.url" target="_blank" rel="noopener noreferrer" class="extra-info">
+                    {{ streamingService.name }}
+                  </a>
+                }
+              } @else {
+                <span>Nessun servizio di streaming trovato.</span>
               }
             </p>
           </div>

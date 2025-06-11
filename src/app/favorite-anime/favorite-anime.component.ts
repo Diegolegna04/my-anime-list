@@ -21,6 +21,7 @@ export class FavoriteAnimeComponent implements OnInit {
   ngOnInit(): void {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
     this.loadFavoriteAnime();
+    window.scroll(0, 0);
   }
 
   loadFavoriteAnime(): void {

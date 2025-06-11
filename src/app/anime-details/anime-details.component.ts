@@ -17,6 +17,7 @@ export class AnimeDetailsComponent implements OnInit {
   animeDetails: any = null;
   recommendedAnime: any[] = [];
   displayedRecommendedAnime: any[] = [];
+  animeStreaming: any[] = [];
   animeToShow = 5;
   visto: boolean = false;
   voto: number = 0;
@@ -43,6 +44,7 @@ export class AnimeDetailsComponent implements OnInit {
         this.loadRecommendedAnime();
         this.loadAnimeState();
         this.loadInEvidenza();
+        this.loadStreaming();
 
         const statoWatching = JSON.parse(localStorage.getItem('statoWatching') || '{}');
         const elencoVisti = JSON.parse(localStorage.getItem('elencoVisti') || '[]');
@@ -56,6 +58,24 @@ export class AnimeDetailsComponent implements OnInit {
         this.visto = elencoVisti.includes(this.animeId.toString());
         this.voto = elencoVoti[this.animeId] || 0; // Default a 0 invece di null
         this.preferito = elencoPreferiti.includes(this.animeId.toString());
+      }
+    });
+  }
+
+  loadStreaming(): void {
+    const url = `${this.animeDetailUrl}/${this.animeId}/streaming`;
+    this.http.get<any>(url).subscribe({
+      next: (response) => {
+        if (response.data && Array.isArray(response.data)) {
+          this.animeStreaming = response.data;
+        } else {
+          this.animeStreaming = [];
+          console.warn('Dati di streaming non validi o assenti:', response);
+        }
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento dei servizi di streaming:', error);
+        this.animeStreaming = [];
       }
     });
   }

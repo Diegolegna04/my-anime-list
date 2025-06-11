@@ -1,0 +1,118 @@
+<div class="dashboard-container">
+  <div class="seasonal-header">
+    <div class="season-navigation">
+      <button
+        class="nav-season-btn"
+        (click)="goToPreviousSeason()"
+        aria-label="Stagione Precedente">
+        <i class="fas fa-chevron-left"></i>
+        Precedente
+      </button>
+
+      <div class="current-season">
+        <h1>Anime {{ getFormattedSeason() }}</h1>
+        <p>Scopri tutti gli anime di questa stagione</p>
+      </div>
+
+      <button
+        class="nav-season-btn"
+        (click)="goToNextSeason()"
+        [disabled]="!canGoToNextSeason()"
+        aria-label="Stagione Successiva">
+        Successiva
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="seasonal-controls-section">
+    <div class="section-header">
+      <h2 class="section-title">Anime Stagionali</h2>
+      <div class="section-controls">
+        <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
+          <i class="fas fa-language"></i>
+          {{ titleLanguage === 'english' ? 'Mostra titoli originali' : 'Mostra titoli inglesi' }}
+        </button>
+        <div class="view-toggle">
+          <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
+            <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th-large'"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    @if (seasonalAnimeList.length > 0) {
+      <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
+        @for (anime of seasonalAnimeList; track anime.mal_id) {
+          <div
+            class="anime-card"
+            (click)="goToDetails(anime.mal_id)">
+            <img [src]="anime.images.jpg.image_url" [alt]="getTitle(anime)"/>
+            <div class="anime-card-content">
+              <h3 class="anime-title">{{ getTitle(anime) }}</h3>
+              <div class="anime-meta">
+                @if (anime.score) {
+                  <div class="anime-score">
+                    <i class="fas fa-star"></i>
+                    {{ anime.score }}
+                  </div>
+                }
+                <div class="anime-type">
+                  {{ anime.type || 'N/A' }}
+                </div>
+              </div>
+
+              @if (!isGridView && anime.synopsis) {
+                <p class="anime-synopsis">
+                  {{ anime.synopsis.length > 150 ? (anime.synopsis | slice:0:150) + '...' : anime.synopsis }}
+                </p>
+              }
+
+              @if (!isGridView && anime.genres && anime.genres.length > 0) {
+                <div class="anime-genres">
+                  @for (genre of anime.genres.slice(0, 3); track genre.mal_id) {
+                    <span class="genre-tag">{{ genre.name }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (seasonalAnimeList.length === 0 && !isLoading) {
+      <div class="no-results">
+        <i class="fas fa-sad-tear"></i>
+        <h3>Nessun anime trovato</h3>
+        <p>Non sono stati trovati anime per questa stagione.</p>
+        <button class="primary-btn" routerLink="/seasonal/current">
+          Vai alla Stagione Corrente
+        </button>
+      </div>
+    }
+
+    @if (isLoading) {
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Caricamento anime stagionali...</p>
+      </div>
+    }
+
+    @if (!isLoading && hasNextPage && seasonalAnimeList.length > 0) {
+      <button
+        (click)="loadMoreAnime()"
+        class="load-more-btn"
+        >
+        <i class="fas fa-plus-circle"></i> Carica Altri Anime
+      </button>
+    }
+  </div>
+
+  <div class="back-to-home">
+    <button routerLink="/" class="secondary-btn">
+      <i class="fas fa-home"></i>
+      Torna alla Home
+    </button>
+  </div>
+</div>

@@ -1,16 +1,3 @@
-/* General Styles */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Nunito', 'Arial', sans-serif;
-  background-color: #f6f8fa;
-  color: #333;
-}
-
 .dashboard-container {
   width: 100%;
   max-width: 1200px;
@@ -177,6 +164,7 @@ body {
 .slider-controls {
   display: flex;
   align-items: center;
+  gap: 2rem;
 }
 
 .slider-arrow {
@@ -194,41 +182,76 @@ body {
   transition: all 0.3s ease;
 }
 
-.slider-arrow:hover {
+.slider-arrow:hover:not(.disabled) {
   background-color: #7c4dff;
   border-color: #7c4dff;
   color: white;
+  transform: scale(1.1);
 }
 
-.prev-arrow {
-  margin-right: 10px;
+.slider-arrow.disabled {
+  background-color: #f5f5f5;
+  border-color: #ddd;
+  color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
-.next-arrow {
-  margin-left: 10px;
+.slider-arrow.disabled:hover {
+  transform: none;
+  background-color: #f5f5f5;
+  border-color: #ddd;
+  color: #ccc;
 }
 
 .seasonal-anime-container {
   display: flex;
+  justify-content: center;
   gap: 1.5rem;
-  overflow-x: auto;
+  overflow: hidden;
   padding: 0.5rem;
-  scrollbar-width: none;  /* Firefox */
+  scrollbar-width: none;
+  transition: transform 0.3s ease;
 }
 
 .seasonal-anime-container::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari, Opera */
+  display: none;
+}
+
+/* Indicatori di posizione opzionali */
+.slider-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.slider-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ddd;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.slider-dot.active {
+  background-color: #7c4dff;
 }
 
 .seasonal-anime-card {
   min-width: 180px;
+  width: 180px;
+  height: 320px;
   position: relative;
   transition: transform 0.3s ease;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
 }
 
 .seasonal-anime-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-5px);
 }
 
 .seasonal-badge {
@@ -246,23 +269,34 @@ body {
 
 .seasonal-anime-card img {
   width: 100%;
-  height: 250px;
+  height: 250px; /* Altezza fissa dell'immagine */
   object-fit: cover;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0; /* Impedisce il restringimento dell'immagine */
 }
 
 .seasonal-anime-info {
   margin-top: 0.8rem;
+  flex: 1; /* Occupa lo spazio rimanente */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 70px; /* Altezza fissa per le informazioni */
+  overflow: hidden; /* Nasconde il contenuto che supera l'altezza */
 }
 
 .seasonal-anime-info h3 {
   font-size: 0.9rem;
   font-weight: bold;
   margin-bottom: 0.3rem;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limita a 2 righe */
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.2;
+  height: 2.4em; /* Altezza per 2 righe di testo */
 }
 
 .anime-stats {
@@ -270,11 +304,42 @@ body {
   justify-content: space-between;
   font-size: 0.8rem;
   color: #666;
+  margin-top: auto; /* Spinge le stats verso il fondo */
 }
 
 .anime-stats i {
   margin-right: 4px;
   color: #ffc107;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .seasonal-anime-card {
+    min-width: 150px;
+    width: 150px;
+    height: 270px;
+  }
+  
+  .seasonal-anime-card img {
+    height: 200px;
+  }
+  
+  .seasonal-anime-info {
+    height: 60px;
+  }
+  
+  .seasonal-anime-info h3 {
+    font-size: 0.8rem;
+  }
+  
+  .seasonal-anime-container {
+    gap: 1rem;
+  }
+  
+  .slider-arrow {
+    width: 35px;
+    height: 35px;
+  }
 }
 
 /* Top Anime Section */
@@ -719,5 +784,38 @@ body {
   .newsletter-input, .newsletter-btn {
     width: 100%;
     border-radius: 30px;
+  }
+
+  .seasonal-anime-card {
+    min-width: 150px;
+  }
+  
+  .seasonal-anime-container {
+    gap: 1rem;
+  }
+  
+  .slider-arrow {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+@media (max-width: 480px) {
+  .seasonal-anime-card {
+    min-width: 130px;
+    width: 130px;
+    height: 240px;
+  }
+  
+  .seasonal-anime-card img {
+    height: 180px;
+  }
+  
+  .seasonal-anime-info {
+    height: 50px;
+  }
+  
+  .seasonal-anime-container {
+    gap: 0.8rem;
   }
 }

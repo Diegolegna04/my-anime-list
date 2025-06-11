@@ -8,7 +8,7 @@
 
   <div class="controls-section">
     <div class="global-buttons">
-      <button routerLink="/watched-anime/favourites" class="action-button primary">
+      <button routerLink="/profile/watched-anime/favourites" class="action-button primary">
         <i class="fas fa-heart"></i>
         <span>Visualizza Anime Preferiti</span>
       </button>
@@ -49,7 +49,8 @@
     }
 
     @if (!isLoading && filteredAnime.length > 0) {
-      <div class="anime-grid"> @for (anime of filteredAnime; track anime.id) { <div class="anime-card" (click)="goToDetails(anime.details?.data?.mal_id)">
+      <div class="anime-grid"> @for (anime of filteredAnime; track anime.id) {
+        <div class="anime-card" (click)="goToDetails(anime.details?.data?.mal_id)">
             @if (anime.details?.data?.images?.jpg?.large_image_url) {
               <img
                 [src]="anime.details.data.images.jpg.large_image_url"
@@ -64,7 +65,8 @@
             }
             <div class="card-info">
               <h3 class="card-title">{{ getTitle(anime.details?.data) || 'Titolo non disponibile' }}</h3>
-              <p class="card-status" [class.status-completato]="anime.state === 'completato'" [class.status-in-visione]="anime.state === 'in visione'">
+              <p class="card-status" [class.status-completato]="anime.state === 'completato'"
+                [class.status-in-visione]="anime.state === 'in visione'">
                 Stato: {{ anime.state | titlecase }} </p>
               @if (anime.state === 'in visione' && anime.episodiVisti && anime.details?.data?.episodes) {
                  <div class="progress-bar-container">
@@ -85,5 +87,3 @@
     }
   </div>
 </div>
-
-<router-outlet/>

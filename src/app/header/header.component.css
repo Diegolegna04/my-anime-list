@@ -264,6 +264,7 @@ body {
   font-size: 0.95rem;
   font-weight: 500;
   transition: background-color 0.2s ease;
+  cursor: pointer;
 }
 
 .dropdown-menu a i {

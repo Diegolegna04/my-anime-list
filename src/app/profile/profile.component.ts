@@ -28,6 +28,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.loadProfile();
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
+    window.scroll(0, 0);
   }
 
   loadProfile(): void {

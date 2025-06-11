@@ -105,26 +105,31 @@
   <div class="seasonal-section">
     <div class="section-header">
       <h2 class="section-title">Anime della Stagione</h2>
-      <span class="season-tag">Primavera 2025</span>
+      <span class="season-tag">
+        {{ getCurrentAnimeSeason() }}
+      </span>
     </div>
     <div class="seasonal-slider">
       <div class="section-header">
         <div class="slider-controls">
-          <div class="slider-arrow prev-arrow">
+          <div 
+            class="slider-arrow prev-arrow" 
+            [class.disabled]="!canGoPrev()"
+            (click)="prevSlide()">
             <i class="fas fa-chevron-left"></i>
           </div>
-          <div class="slider-arrow next-arrow">
+          <div 
+            class="slider-arrow next-arrow" 
+            [class.disabled]="!canGoNext()"
+            (click)="nextSlide()">
             <i class="fas fa-chevron-right"></i>
           </div>
         </div>
       </div>
       <div class="seasonal-anime-container">
-        <!-- Anime stagionali - Saranno popolati dinamicamente -->
-        @for (anime of animeList.slice(0, 5); track anime) {
-          <div class="seasonal-anime-card">
-            @if (anime.score && anime.score > 8.5) {
-              <span class="seasonal-badge">HOT</span>
-            }
+        @for (anime of getCurrentSlideAnime(); track anime.mal_id) {
+          <div class="seasonal-anime-card" routerLink="/anime/{{anime.mal_id}}">
+            <span class="seasonal-badge">HOT</span>
             <img [src]="anime.images.jpg.image_url" alt="{{ getTitle(anime) }}">
             <div class="seasonal-anime-info">
               <h3>{{ getTitle(anime) }}</h3>
@@ -138,9 +143,11 @@
           </div>
         }
       </div>
+        <button class="load-more-btn" routerLink="/seasonal/{{ getCurrentAnimeSeasonT() }}">
+          Vai agli anime di questa stagione
+        </button>
     </div>
   </div>
-
   <!-- Genres Section -->
   <div class="genres-section">
     <div class="section-header">
@@ -187,7 +194,8 @@
     <div class="newsletter-content">
       <h2>Rimani Aggiornato</h2>
       <p>
-        Iscriviti alla nostra newsletter per ricevere aggiornamenti sui nuovi anime, eventi esclusivi e suggerimenti personalizzati.
+        Iscriviti alla nostra newsletter per ricevere aggiornamenti sui nuovi anime,
+        eventi esclusivi e suggerimenti personalizzati.
       </p>
       <div class="newsletter-form">
         <input type="email" placeholder="La tua email" class="newsletter-input">

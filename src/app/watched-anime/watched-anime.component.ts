@@ -27,6 +27,7 @@ export class WatchedAnimeComponent implements OnInit {
   ngOnInit(): void {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
     this.loadWatchedAnime();
+    window.scroll(0, 0);
   }
 
   loadWatchedAnime(): void {
