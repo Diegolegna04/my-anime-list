@@ -6,13 +6,14 @@ import { ViewportScroller } from '@angular/common';
 import { DOCUMENT } from '@angular/core';
 import { filter } from 'rxjs';
 import { AnimeService } from '../services/anime.service';
+import { RandomAnimeComponent } from "../components/random-anime/random-anime.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, RandomAnimeComponent],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   animeList: any[] = [];

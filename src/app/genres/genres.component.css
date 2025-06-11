@@ -1,6 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&family=Poppins:wght@300;400;600;700;800&display=swap');
-
-:root {
+  :root {
   --primary-color: #7c4dff;
   --primary-dark: #6a45e5;
   --secondary-color: #f0f2f5;
@@ -12,17 +10,8 @@
   --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
-body {
-  font-family: 'Poppins', sans-serif;
-  background-color: var(--secondary-color);
-  color: var(--text-dark);
-  margin: 0;
-  padding: 0;
-  line-height: 1.6;
-}
-
 .genres-page-container {
-  padding: 2rem;
+  padding: 0 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -34,34 +23,11 @@ body {
   padding: 3rem 2rem;
   border-radius: 15px;
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin: 2rem 0;
   box-shadow: var(--shadow-light);
   background-image: linear-gradient(135deg, #7c4dff 0%, #a27aff 100%);
   position: relative;
   overflow: hidden;
-}
-
-.intro-section::before,
-.intro-section::after {
-  content: '';
-  position: absolute;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  filter: blur(50px);
-  z-index: 0;
-}
-.intro-section::before {
-  width: 150px;
-  height: 150px;
-  top: -50px;
-  left: -50px;
-}
-.intro-section::after {
-  width: 200px;
-  height: 200px;
-  bottom: -80px;
-  right: -80px;
-  opacity: 0.8;
 }
 
 .intro-content {
@@ -73,7 +39,7 @@ body {
 
 .intro-title {
   font-family: 'Fira Sans', sans-serif;
-  font-size: 3.2rem;
+  font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
   line-height: 1.2;
