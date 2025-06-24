@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
-import { AnimeService } from '../services/anime.service';
+import { AnimeService } from '../../services/anime.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-anime-details',
   templateUrl: './anime-details.component.html',
   styleUrls: ['./anime-details.component.css'],
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   standalone: true,
 })
 export class AnimeDetailsComponent implements OnInit {

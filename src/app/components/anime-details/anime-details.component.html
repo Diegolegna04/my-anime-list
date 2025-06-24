@@ -119,7 +119,7 @@
         @for (anime of displayedRecommendedAnime; track anime) {
           <div
             class="recommended-card"
-            (click)="viewAnimeDetails(anime.mal_id)">
+            routerLink="/anime/{{ anime.mal_id }}">
             <img [src]="anime.images.jpg.image_url" [alt]="anime.title" />
             <h4>{{ anime.title }}</h4>
           </div>

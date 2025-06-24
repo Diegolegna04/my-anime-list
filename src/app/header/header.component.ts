@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AnimeService } from '../services/anime.service';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
+import { Theme, ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -19,10 +20,9 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  // ... (proprietà esistenti come showSearchBar, query, ecc.) ...
   showSearchBar: boolean = false;
   query: string = '';
-
+  currentTheme: Theme = 'light';
   accessoEffettuato: boolean = false; // Sarà impostato a true in ngOnInit
   profileImage: string = 'assets/default-profile.png';
   username: string = 'Username';
@@ -34,10 +34,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private router: Router,
     private animeService: AnimeService,
-    private authService: AuthService
+    private authService: AuthService,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
+    this.currentTheme = this.themeService.getCurrentTheme();
     this.accessoEffettuato = true; // Forziamo l'accesso a true
 
     this.loadProfileDetails();
@@ -133,5 +135,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.showDropdown = false;
   }
 
-  // loadTopAnime(): void { } // Lasciato commentato
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+    this.currentTheme = this.themeService.getCurrentTheme();
+  }
 }

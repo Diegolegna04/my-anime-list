@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import {AnimeService} from '../services/anime.service';
+import {AnimeService} from '../../services/anime.service';
 
 @Component({
   selector: 'app-favorite-anime',

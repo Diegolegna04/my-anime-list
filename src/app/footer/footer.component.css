@@ -1,8 +1,9 @@
 .footer {
-  background-color: #333;
-  color: #fff;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
   padding: 20px 0;
   text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .footer-content {
@@ -18,23 +19,28 @@
 
 .footer-section h2 {
   margin-bottom: 10px;
+  color: var(--text-primary);
 }
 
 .footer-section p, .footer-section ul, .footer-section li {
   margin: 0;
   padding: 0;
   list-style: none;
+  color: var(--text-secondary);
 }
 
 .footer-section a {
-  color: #fff;
+  color: var(--accent-color);
   text-decoration: none;
+  transition: color 0.3s ease;
 }
 
 .footer-section a:hover {
+  color: var(--accent-hover);
   text-decoration: underline;
 }
 
 .footer-bottom {
   margin-top: 20px;
+  color: var(--text-muted);
 }

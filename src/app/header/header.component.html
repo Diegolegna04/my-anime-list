@@ -6,6 +6,10 @@
   <div class="header-center"> </div>
 
   <div class="header-right">
+    <button (click)="toggleTheme()" class="action-button secondary theme-toggle-btn" [title]="currentTheme === 'light' ? 'Passa alla modalità scura' : 'Passa alla modalità chiara'">
+      <i [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'"></i>
+    </button>
+
     <button (click)="goToGenres()" class="action-button secondary">
       <i class="fas fa-filter"></i>
       <span>Generi</span>

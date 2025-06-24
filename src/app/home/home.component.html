@@ -9,7 +9,9 @@
       </p>
       <div class="hero-buttons">
         <button class="primary-btn" (click)="currentView = 'list'">Top Anime</button>
-        <button class="secondary-btn" routerLink="/search">Cerca Anime</button>
+        <button class="primary-btn" routerLink="/seasonal/{{ getCurrentAnimeSeasonT() }}">
+          <i class="fas fa-calendar-alt"></i> Anime Stagionali
+        </button>
       </div>
     </div>
   </div>
@@ -60,7 +62,7 @@
       @for (anime of animeList; track anime; let i = $index) {
         <div
           class="anime-card"
-          (click)="goToDetails(anime.mal_id)"
+          routerLink="/anime/{{ anime.mal_id }}"
           >
           <span class="anime-card-rank">#{{i + 1}}</span>
           <img [src]="anime.images.jpg.image_url" alt="{{ getTitle(anime) }}"/>

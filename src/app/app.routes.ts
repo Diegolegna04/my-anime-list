@@ -3,7 +3,7 @@ import { HomeComponent } from './home/home.component';
 import { AnimeDetailsComponent } from './anime-details/anime-details.component';
 import { AnimeSearchComponent } from './components/anime-search/anime-search.component';
 import { GenresComponent } from './genres/genres.component';
-import { AnimeByGenreComponent } from './anime-by-genre/anime-by-genre.component';
+import { AnimeByGenreComponent } from './components/anime-by-genre/anime-by-genre.component';
 import { LoginRegisterComponent } from './login-register/login-register.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { FavoriteAnimeComponent } from './favorite-anime/favorite-anime.component';
