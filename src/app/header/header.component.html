@@ -1,12 +1,15 @@
 <header class="app-header">
   <div class="header-left">
-    <a routerLink="/" class="app-logo" (click)="goToHome()">Anime List</a>
+    <a routerLink="/" class="app-logo" (click)="goToHome()">
+      <img src="logo-circle.png" alt="Logo" class="logo-image">
+      <span>Anime List</span>
+    </a>
   </div>
 
   <div class="header-center"> </div>
 
   <div class="header-right">
-    <button (click)="toggleTheme()" class="action-button secondary theme-toggle-btn" [title]="currentTheme === 'light' ? 'Passa alla modalità scura' : 'Passa alla modalità chiara'">
+    <button (click)="toggleTheme()" class="action-button secondary theme-toggle-btn" [title]="currentTheme === 'light'">
       <i [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'"></i>
     </button>
 
