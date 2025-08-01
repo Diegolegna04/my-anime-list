@@ -3,17 +3,19 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f4f4f4;
+  background-color: var(--bg-secondary);
+  transition: background-color 0.3s ease;
 }
 
 .form-wrapper {
-  background-color: #fff;
+  background-color: var(--card-bg);
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-medium);
   width: 100%;
   max-width: 400px;
   text-align: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 form {
@@ -24,46 +26,69 @@ form {
 
 label {
   font-weight: bold;
-  align-self: flex-start; /* Allinea le etichette a sinistra */
+  align-self: flex-start;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 input {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.2);
 }
 
 button {
-  background-color: #007bff;
+  background-color: var(--accent-color);
   color: white;
   border: none;
   padding: 0.75rem 1rem;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-weight: 600;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: var(--accent-hover);
+}
+
+button:disabled {
+  background-color: var(--text-muted);
+  cursor: not-allowed;
 }
 
 a {
-  color: #007bff;
+  color: var(--accent-color);
   cursor: pointer;
   text-decoration: none;
+  transition: color 0.3s ease;
 }
 
 a:hover {
+  color: var(--accent-hover);
   text-decoration: underline;
 }
 
 p {
   margin-top: 1rem;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
 }
 
 h2 {
   margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .auth-container {

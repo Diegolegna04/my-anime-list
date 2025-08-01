@@ -6,8 +6,8 @@
       <div class="sort-select">
         <label for="sortCriteria">Ordina per:</label>
         <select id="sortCriteria" (change)="onSortChange($event)">
-          <option value="members">Membri</option>
           <option value="score">Voti</option>
+          <option value="members">Membri</option>
           <option value="date">Novità</option>
         </select>
       </div>
@@ -51,7 +51,7 @@
   </div>
 
   <!-- Messaggio Nessun Risultato -->
-  @if (searchResults.length === 0) {
+  @if (searchResults.length === 0 && !isLoading) {
     <div class="no-results">
       <p>
         <i class="fas fa-frown"></i> Non ci sono risultati per
@@ -60,12 +60,27 @@
     </div>
   }
 
+  <!-- Loading Spinner -->
+  @if (isLoading) {
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Caricamento in corso...</p>
+    </div>
+  }
+
+  <!-- Bottone Carica Altri Risultati -->
+  @if (hasMoreResults && searchResults.length > 0 && !isLoading) {
+    <button (click)="loadMoreResults()" class="load-more-btn">
+      <i class="fas fa-plus"></i> Carica Altri Risultati
+    </button>
+  }
+
   <!-- Bottone Torna alla Home -->
   @if (searchResults.length > 0) {
-    <button (click)="goBackToHome()" class="load-more-btn">
+    <button (click)="goBackToHome()" class="load-more-btn secondary">
       <i class="fas fa-home"></i> Torna alla Home
     </button>
-  } @else {
+  } @else if (!isLoading) {
     <button (click)="goBackToHome()" class="load-more-btn">
       <i class="fas fa-home"></i> Torna alla Home
     </button>

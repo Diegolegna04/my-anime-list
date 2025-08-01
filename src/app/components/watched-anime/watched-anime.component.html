@@ -64,7 +64,9 @@
               </div>
             }
             <div class="card-info">
-              <h3 class="card-title">{{ getTitle(anime.details?.data) || 'Titolo non disponibile' }}</h3>
+              <h3 class="card-title" title="{{ getTitle(anime.details?.data) }}">
+                {{ getTitle(anime.details?.data) || 'Titolo non disponibile' }}
+              </h3>
               <p class="card-status" [class.status-completato]="anime.state === 'completato'"
                 [class.status-in-visione]="anime.state === 'in visione'">
                 Stato: {{ anime.state | titlecase }} </p>

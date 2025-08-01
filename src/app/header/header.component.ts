@@ -20,7 +20,6 @@ import { Theme, ThemeService } from '../services/theme.service';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  showSearchBar: boolean = false;
   query: string = '';
   currentTheme: Theme = 'light';
   accessoEffettuato: boolean = false; // Sarà impostato a true in ngOnInit
@@ -103,17 +102,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.showDropdown = !this.showDropdown;
   }
 
-  toggleSearchBar(): void {
-    this.showSearchBar = !this.showSearchBar;
-    if (!this.showSearchBar) {
-      this.query = '';
-    }
-  }
-
   searchAnime(): void {
     if (this.query.trim()) {
       this.router.navigate(['/search'], { queryParams: { q: this.query.trim() } });
-      this.showSearchBar = false;
       this.query = '';
     }
   }

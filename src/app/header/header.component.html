@@ -9,7 +9,7 @@
   <div class="header-center"> </div>
 
   <div class="header-right">
-    <button (click)="toggleTheme()" class="action-button secondary theme-toggle-btn" [title]="currentTheme === 'light'">
+    <button (click)="toggleTheme()" class="action-button secondary theme-toggle-btn">
       <i [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'"></i>
     </button>
 
@@ -19,26 +19,18 @@
     </button>
 
     <div class="search-section">
-      <button (click)="toggleSearchBar()" class="action-button secondary toggle-search-btn">
-        <i class="fas fa-search"></i>
-      </button>
-      @if (showSearchBar) {
-        <div class="search-bar">
-          <button (click)="toggleSearchBar()" class="close-search-btn">
-            <i class="fas fa-times"></i>
-          </button>
-          <input
-            type="text"
-            [(ngModel)]="query"
-            (keyup.enter)="searchAnime()"
-            placeholder="Cerca un anime..."
-            class="search-input"
-            />
-          <button (click)="searchAnime()" class="action-button primary search-btn">
-            <i class="fas fa-arrow-right"></i>
-          </button>
-        </div>
-      }
+      <div class="search-bar">
+        <input
+          type="text"
+          [(ngModel)]="query"
+          (keyup.enter)="searchAnime()"
+          placeholder="Cerca un anime..."
+          class="search-input"
+          />
+        <button (click)="searchAnime()" class="search-btn">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
     </div>
 
     @if (!accessoEffettuato) {

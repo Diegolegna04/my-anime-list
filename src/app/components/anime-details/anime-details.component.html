@@ -43,12 +43,10 @@
         <button class="stato-btn" (click)="setAnimeState('non visto')" [disabled]="animeState === 'non visto'">
           Non Visto
         </button>
-        <button class="stato-btn" (click)="setAnimeState('in visione')"
-          [disabled]="animeState === 'in visione' || animeState === 'completato'">
+        <button class="stato-btn" (click)="setAnimeState('in visione')" [disabled]="animeState === 'in visione'">
           In Visione
         </button>
-        <button class="stato-btn" (click)="setAnimeState('completato')"
-          [disabled]="animeState === 'completato' || animeState === 'in visione'">
+        <button class="stato-btn" (click)="setAnimeState('completato')" [disabled]="animeState === 'completato'">
           Completato
         </button>
       </div>
@@ -63,6 +61,15 @@
             [min]="0"
             [max]="animeDetails.episodes"
             (change)="updateEpisodiVisti()" />
+          
+          <!-- Progress bar visiva -->
+          <div class="episodi-progress">
+            <div 
+              class="episodi-progress-bar" 
+              [style.width.%]="(episodiVisti / animeDetails.episodes) * 100">
+            </div>
+          </div>
+          
           <p>{{ episodiVisti }}/{{ animeDetails.episodes }} episodi visti</p>
         </div>
       }

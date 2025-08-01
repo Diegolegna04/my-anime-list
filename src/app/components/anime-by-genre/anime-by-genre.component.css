@@ -14,10 +14,8 @@
   align-items: center;
   flex-wrap: wrap;
   margin: 0 2rem 1.5rem;
-  background-color: var(--card-bg);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: var(--card-shadow);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -311,6 +309,8 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+    margin: 0 1rem 1rem;
+    padding: 1rem;
   }
   
   .section-controls {
