@@ -6,6 +6,7 @@ import { AnimeService } from '../services/anime.service';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { Theme, ThemeService } from '../services/theme.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -22,12 +23,13 @@ import { Theme, ThemeService } from '../services/theme.service';
 export class HeaderComponent implements OnInit, OnDestroy {
   query: string = '';
   currentTheme: Theme = 'light';
-  accessoEffettuato: boolean = false; // Sarà impostato a true in ngOnInit
+  accessoEffettuato: boolean = false;
   profileImage: string = 'assets/default-profile.png';
   username: string = 'Username';
   showDropdown: boolean = false;
 
-  private authStatusSubscription: any;
+  private authStatusSubscription!: Subscription;
+  private userDataSubscription!: Subscription;
 
   constructor(
     private http: HttpClient,
@@ -39,64 +41,67 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentTheme = this.themeService.getCurrentTheme();
-    this.accessoEffettuato = true; // Forziamo l'accesso a true
 
-    this.loadProfileDetails();
-    /*if (this.authService) { // Assicurati di iniettare authService se lo usi
-     this.authStatusSubscription = this.authService.getAuthStatus().subscribe(status => {
-         this.accessoEffettuato = status.isLoggedIn;
-         this.username = status.username;
-         this.profileImage = status.profileImage;
-         // this.cdr.detectChanges(); // Potrebbe servire se hai ChangeDetectionStrategy.OnPush
-       });
-    }*/
+    // Sottoscrivi all'Observable dello stato di login
+    this.authStatusSubscription = this.authService.accessoEffettuato$.subscribe(
+      (isLoggedIn: boolean) => {
+        this.accessoEffettuato = isLoggedIn;
+        
+        // Se non è loggato, resetta i dati
+        if (!isLoggedIn) {
+          this.username = 'Username';
+          this.profileImage = 'assets/default-profile.png';
+        }
+      }
+    );
+
+    // Sottoscrivi ai dati dell'utente
+    this.userDataSubscription = this.authService.userData$.subscribe(
+      (userData) => {
+        if (userData) {
+          // Aggiorna i dati dell'utente dall'Observable
+          this.username = userData.username || 'Username';
+          this.profileImage = userData.profileImage || 'assets/default-profile.png';
+        } else {
+          // Se userData è null, carica dal localStorage (fallback)
+          this.loadProfileDetailsFromStorage();
+        }
+      }
+    );
   }
 
   ngOnDestroy(): void {
+    // Disiscriviti da entrambe le subscription
     if (this.authStatusSubscription) {
       this.authStatusSubscription.unsubscribe();
     }
+    if (this.userDataSubscription) {
+      this.userDataSubscription.unsubscribe();
+    }
   }
 
-  checkLoginStatus(): void {
-  }
-
-  loadProfileDetails(): void {
+  // Metodo fallback per caricare dal localStorage
+  private loadProfileDetailsFromStorage(): void {
     const savedImage = localStorage.getItem('profileImage');
     if (savedImage) {
       this.profileImage = savedImage;
-    } else {
-      this.profileImage = 'https://via.placeholder.com/40/7c4dff/FFFFFF?text=JP';
-      localStorage.setItem('profileImage', this.profileImage);
     }
 
     const savedUsername = localStorage.getItem('username');
     if (savedUsername) {
-      this.username = "username";
-    } else {
-      this.username = 'username'; // Username di default
-      localStorage.setItem('username', this.username);
+      this.username = savedUsername;
     }
   }
 
   goToLoginRegister(): void {
-    alert('La pagina di Login/Registrazione non è ancora disponibile.');
-    // this.router.navigate(['/login-register']); // Commenta questa riga
+    this.router.navigate(['/register-login']);
     this.showDropdown = false;
   }
 
   logout(): void {
-    localStorage.removeItem('isLoggedIn'); // Rimuove il flag, ma ngOnInit lo imposta di nuovo
-    localStorage.removeItem('username');
-    localStorage.removeItem('profileImage');
-    this.accessoEffettuato = false; // Sarà reimpostato a true al ricaricamento del componente
-    this.username = 'Username';
-    this.profileImage = 'assets/default-profile.png';
-    alert('Hai effettuato il logout (simulato). Al prossimo ricaricamento sarai di nuovo "loggato".');
-    // this.router.navigate(['/']); // Reindirizza alla home
+    this.authService.onLogout();
     this.showDropdown = false;
   }
-
 
   toggleDropdown(): void {
     this.showDropdown = !this.showDropdown;

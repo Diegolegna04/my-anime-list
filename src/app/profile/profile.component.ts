@@ -15,7 +15,7 @@ import {AnimeService} from '../services/anime.service';
 })
 export class ProfileComponent implements OnInit {
   profileImage: string = 'assets/default-profile.png';
-  username: string = 'Utente';
+  username: string = '';
   watchedAnimeCount: number = 0;
   inEvidenza: any[] = [];
   animePreferiti: number = 0;
@@ -54,6 +54,9 @@ export class ProfileComponent implements OnInit {
         this.cdr.detectChanges();
       });
     }
+
+    const userName = localStorage.getItem('username');
+    if (userName) this.username = userName;
   }
 
   changeProfileImage(): void {
