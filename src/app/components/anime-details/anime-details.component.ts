@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-
 import { AnimeService } from '../../services/anime.service';
+import { UserAnime, UserAnimeService } from '../../services/userAnimeService.service';
 import { FormsModule } from '@angular/forms';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-anime-details',
@@ -19,6 +20,7 @@ export class AnimeDetailsComponent implements OnInit {
   displayedRecommendedAnime: any[] = [];
   animeStreaming: any[] = [];
   animeToShow = 5;
+
   visto: boolean = false;
   voto: number = 0;
   preferito: boolean = false;
@@ -28,12 +30,18 @@ export class AnimeDetailsComponent implements OnInit {
   inEvidenza: boolean = false;
   hoveredRating: number = 0;
 
+  // Dati dell'anime utente dal backend
+  userAnimeData: UserAnime | null = null;
+  isLoadingUserData: boolean = true;
+
   private animeDetailUrl = 'https://api.jikan.moe/v4/anime';
 
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private animeService: AnimeService
+    private animeService: AnimeService,
+    private userAnimeService: UserAnimeService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -42,22 +50,8 @@ export class AnimeDetailsComponent implements OnInit {
       if (this.animeId) {
         this.loadAnimeDetails();
         this.loadRecommendedAnime();
-        this.loadAnimeState();
-        this.loadInEvidenza();
+        this.loadUserAnimeData();
         this.loadStreaming();
-
-        const statoWatching = JSON.parse(localStorage.getItem('statoWatching') || '{}');
-        const elencoVisti = JSON.parse(localStorage.getItem('elencoVisti') || '[]');
-        const elencoVoti = JSON.parse(localStorage.getItem('elencoVoti') || '{}');
-        const elencoPreferiti = JSON.parse(localStorage.getItem('elencoPreferiti') || '[]');
-
-        if (statoWatching[this.animeId]) {
-          this.watching = true;
-          this.episodiVisti = statoWatching[this.animeId];
-        }
-        this.visto = elencoVisti.includes(this.animeId.toString());
-        this.voto = elencoVoti[this.animeId] || 0; // Default a 0 invece di null
-        this.preferito = elencoPreferiti.includes(this.animeId.toString());
       }
     });
   }
@@ -80,7 +74,6 @@ export class AnimeDetailsComponent implements OnInit {
     });
   }
 
-  // Carica i dettagli dell'anime
   loadAnimeDetails(): void {
     const url = `${this.animeDetailUrl}/${this.animeId}`;
     this.http.get<any>(url).subscribe((response) => {
@@ -88,7 +81,6 @@ export class AnimeDetailsComponent implements OnInit {
     });
   }
 
-  // Carica gli anime consigliati
   loadRecommendedAnime(): void {
     const url = `${this.animeDetailUrl}/${this.animeId}/recommendations`;
     this.http.get<any>(url).subscribe((response) => {
@@ -97,27 +89,133 @@ export class AnimeDetailsComponent implements OnInit {
     });
   }
 
-  // Aggiorna la lista degli anime visibili
   updateDisplayedAnime(): void {
     this.displayedRecommendedAnime = this.recommendedAnime.slice(0, this.animeToShow);
   }
 
-  // Carica altri anime
   loadMoreAnime(): void {
     this.animeToShow += 5;
     this.updateDisplayedAnime();
   }
 
-  // Naviga ai dettagli di un anime raccomandato
   viewAnimeDetails(animeId: number): void {
     this.animeService.goToDetails(animeId);
   }
 
-  // Funzione per contrassegnare come visto
+  // Carica i dati dell'anime utente dal backend
+  loadUserAnimeData(): void {
+    this.isLoadingUserData = true;
+    
+    this.userAnimeService.getAnimeStatus(this.animeId).subscribe({
+      next: (userData) => {
+        this.userAnimeData = userData;
+        this.mapUserDataToLocalState(userData);
+        this.isLoadingUserData = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        // Se l'anime non è presente nel database utente, inizializza con valori di default
+        console.log('Anime non presente nei dati utente, usando valori di default');
+        this.initializeDefaultState();
+        this.isLoadingUserData = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Mappa i dati dal backend al formato locale del componente
+  private mapUserDataToLocalState(userData: UserAnime): void {
+    if (!userData) {
+      this.initializeDefaultState();
+      return;
+    }
+
+    // Mappatura degli stati
+    const statusMap: { [key: string]: string } = {
+      'watching': 'in visione',
+      'completed': 'completato',
+      'plan_to_watch': 'da vedere',
+      'dropped': 'droppato',
+      'on_hold': 'in pausa'
+    };
+
+    this.animeState = statusMap[userData.status] || 'non visto';
+    this.voto = userData.rating || 0;
+    this.preferito = userData.isFavorite || false;
+    this.inEvidenza = userData.inEvidenza || false;
+    this.episodiVisti = userData.episodesWatched || 0;
+    
+    // Logica per visto e watching
+    this.visto = ['in visione', 'completato'].includes(this.animeState);
+    this.watching = this.animeState === 'in visione';
+  }
+
+  private initializeDefaultState(): void {
+    this.animeState = 'non visto';
+    this.voto = 0;
+    this.preferito = false;
+    this.inEvidenza = false;
+    this.episodiVisti = 0;
+    this.visto = false;
+    this.watching = false;
+    this.userAnimeData = null;
+  }
+
+  // Aggiorna lo stato dell'anime nel backend
+  setAnimeState(state: string): void {
+    // Mappatura degli stati al formato backend
+    const backendStatusMap: { [key: string]: string } = {
+      'in visione': 'watching',
+      'completato': 'completed',
+      'da vedere': 'plan_to_watch',
+      'droppato': 'dropped',
+      'in pausa': 'on_hold',
+      'non visto': 'plan_to_watch' // Default fallback
+    };
+
+    const backendStatus = backendStatusMap[state];
+    
+    if (state === 'completato') {
+      this.episodiVisti = this.animeDetails?.episodes || 0;
+      this.visto = true;
+    } else if (state === 'non visto') {
+      this.episodiVisti = 0;
+      this.visto = false;
+      // Per "non visto", rimuoviamo l'anime dal database
+      if (this.userAnimeData) {
+        this.userAnimeService.removeAnime(this.animeId).subscribe({
+          next: () => {
+            this.initializeDefaultState();
+            this.cdr.detectChanges();
+          },
+          error: (error) => console.error('Errore nella rimozione dell\'anime:', error)
+        });
+      }
+      return;
+    } else if (state === 'in visione') {
+      if (!this.visto && this.episodiVisti === 0) {
+        this.visto = true;
+      }
+    }
+
+    this.animeState = state;
+
+    this.userAnimeService.updateAnimeStatus(this.animeId, backendStatus).subscribe({
+      next: (response) => {
+        this.userAnimeData = response;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Errore nell\'aggiornamento dello stato:', error);
+        // Ripristina lo stato precedente in caso di errore
+        this.loadUserAnimeData();
+      }
+    });
+  }
+
   toggleVisto(): void {
     this.visto = !this.visto;
-    this.updateElencoVistiLocalStorage(this.visto);
-  
+    
     if (this.visto && this.animeState === 'non visto') {
       this.setAnimeState('in visione');
     } else if (!this.visto && (this.animeState === 'in visione' || this.animeState === 'completato')) {
@@ -125,16 +223,20 @@ export class AnimeDetailsComponent implements OnInit {
     }
   }
 
-  // Metodo aggiornato per il sistema di voto a stelle
+  // Aggiorna il voto nel backend
   setVoto(rating: number): void {
     this.voto = rating;
-    const elencoVoti = JSON.parse(localStorage.getItem('elencoVoti') || '{}');
-    elencoVoti[this.animeId] = rating;
-    localStorage.setItem('elencoVoti', JSON.stringify(elencoVoti));
-    console.log(`Voto impostato a: ${rating}`);
+    
+    // Se l'anime non è ancora nel database, aggiungilo prima
+    if (!this.userAnimeData) {
+      // Imposta uno stato di default se necessario
+      const defaultStatus = this.animeState !== 'non visto' ? this.animeState : 'in visione';
+      this.setAnimeState(defaultStatus);
+    }
+
+    this.updateUserAnimeData({ rating });
   }
 
-  // Nuovi metodi per gestire il sistema di voto a stelle
   onStarHover(rating: number): void {
     this.hoveredRating = rating;
   }
@@ -143,7 +245,6 @@ export class AnimeDetailsComponent implements OnInit {
     this.hoveredRating = 0;
   }
 
-  // Metodo helper per determinare la classe CSS delle stelle
   getStarClass(starNumber: number): string {
     const targetRating = this.hoveredRating > 0 ? this.hoveredRating : this.voto;
     
@@ -155,85 +256,77 @@ export class AnimeDetailsComponent implements OnInit {
     return '';
   }
 
-  setPreferito(isPreferred: boolean): void {
-    const elencoPreferiti = JSON.parse(localStorage.getItem('elencoPreferiti') || '[]');
-
-    if (isPreferred && !elencoPreferiti.includes(this.animeId.toString())) {
-      elencoPreferiti.push(this.animeId.toString());
-    } else if (!isPreferred) {
-      const index = elencoPreferiti.indexOf(this.animeId.toString());
-      if (index !== -1) elencoPreferiti.splice(index, 1);
-    }
-
-    localStorage.setItem('elencoPreferiti', JSON.stringify(elencoPreferiti));
-    this.preferito = isPreferred;
-  }
-
+  // Toggle preferito nel backend
   togglePreferito(): void {
-    this.setPreferito(!this.preferito);
-  }
-
-  loadAnimeState(): void {
-    const savedState = JSON.parse(localStorage.getItem('animeStates') || '{}');
-    this.animeState = savedState[this.animeId]?.state || 'non visto';
-    this.episodiVisti = savedState[this.animeId]?.episodiVisti || 0;
-  }
-
-  // Aggiorna lo stato dell'anime
-  setAnimeState(state: string): void {
-    if (state === 'completato') {
-      this.episodiVisti = this.animeDetails.episodes;
-      this.visto = true;
-    } else if (state === 'non visto') {
-      this.episodiVisti = 0;
-      this.visto = false;
-    } else if (state === 'in visione') {
-      
-      if (!this.visto && this.episodiVisti === 0) {
-          this.visto = true;
+    this.userAnimeService.toggleFavorite(this.animeId).subscribe({
+      next: (response) => {
+        this.preferito = response.isFavorite;
+        this.userAnimeData = response;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Errore nel toggle preferito:', error);
       }
-    }
-  
-    this.animeState = state;
-    this.saveAnimeState();
-    this.updateElencoVistiLocalStorage(this.visto);
+    });
   }
 
-  updateElencoVistiLocalStorage(isVisto: boolean): void {
-    const elencoVisti = JSON.parse(localStorage.getItem('elencoVisti') || '[]');
-    const animeIdString = this.animeId.toString();
-  
-    if (isVisto && !elencoVisti.includes(animeIdString)) {
-      elencoVisti.push(animeIdString);
-    } else if (!isVisto && elencoVisti.includes(animeIdString)) {
-      const index = elencoVisti.indexOf(animeIdString);
-      if (index !== -1) {
-        elencoVisti.splice(index, 1);
+  // Toggle in evidenza nel backend
+  toggleInEvidenza(): void {
+    this.userAnimeService.toggleInEvidenza(this.animeId).subscribe({
+      next: (response) => {
+        this.inEvidenza = response.inEvidenza;
+        this.userAnimeData = response;
+        this.cdr.detectChanges();
+        
+        // Aggiorna la cache degli anime in evidenza
+        this.userAnimeService.refreshInEvidenza();
+      },
+      error: (error) => {
+        console.error('Errore nel toggle in evidenza:', error);
       }
-    }
-    localStorage.setItem('elencoVisti', JSON.stringify(elencoVisti));
+    });
   }
 
-  // Aggiorna gli episodi visti
+  // Aggiorna episodi visti
   updateEpisodiVisti(): void {
     if (this.animeState === 'in visione') {
-      if (this.episodiVisti >= this.animeDetails.episodes) {
+      if (this.episodiVisti >= (this.animeDetails?.episodes || 0)) {
         // Se tutti gli episodi sono visti, cambia lo stato in "completato"
         this.setAnimeState('completato');
+        return;
       }
-      this.saveAnimeState();
+      
+      // Aggiorna solo gli episodi visti
+      this.updateUserAnimeData({ episodesWatched: this.episodiVisti });
     }
   }
 
-  // Salva lo stato dell'anime nel localStorage
-  saveAnimeState(): void {
-    const savedState = JSON.parse(localStorage.getItem('animeStates') || '{}');
-    savedState[this.animeId] = {
-      state: this.animeState,
-      episodiVisti: this.episodiVisti,
+  // Metodo helper per aggiornare dati specifici dell'anime utente
+private updateUserAnimeData(updateData: Partial<UserAnime>): void {
+  // Se l'anime non è ancora nel DB → lo creiamo almeno con lo stato corrente
+  if (!this.userAnimeData) {
+    const defaultStatusMap: { [key: string]: string } = {
+      'in visione': 'watching',
+      'completato': 'completed',
+      'da vedere': 'plan_to_watch',
+      'droppato': 'dropped',
+      'in pausa': 'on_hold',
+      'non visto': 'plan_to_watch'
     };
-    localStorage.setItem('animeStates', JSON.stringify(savedState));
+
+    this.userAnimeService.updateAnimeStatus(this.animeId, defaultStatusMap[this.animeState]).subscribe({
+      next: (created) => {
+        this.userAnimeData = created;
+        this.applyUpdate(updateData);
+      },
+      error: (err) => console.error('Errore creazione anime:', err)
+    });
+    return;
   }
+
+  // Se esiste già, applica subito l’update
+  this.applyUpdate(updateData);
+}
 
   translateText(): void {
     const apiUrl = 'https://api.mymemory.translated.net/get';
@@ -241,7 +334,6 @@ export class AnimeDetailsComponent implements OnInit {
 
     if (!this.animeDetails) return;
 
-    // Funzione per tradurre un testo con MyMemory
     const translate = (text: string, callback: (translated: string) => void) => {
       if (!text) return;
 
@@ -261,7 +353,6 @@ export class AnimeDetailsComponent implements OnInit {
             translatedParts[index] = response.responseData.translatedText;
             completedRequests++;
 
-            // Se tutte le parti sono state tradotte, chiamiamo la callback
             if (completedRequests === parts.length) {
               callback(translatedParts.join(' '));
             }
@@ -273,39 +364,82 @@ export class AnimeDetailsComponent implements OnInit {
       });
     };
 
-    // Traduzione del titolo
     translate(this.animeDetails.title, (translatedTitle) => {
       this.animeDetails.title = translatedTitle;
     });
 
-    // Traduzione della sinossi
     translate(this.animeDetails.synopsis, (translatedSynopsis) => {
       this.animeDetails.synopsis = translatedSynopsis;
     });
   }
 
-  loadInEvidenza(): void {
-    const inEvidenza = localStorage.getItem('inEvidenza');
-    if (inEvidenza) {
-      this.inEvidenza = JSON.parse(inEvidenza).includes(this.animeId.toString());
-    } else {
-      this.inEvidenza = false;
+  // Metodi di utilità per refresh dei dati
+  refreshUserData(): void {
+    this.loadUserAnimeData();
+  }
+
+  // Metodo per gestire il cambio di stato con validazione
+  onStateChange(newState: string): void {
+    if (newState !== this.animeState) {
+      this.setAnimeState(newState);
     }
   }
 
-  toggleInEvidenza(): void {
-    const inEvidenza = JSON.parse(localStorage.getItem('inEvidenza') || '[]');
-    const animeIdString = this.animeId.toString();
-    const index = inEvidenza.indexOf(animeIdString);
-
-    if (index === -1) {
-      // L'ID dell'anime non è presente, quindi aggiungilo
-      inEvidenza.push(animeIdString);
-    } else {
-      // L'ID dell'anime è presente, quindi rimuovilo
-      inEvidenza.splice(index, 1);
+  // Metodo per gestire il cambio di episodi visti con validazione
+  onEpisodesChange(): void {
+    const maxEpisodes = this.animeDetails?.episodes || 0;
+    
+    // Valida il numero di episodi
+    if (this.episodiVisti < 0) {
+      this.episodiVisti = 0;
+    } else if (maxEpisodes > 0 && this.episodiVisti > maxEpisodes) {
+      this.episodiVisti = maxEpisodes;
     }
-    this.inEvidenza = !this.inEvidenza;
-    localStorage.setItem('inEvidenza', JSON.stringify(inEvidenza));
+
+    this.updateEpisodiVisti();
+  }
+
+  // Metodo per verificare se l'anime è nel database utente
+  isAnimeInUserDatabase(): boolean {
+    return this.userAnimeData !== null;
+  }
+
+  // Metodo per ottenere il testo dello stato attuale
+  getStateDisplayText(): string {
+    const stateTexts: { [key: string]: string } = {
+      'non visto': 'Non visto',
+      'in visione': 'In visione',
+      'completato': 'Completato',
+      'da vedere': 'Da vedere',
+      'droppato': 'Droppato',
+      'in pausa': 'In pausa'
+    };
+    
+    return stateTexts[this.animeState] || 'Non visto';
+  }
+
+  // Funzione separata per applicare l’update giusto
+  private applyUpdate(updateData: Partial<UserAnime>): void {
+    if (updateData.rating !== undefined) {
+      this.userAnimeService.updateRating(this.animeId, updateData.rating).subscribe({
+        next: (response) => {
+          this.userAnimeData = response;
+          this.voto = response.rating;
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Errore aggiornamento rating:', err)
+      });
+    }
+
+    if (updateData.episodesWatched !== undefined) {
+      this.userAnimeService.updateEpisodesWatched(this.animeId, updateData.episodesWatched).subscribe({
+        next: (response) => {
+          this.userAnimeData = response;
+          this.episodiVisti = response.episodesWatched;
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Errore aggiornamento episodi:', err)
+      });
+    }
   }
 }

@@ -11,6 +11,7 @@ export interface UserAnime {
   inEvidenza: boolean;
   evidenzaOrder: number;
   rating: number;
+  episodesWatched: number
 }
 
 @Injectable({
@@ -31,6 +32,16 @@ export class UserAnimeService {
   // Aggiorna stato anime
   updateAnimeStatus(animeId: number, status: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/${animeId}/status`, { status }, { withCredentials: true });
+  }
+
+  // Aggiorna episodi visti
+  updateEpisodesWatched(animeId: number, episodesWatched: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${animeId}/episodes`, { episodesWatched }, { withCredentials: true });
+  }
+
+  // Aggiorna rating
+  updateRating(animeId: number, rating: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${animeId}/rating`, { rating }, { withCredentials: true });
   }
 
   // Toggle preferito

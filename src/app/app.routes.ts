@@ -10,6 +10,7 @@ import { FavoriteAnimeComponent } from './components/favorite-anime/favorite-ani
 import { WatchedAnimeComponent } from './components/watched-anime/watched-anime.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SeasonalAnimeComponent } from './components/seasonal-anime/seasonal-anime.component';
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Home
@@ -17,8 +18,8 @@ export const routes: Routes = [
   { path: 'search', component: AnimeSearchComponent }, // Ricerca Anime
   { path: 'genres', component: GenresComponent }, // Lista Generi
   { path: 'genres/anime-by-genre/:id', component: AnimeByGenreComponent },
-  { path: 'register-login', component: LoginRegisterComponent },
-  { path: 'profile', component: ProfileComponent },
+  { path: 'register-login', component: LoginRegisterComponent, canActivate: [authGuard] },
+  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'profile/watched-anime', component: WatchedAnimeComponent },
   { path: 'profile/watched-anime/favourites', component: FavoriteAnimeComponent },
   { path: 'seasonal/:season', component: SeasonalAnimeComponent },

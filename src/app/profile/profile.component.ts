@@ -1,7 +1,10 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, OnDestroy} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import { DragDropModule, moveItemInArray, CdkDragDrop} from '@angular/cdk/drag-drop';
 import {AnimeService} from '../services/anime.service';
+import { UserAnimeService } from '../services/userAnimeService.service';
+import {AuthService} from '../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-user-profile',
@@ -13,7 +16,7 @@ import {AnimeService} from '../services/anime.service';
 ],
   standalone: true
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
   profileImage: string = 'assets/default-profile.png';
   username: string = '';
   watchedAnimeCount: number = 0;
@@ -21,42 +24,93 @@ export class ProfileComponent implements OnInit {
   animePreferiti: number = 0;
   titleLanguage: 'english' | 'original' = 'original';
   showOverlay: boolean = false;
+  isLoading: boolean = true;
 
-  constructor(private animeService: AnimeService, private cdr: ChangeDetectorRef) {
-  }
+  private userDataSubscription!: Subscription;
+  private userStatsSubscription!: Subscription;
+  private inEvidenzaSubscription!: Subscription;
+
+  constructor(
+    private animeService: AnimeService, 
+    private cdr: ChangeDetectorRef,
+    private userAnimeService: UserAnimeService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.loadProfile();
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
+    
+    // Sottoscrivi ai dati dell'utente
+    this.userDataSubscription = this.authService.userData$.subscribe(userData => {
+      if (userData) {
+        this.username = userData.username || '';
+        this.profileImage = userData.profileImage || 'assets/default-profile.png';
+      }
+    });
+
+    // Carica i dati dal backend
+    this.loadProfileFromBackend();
+    
     window.scroll(0, 0);
   }
 
-  loadProfile(): void {
-    const savedImage = localStorage.getItem('profileImage');
-    if (savedImage) this.profileImage = savedImage;
-
-    const watchedAnime = JSON.parse(localStorage.getItem('animeStates') || '{}');
-    this.watchedAnimeCount = Object.keys(watchedAnime).length;
-
-    const inEvidenza = JSON.parse(localStorage.getItem('inEvidenza') || '[]');
-
-    const preferiti = JSON.parse(localStorage.getItem('elencoPreferiti') || '{}');
-    this.animePreferiti = Object.keys(preferiti).length;
-
-    if (inEvidenza.length > 0) {
-      this.inEvidenza = [];
-      const requests = inEvidenza.map((id: string) =>
-        this.animeService.getAnimeById(id).toPromise()
-      );
-
-      Promise.all(requests).then((responses) => {
-        this.inEvidenza = responses.map((res) => res.data);
-        this.cdr.detectChanges();
-      });
+  ngOnDestroy(): void {
+    if (this.userDataSubscription) {
+      this.userDataSubscription.unsubscribe();
     }
+    if (this.userStatsSubscription) {
+      this.userStatsSubscription.unsubscribe();
+    }
+    if (this.inEvidenzaSubscription) {
+      this.inEvidenzaSubscription.unsubscribe();
+    }
+  }
 
-    const userName = localStorage.getItem('username');
-    if (userName) this.username = userName;
+  loadProfileFromBackend(): void {
+    this.isLoading = true;
+
+    // Carica statistiche
+    this.userStatsSubscription = this.userAnimeService.getUserStats().subscribe({
+      next: (stats) => {
+        this.watchedAnimeCount = stats.watchedCount || 0;
+        this.animePreferiti = stats.favoritesCount || 0;
+        this.userAnimeService.userStats$.subscribe(s => this.userStatsSubscription = s);
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento statistiche:', error);
+      }
+    });
+
+    // Carica anime in evidenza
+    this.inEvidenzaSubscription = this.userAnimeService.getInEvidenza().subscribe({
+      next: (evidenzaData) => {
+        if (evidenzaData && evidenzaData.length > 0) {
+          // Ordina per evidenzaOrder
+          evidenzaData.sort((a: any, b: any) => a.evidenzaOrder - b.evidenzaOrder);
+          
+          // Recupera i dettagli degli anime dall'API esterna
+          const requests = evidenzaData.map((userAnime: any) =>
+            this.animeService.getAnimeById(userAnime.animeId).toPromise()
+          );
+
+          Promise.all(requests).then((responses) => {
+            this.inEvidenza = responses.map((res) => res.data);
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          }).catch((error) => {
+            console.error('Errore nel caricamento dettagli anime:', error);
+            this.isLoading = false;
+          });
+        } else {
+          this.inEvidenza = [];
+          this.isLoading = false;
+        }
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento anime in evidenza:', error);
+        this.isLoading = false;
+      }
+    });
   }
 
   changeProfileImage(): void {
@@ -93,7 +147,7 @@ export class ProfileComponent implements OnInit {
   toggleTitleLanguage(): void {
     this.titleLanguage = this.titleLanguage === 'english' ? 'original' : 'english';
     localStorage.setItem('titleLanguage', this.titleLanguage);
-    this.cdr.detectChanges(); // Forza l'aggiornamento della vista
+    this.cdr.detectChanges();
   }
 
   getTitle(anime: any): string {
@@ -108,8 +162,18 @@ export class ProfileComponent implements OnInit {
   drop(event: CdkDragDrop<any[]>): void {
     moveItemInArray(this.inEvidenza, event.previousIndex, event.currentIndex);
 
-    const updatedInEvidenzaIds = this.inEvidenza.map(anime => anime.mal_id.toString());
-    localStorage.setItem('inEvidenza', JSON.stringify(updatedInEvidenzaIds));
+    // Aggiorna l'ordine nel backend
+    const updatedOrder = this.inEvidenza.map(anime => anime.mal_id);
+    this.userAnimeService.updateEvidenzaOrder(updatedOrder).subscribe({
+      next: () => {
+        console.log('Ordine aggiornato con successo');
+      },
+      error: (error) => {
+        console.error('Errore nell\'aggiornamento ordine:', error);
+        // Ripristina l'ordine originale in caso di errore
+        moveItemInArray(this.inEvidenza, event.currentIndex, event.previousIndex);
+      }
+    });
 
     this.cdr.detectChanges();
   }
@@ -119,5 +183,9 @@ export class ProfileComponent implements OnInit {
     if (evidenzaSection) {
       evidenzaSection.scrollIntoView({behavior: 'smooth'});
     }
+  }
+
+  refreshProfile(): void {
+    this.loadProfileFromBackend();
   }
 }

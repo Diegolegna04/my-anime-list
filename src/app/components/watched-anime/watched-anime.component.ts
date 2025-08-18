@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { AnimeService } from '../../services/anime.service';
+import { UserAnimeService } from '../../services/userAnimeService.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-watched-anime',
@@ -22,7 +25,11 @@ export class WatchedAnimeComponent implements OnInit {
   private readonly REQUEST_CONCURRENCY_LIMIT = 3;
   private readonly REQUEST_DELAY_MS = 500;
 
-  constructor(private animeService: AnimeService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private animeService: AnimeService, 
+    private userAnimeService: UserAnimeService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
@@ -31,35 +38,62 @@ export class WatchedAnimeComponent implements OnInit {
   }
 
   loadWatchedAnime(): void {
-    const animeStates = JSON.parse(localStorage.getItem('animeStates') || '{}');
-
-    const validAnimeEntries = Object.keys(animeStates).filter(id => {
-      const state = animeStates[id].state;
-      return state === 'completato' || state === 'in visione';
-    });
-
-    this.watchedAnime = validAnimeEntries.map((id) => ({
-      id,
-      state: animeStates[id].state,
-      episodiVisti: animeStates[id].episodiVisti,
-      details: null,
-    }));
-
-    if (this.watchedAnime.length === 0) {
-      this.isLoading = false;
-      this.filteredAnime = [];
-      return;
-    }
-
     this.isLoading = true;
+    
+    // Carica anime "completed" e "watching" dal backend
+    forkJoin({
+      completed: this.userAnimeService.getAnimeByStatus('completed').pipe(
+        catchError(error => {
+          console.error('Errore nel caricamento anime completati:', error);
+          return of([]);
+        })
+      ),
+      watching: this.userAnimeService.getAnimeByStatus('watching').pipe(
+        catchError(error => {
+          console.error('Errore nel caricamento anime in visione:', error);
+          return of([]);
+        })
+      )
+    }).subscribe({
+      next: (result) => {
+        // Combina i risultati e mappa al formato esistente
+        this.watchedAnime = [
+          ...result.completed.map((anime: any) => ({
+            id: anime.animeId.toString(),
+            state: 'completato',
+            episodiVisti: anime.episodesWatched || 0,
+            details: null,
+            userAnimeData: anime
+          })),
+          ...result.watching.map((anime: any) => ({
+            id: anime.animeId.toString(),
+            state: 'in visione',
+            episodiVisti: anime.episodesWatched || 0,
+            details: null,
+            userAnimeData: anime
+          }))
+        ];
 
-    this.processAnimeDetailsRequests().then(() => {
-      this.isLoading = false;
-      this.applyFilter();
-      this.cdr.detectChanges();
-    }).catch(error => {
-      console.error("Errore durante il caricamento dei dettagli degli anime:", error);
-      this.isLoading = false;
+        if (this.watchedAnime.length === 0) {
+          this.isLoading = false;
+          this.filteredAnime = [];
+          return;
+        }
+
+        this.processAnimeDetailsRequests().then(() => {
+          this.isLoading = false;
+          this.applyFilter();
+          this.cdr.detectChanges();
+        }).catch(error => {
+          console.error("Errore durante il caricamento dei dettagli degli anime:", error);
+          this.isLoading = false;
+        });
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento degli anime:', error);
+        this.isLoading = false;
+        this.filteredAnime = [];
+      }
     });
   }
 
@@ -149,5 +183,10 @@ export class WatchedAnimeComponent implements OnInit {
 
   goToDetails(id: number): void {
     this.animeService.goToDetails(id);
+  }
+
+  // Metodo per ricaricare i dati (utile per refresh)
+  refreshData(): void {
+    this.loadWatchedAnime();
   }
 }
