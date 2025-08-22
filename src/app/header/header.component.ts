@@ -24,7 +24,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   query: string = '';
   currentTheme: Theme = 'light';
   accessoEffettuato: boolean = false;
-  profileImage: string = 'assets/default-profile.png';
+  profileImage: string = 'pfp-no-bg.png';
   username: string = 'Username';
   showDropdown: boolean = false;
 
@@ -50,7 +50,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         // Se non è loggato, resetta i dati
         if (!isLoggedIn) {
           this.username = 'Username';
-          this.profileImage = 'assets/default-profile.png';
+          this.profileImage = this.profileImage;
         }
       }
     );
@@ -61,7 +61,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         if (userData) {
           // Aggiorna i dati dell'utente dall'Observable
           this.username = userData.username || 'Username';
-          this.profileImage = userData.profileImage || 'assets/default-profile.png';
+          this.profileImage = userData.profileImage || this.profileImage;
         } else {
           // Se userData è null, carica dal localStorage (fallback)
           this.loadProfileDetailsFromStorage();

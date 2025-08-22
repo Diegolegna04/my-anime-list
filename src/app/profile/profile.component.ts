@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
   standalone: true
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-  profileImage: string = 'assets/default-profile.png';
+  profileImage: string = 'pfp-no-bg.png';
   username: string = '';
   watchedAnimeCount: number = 0;
   inEvidenza: any[] = [];
@@ -44,7 +44,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.userDataSubscription = this.authService.userData$.subscribe(userData => {
       if (userData) {
         this.username = userData.username || '';
-        this.profileImage = userData.profileImage || 'assets/default-profile.png';
+        this.profileImage = userData.profileImage || this.profileImage;
       }
     });
 

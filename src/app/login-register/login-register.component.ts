@@ -4,6 +4,7 @@ import { NgClass, NgIf } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import * as CryptoJS from 'crypto-js';
 
 @Component({
   selector: 'app-login-register',
@@ -45,9 +46,11 @@ export class LoginRegisterComponent implements OnInit {
 
   onLogin(): void {
     this.isLoading = true;
+    const hashedPassword = CryptoJS.SHA256(this.loginData.password).toString();
+
     const requestBody = {
       email: this.loginData.email,
-      password: this.loginData.password
+      password: hashedPassword
     };
     
     this.http.post(`${this.apiUrl}/login`, requestBody, {
@@ -89,14 +92,16 @@ export class LoginRegisterComponent implements OnInit {
   }
 
   onRegister(): void {
+    const hashedPassword = CryptoJS.SHA256(this.registerData.password).toString();
+
     const requestBody = {
       username: this.registerData.username,
       email: this.registerData.email,
-      password: this.registerData.password
+      password: hashedPassword
     };
-    
+
     console.log('Dati registrazione inviati:', requestBody);
-    
+
     this.http
       .post(`${this.apiUrl}/register`, requestBody, {
       headers: {'Content-Type': 'application/json'},
