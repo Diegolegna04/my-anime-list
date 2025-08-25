@@ -1,0 +1,52 @@
+<div class="top-anime-section">
+    <div class="section-header">
+      <h2 class="section-title">Top Anime</h2>
+      <div class="section-controls">
+        <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
+          <i class="fas fa-language"></i>
+          {{ titleLanguage === 'english' ? 'Mostra titoli originali' : 'Mostra titoli inglesi' }}
+        </button>
+        <div class="view-toggle">
+          <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
+            <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th-large'"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
+      @for (anime of animeList; track anime; let i = $index) {
+        <div class="anime-card" routerLink="/anime/{{ anime.mal_id }}">
+          <span class="anime-card-rank">#{{ i + 1 }}</span>
+          <img [src]="anime.images.jpg.image_url" alt="{{ getTitle(anime) }}" />
+          <div class="anime-card-content">
+            <h3 class="anime-title">{{ getTitle(anime) }}</h3>
+            <div class="anime-meta">
+              @if (anime.score) {
+                <div class="anime-score">
+                  <i class="fas fa-star"></i>
+                  {{ anime.score }}
+                </div>
+              }
+              <div class="anime-type">
+                {{ anime.type || 'N/A' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  
+    @if (isLoading) {
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Caricamento anime in corso...</p>
+      </div>
+    }
+  
+    @if (!isLoading && animeList.length > 0) {
+      <button (click)="loadMore.emit()" class="load-more-btn">
+        <i class="fas fa-plus-circle"></i> Carica Altri Anime
+      </button>
+    }
+</div>

@@ -1,187 +1,23 @@
 <div class="dashboard-container">
   <!-- Hero Section -->
-  <div class="hero-section">
-    <div class="hero-content">
-      <h1>Benvenuto sul mio My Anime List!</h1>
-      <p>
-        Esplora la nostra classifica con i migliori titoli e scopri cosa guardare dopo.
-        Immergiti nel mondo fantastico degli anime oggi stesso!
-      </p>
-      <div class="hero-buttons">
-        <button class="primary-btn" (click)="currentView = 'list'">Top Anime</button>
-        <button class="primary-btn" routerLink="/seasonal/{{ getCurrentAnimeSeasonT() }}">
-          <i class="fas fa-calendar-alt"></i> Anime Stagionali
-        </button>
-      </div>
-    </div>
-  </div>
-
+  <app-hero-section
+    [currentSeason]="getCurrentAnimeSeasonT()"
+    (topAnimeClick)="currentView = 'list'">
+  </app-hero-section>
   <!-- Top Anime Section -->
-  <div class="top-anime-section">
-    <div class="section-header">
-      <h2 class="section-title">Top Anime</h2>
-      <div class="section-controls">
-        <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
-          <i class="fas fa-language"></i>
-          {{titleLanguage === 'english' ? 'Mostra titoli originali' : 'Mostra titoli inglesi'}}
-        </button>
-        <div class="view-toggle">
-          <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
-            <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th-large'"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Anime Container -->
-    <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
-      @for (anime of animeList; track anime; let i = $index) {
-        <div
-          class="anime-card"
-          routerLink="/anime/{{ anime.mal_id }}"
-          >
-          <span class="anime-card-rank">#{{i + 1}}</span>
-          <img [src]="anime.images.jpg.image_url" alt="{{ getTitle(anime) }}"/>
-          <div class="anime-card-content">
-            <h3 class="anime-title">{{ getTitle(anime) }}</h3>
-            <div class="anime-meta">
-              @if (anime.score) {
-                <div class="anime-score">
-                  <i class="fas fa-star"></i>
-                  {{anime.score}}
-                </div>
-              }
-              <div class="anime-type">
-                {{anime.type || 'N/A'}}
-              </div>
-            </div>
-          </div>
-        </div>
-      }
-    </div>
-
-    <!-- Loading Container -->
-    @if (isLoading) {
-      <div class="loading-container">
-        <div class="loading-spinner"></div>
-        <p class="loading-text">Caricamento anime in corso...</p>
-      </div>
-    }
-
-    <!-- Load More Button -->
-    @if (!isLoading && animeList.length > 0) {
-      <button
-        (click)="loadMoreAnime()"
-        class="load-more-btn"
-        >
-        <i class="fas fa-plus-circle"></i> Carica Altri Anime
-      </button>
-    }
-  </div>
-
+  <app-top-anime
+    [animeList]="animeList"
+    [isLoading]="isLoading"
+    (loadMore)="loadMoreAnime()">
+  </app-top-anime>
   <!-- Seasonal Section -->
-  <div class="seasonal-section">
-    <div class="section-header">
-      <h2 class="section-title">Top Anime della Stagione</h2>
-      <span class="season-tag">
-        {{ getCurrentAnimeSeason() }}
-      </span>
-    </div>
-    <div class="seasonal-slider">
-      <div class="section-header">
-        <div class="slider-controls">
-          <div 
-            class="slider-arrow prev-arrow" 
-            [class.disabled]="!canGoPrev()"
-            (click)="prevSlide()">
-            <i class="fas fa-chevron-left"></i>
-          </div>
-          <div 
-            class="slider-arrow next-arrow" 
-            [class.disabled]="!canGoNext()"
-            (click)="nextSlide()">
-            <i class="fas fa-chevron-right"></i>
-          </div>
-        </div>
-      </div>
-      <div class="seasonal-anime-container">
-        @for (anime of getCurrentSlideAnime(); track anime.mal_id) {
-          <div class="seasonal-anime-card" routerLink="/anime/{{anime.mal_id}}">
-            <span class="seasonal-badge">HOT</span>
-            <img [src]="anime.images.jpg.image_url" alt="{{ getTitle(anime) }}">
-            <div class="seasonal-anime-info">
-              <h3>{{ getTitle(anime) }}</h3>
-              <div class="anime-stats">
-                @if (anime.score) {
-                  <span><i class="fas fa-star"></i> {{anime.score}}</span>
-                }
-                <span>{{anime.type}}</span>
-              </div>
-            </div>
-          </div>
-        }
-      </div>
-        <button class="load-more-btn" routerLink="/seasonal/{{ getCurrentAnimeSeasonT() }}">
-          Vai agli anime di questa stagione
-        </button>
-    </div>
-  </div>
-
+  <app-seasonal-anime
+    [seasonalAnimeList]="seasonalAnimeList">
+  </app-seasonal-anime>
   <app-random-anime></app-random-anime>
-
   <!-- Genres Section -->
-  <div class="genres-section">
-    <div class="section-header">
-      <h2 class="section-title">Esplora per Genere</h2>
-    </div>
-    <div class="genres-grid">
-      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'action'}">
-        <i class="fas fa-fist-raised genre-icon"></i>
-        <h3>Azione</h3>
-      </div>
-      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'romance'}">
-        <i class="fas fa-heart genre-icon"></i>
-        <h3>Romance</h3>
-      </div>
-      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'horror'}">
-        <i class="fas fa-ghost genre-icon"></i>
-        <h3>Horror</h3>
-      </div>
-      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'comedy'}">
-        <i class="fas fa-laugh-beam genre-icon"></i>
-        <h3>Commedia</h3>
-      </div>
-      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'sci-fi'}">
-        <i class="fas fa-rocket genre-icon"></i>
-        <h3>Sci-Fi</h3>
-      </div>
-      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'fantasy'}">
-        <i class="fas fa-magic genre-icon"></i>
-        <h3>Fantasy</h3>
-      </div>
-      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'slice-of-life'}">
-        <i class="fas fa-school genre-icon"></i>
-        <h3>Slice of Life</h3>
-      </div>
-      <div class="genre-card" routerLink="/genres">
-        <i class="fas fa-plus-circle genre-icon"></i>
-        <h3>Altri Generi</h3>
-      </div>
-    </div>
-  </div>
+  <app-genres-home></app-genres-home>
 
   <!-- Newsletter Section -->
-  <div class="newsletter-section">
-    <div class="newsletter-content">
-      <h2>Rimani Aggiornato</h2>
-      <p>
-        Iscriviti alla nostra newsletter per ricevere aggiornamenti sui nuovi anime,
-        eventi esclusivi e suggerimenti personalizzati.
-      </p>
-      <div class="newsletter-form">
-        <input type="email" placeholder="La tua email" class="newsletter-input">
-        <button class="newsletter-btn">Iscriviti</button>
-      </div>
-    </div>
-  </div>
+  <app-newsletter></app-newsletter>
 </div>

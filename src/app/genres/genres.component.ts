@@ -45,13 +45,35 @@ export class GenresComponent implements OnInit {
 
   categorizeGenres(): void {
     this.mainGenres = this.genres.filter((genre: any) =>
-      ['action', 'adventure', 'comedy', 'drama', 'fantasy', 'horror', 'mystery', 'romance', 'sci-fi', 'slice of life', 'sports', 'suspense'].includes(genre.name.toLowerCase())
+      ['action',
+        'adventure',
+        'comedy',
+        'drama',
+        'fantasy',
+        'horror',
+        'mystery',
+        'romance',
+        'sci-fi',
+        'slice of life',
+        'sports',
+        'suspense'].includes(genre.name.toLowerCase())
     );
     this.explicitGenres = this.genres.filter((genre: any) =>
       ['ecchi', 'hentai', 'erotica'].includes(genre.name.toLowerCase())
     );
     this.themes = this.genres.filter((genre: any) =>
-      ['adult cast', 'anthropomorphic', 'cyberpunk', 'delinquents', 'gore', 'magical sex shift', 'military', 'mythology', 'psychological', 'super power', 'survival', 'workplace'].includes(genre.name.toLowerCase())
+      ['adult cast',
+        'anthropomorphic', 
+        'cyberpunk',
+        'delinquents',
+        'gore',
+        'magical sex shift',
+        'military',
+        'mythology',
+        'psychological',
+        'super power',
+        'survival',
+        'workplace'].includes(genre.name.toLowerCase())
     );
     this.demographics = this.genres.filter((genre: any) =>
       ['josei', 'seinen', 'shoujo', 'shounen'].includes(genre.name.toLowerCase())

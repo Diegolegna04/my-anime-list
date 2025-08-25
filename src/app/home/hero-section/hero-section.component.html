@@ -1,0 +1,15 @@
+<div class="hero-section">
+    <div class="hero-content">
+      <h1>Benvenuto sul mio My Anime List!</h1>
+      <p>
+        Esplora la nostra classifica con i migliori titoli e scopri cosa guardare dopo.
+        Immergiti nel mondo fantastico degli anime oggi stesso!
+      </p>
+      <div class="hero-buttons">
+        <button class="primary-btn" (click)="onTopAnimeClick()">Top Anime</button>
+        <button class="primary-btn" routerLink="/seasonal/{{ currentSeason }}">
+          <i class="fas fa-calendar-alt"></i> Anime Stagionali
+        </button>
+      </div>
+    </div>
+</div>

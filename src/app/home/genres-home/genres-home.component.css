@@ -1,0 +1,59 @@
+.genres-section {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: var(--card-shadow);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-primary);
+  }
+  
+  .genres-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .genre-card {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .genre-card:hover {
+    background-color: var(--accent-color);
+    color: white;
+    transform: translateY(-5px);
+  }
+  
+  .genre-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+    color: var(--accent-color);
+  }
+  
+  .genre-card:hover .genre-icon {
+    color: white;
+  }
+  
+  .genre-card h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }

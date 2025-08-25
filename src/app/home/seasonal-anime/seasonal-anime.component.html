@@ -1,0 +1,42 @@
+<div class="seasonal-section">
+    <div class="section-header">
+      <h2 class="section-title">Top Anime della Stagione</h2>
+      <span class="season-tag">{{ getCurrentAnimeSeason() }}</span>
+    </div>
+    <div class="seasonal-slider">
+      <div class="slider-controls">
+        <div 
+          class="slider-arrow prev-arrow" 
+          [class.disabled]="!canGoPrev()"
+          (click)="prevSlide()">
+          <i class="fas fa-chevron-left"></i>
+        </div>
+        <div 
+          class="slider-arrow next-arrow" 
+          [class.disabled]="!canGoNext()"
+          (click)="nextSlide()">
+          <i class="fas fa-chevron-right"></i>
+        </div>
+      </div>
+      <div class="seasonal-anime-container">
+        @for (anime of getCurrentSlideAnime(); track anime.mal_id) {
+          <div class="seasonal-anime-card" routerLink="/anime/{{ anime.mal_id }}">
+            <span class="seasonal-badge">HOT</span>
+            <img [src]="anime.images.jpg.image_url" [alt]="getTitle(anime)">
+            <div class="seasonal-anime-info">
+              <h3>{{ getTitle(anime) }}</h3>
+              <div class="anime-stats">
+                @if (anime.score) {
+                  <span><i class="fas fa-star"></i> {{ anime.score }}</span>
+                }
+                <span>{{ anime.type }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+      <button class="load-more-btn" routerLink="/seasonal/{{ getCurrentAnimeSeasonT() }}">
+        Vai agli anime di questa stagione
+      </button>
+    </div>
+</div>

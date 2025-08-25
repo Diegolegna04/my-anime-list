@@ -1,69 +1,94 @@
-@if (showOverlay) {
-  <div class="profile-overlay" (click)="closeOverlay()">
-    <div class="overlay-content" (click)="$event.stopPropagation()">
-      <img [src]="profileImage" class="overlay-profile-pic" alt="Profile Image">
-      <p class="overlay-username">{{ username }}</p>
-      <button class="action-button primary" (click)="changeProfileImage()">
-        <i class="fas fa-camera"></i>
-        Cambia immagine
-      </button>
-      <br/>
-      <input type="file" id="profileImageInput" (change)="uploadProfileImage($event)" hidden />
-      <button class="action-button secondary" (click)="closeOverlay()">Chiudi</button>
+<!-- Loader che viene mostrato durante il caricamento -->
+@if (isLoading) {
+  <div class="loading-container">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p class="loading-text">Caricamento profilo...</p>
+  </div>
+} @else {
+  <!-- Overlay per cambio immagine profilo -->
+  @if (showOverlay) {
+    <div class="profile-overlay" (click)="closeOverlay()">
+      <div class="overlay-content" (click)="$event.stopPropagation()">
+        <img [src]="profileImage" class="overlay-profile-pic" alt="Profile Image">
+        <p class="overlay-username">{{ username }}</p>
+        <button class="action-button primary" (click)="changeProfileImage()">
+          <i class="fas fa-camera"></i>
+          Cambia immagine
+        </button>
+        <br/>
+        <input type="file" id="profileImageInput" (change)="uploadProfileImage($event)" hidden />
+        <button class="action-button secondary" (click)="closeOverlay()">Chiudi</button>
+      </div>
+    </div>
+  }
+
+  <!-- Contenuto principale del profilo -->
+  <div class="profile-page">
+    <div class="profile-header-container">
+      <div class="profile-header-details">
+        <input type="file" id="profileImageInput" (change)="uploadProfileImage($event)" hidden/>
+        <img [src]="profileImage" class="profile-pic" alt="Profile Image" (click)="openOverlay()">
+        <h2 class="username">{{ username }}</h2>
+      </div>
+      
+      <div class="stats-card">
+        <h3 class="stats-title">Le tue Statistiche</h3>
+        <div class="stats-grid">
+          <div class="stat-item" routerLink="/profile/watched-anime">
+            <i class="fas fa-tv"></i>
+            <span class="stat-value">{{ watchedAnimeCount }}</span>
+            <span class="stat-label">Anime Visti</span>
+          </div>
+          <div class="stat-item" routerLink="/profile/watched-anime/favourites">
+            <i class="fas fa-heart"></i>
+            <span class="stat-value">{{ animePreferiti }}</span>
+            <span class="stat-label">Anime Preferiti</span>
+          </div>
+          <div class="stat-item" (click)="scrollToEvidenzaSection()">
+            <i class="fas fa-thumbtack"></i>
+            <span class="stat-value">{{ inEvidenza.length }}</span>
+            <span class="stat-label">In Evidenza</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="main-content">
+      <div class="favorites-section">
+        <h3 class="section-title" id="inEvidenzaSection">Anime Preferiti in Evidenza</h3>
+        <div class="top-bar">
+          <div class="language-toggle">
+            <button class="action-button primary language-toggle-btn" (click)="toggleTitleLanguage()">
+              <i class="fas fa-language"></i>
+              <span>Cambia lingua titolo</span>
+            </button>
+          </div>
+        </div>
+        
+        @if (inEvidenza.length > 0) {
+          <div>
+            <div
+              class="anime-container"
+              cdkDropList
+              cdkDropListOrientation="horizontal"
+              (cdkDropListDropped)="drop($event)">
+              @for (anime of inEvidenza; track anime.mal_id) {
+                <div class="anime-card" cdkDrag (click)="goToDetails(anime.mal_id)">
+                  <img [src]="anime.images.jpg.large_image_url" alt="{{ getTitle(anime) }}" class="anime-image"/>
+                  <h3 class="anime-title">{{ getTitle(anime) }}</h3>
+                </div>
+              }
+            </div>
+          </div>
+        } @else {
+          <h2 class="empty-state">
+            <i class="fas fa-star-half-alt"></i>
+            Nessun anime in evidenza.
+          </h2>
+        }
+      </div>
     </div>
   </div>
 }
-<div class="profile-page">
-  <div class="profile-header-container">
-    <div class="profile-header-details"> <input type="file" id="profileImageInput" (change)="uploadProfileImage($event)" hidden/>
-      <img [src]="profileImage" class="profile-pic" alt="Profile Image" (click)="openOverlay()">
-      <h2 class="username">{{ username }}</h2>
-    </div>
-
-    <div class="stats-card"> <h3 class="stats-title">Le tue Statistiche</h3>
-      <div class="stats-grid">
-        <div class="stat-item" routerLink="/profile/watched-anime">
-          <i class="fas fa-tv"></i> <span class="stat-value">{{ watchedAnimeCount }}</span>
-          <span class="stat-label">Anime Visti</span>
-        </div>
-        <div class="stat-item" routerLink="/profile/watched-anime/favourites">
-          <i class="fas fa-heart"></i> <span class="stat-value">{{ animePreferiti }}</span>
-          <span class="stat-label">Anime Preferiti</span>
-        </div>
-        <div class="stat-item" (click)="scrollToEvidenzaSection()">
-          <i class="fas fa-thumbtack"></i> <span class="stat-value">{{ inEvidenza.length }}</span>
-          <span class="stat-label">In Evidenza</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="main-content">
-    <div class="favorites-section">
-      <h3 class="section-title" id="inEvidenzaSection">Anime Preferiti in Evidenza</h3>
-      <div class="top-bar">
-        <div class="language-toggle">
-          <button class="action-button primary language-toggle-btn" (click)="toggleTitleLanguage()">
-            <i class="fas fa-language"></i> <span>Cambia lingua titolo</span>
-          </button>
-        </div>
-      </div>
-      @if (inEvidenza.length > 0) {
-        <div>
-          <div
-            class="anime-container"
-            cdkDropList
-            cdkDropListOrientation="horizontal"
-            (cdkDropListDropped)="drop($event)">
-            @for (anime of inEvidenza; track anime.mal_id) { <div class="anime-card" cdkDrag (click)="goToDetails(anime.mal_id)">
-                <img [src]="anime.images.jpg.large_image_url" alt="{{ getTitle(anime) }}" class="anime-image"/>
-                <h3 class="anime-title">{{ getTitle(anime) }}</h3>
-              </div>
-            }
-          </div>
-        </div>
-      } @else {
-        <h2 class="empty-state"><i class="fas fa-star-half-alt"></i> Nessun anime in evidenza.</h2> }
-    </div>
-  </div>
-</div>

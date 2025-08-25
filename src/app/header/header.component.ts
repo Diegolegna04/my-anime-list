@@ -27,6 +27,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   profileImage: string = 'pfp-no-bg.png';
   username: string = 'Username';
   showDropdown: boolean = false;
+  showMobileMenu: boolean = false;
 
   private authStatusSubscription!: Subscription;
   private userDataSubscription!: Subscription;
@@ -46,7 +47,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.authStatusSubscription = this.authService.accessoEffettuato$.subscribe(
       (isLoggedIn: boolean) => {
         this.accessoEffettuato = isLoggedIn;
-        
+                
         // Se non è loggato, resetta i dati
         if (!isLoggedIn) {
           this.username = 'Username';
@@ -96,32 +97,54 @@ export class HeaderComponent implements OnInit, OnDestroy {
   goToLoginRegister(): void {
     this.router.navigate(['/register-login']);
     this.showDropdown = false;
+    this.closeMobileMenu();
   }
 
   logout(): void {
     this.authService.onLogout();
     this.showDropdown = false;
+    this.closeMobileMenu();
   }
 
   toggleDropdown(): void {
     this.showDropdown = !this.showDropdown;
   }
 
+  // Mobile menu methods
+  toggleMobileMenu(): void {
+    this.showMobileMenu = !this.showMobileMenu;
+    
+    // Prevent body scrolling when menu is open
+    if (this.showMobileMenu) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+
+  closeMobileMenu(): void {
+    this.showMobileMenu = false;
+    document.body.style.overflow = '';
+  }
+
   searchAnime(): void {
     if (this.query.trim()) {
       this.router.navigate(['/search'], { queryParams: { q: this.query.trim() } });
       this.query = '';
+      this.closeMobileMenu();
     }
   }
 
   goToGenres(): void {
     this.router.navigate(['/genres']);
+    this.closeMobileMenu();
   }
 
   goToHome(): void {
     this.router.navigate(['/']);
+    this.closeMobileMenu();
   }
-  
+    
   goToProfile(): void {
     if (this.accessoEffettuato) {
       this.router.navigate(['/profile']);
@@ -129,6 +152,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       alert('Devi essere loggato per accedere al profilo.');
     }
     this.showDropdown = false;
+    this.closeMobileMenu();
   }
 
   toggleTheme(): void {

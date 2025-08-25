@@ -4,7 +4,7 @@ import { DragDropModule, moveItemInArray, CdkDragDrop} from '@angular/cdk/drag-d
 import {AnimeService} from '../services/anime.service';
 import { UserAnimeService } from '../services/userAnimeService.service';
 import {AuthService} from '../services/auth.service';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-user-profile',
@@ -27,8 +27,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
   isLoading: boolean = true;
 
   private userDataSubscription!: Subscription;
-  private userStatsSubscription!: Subscription;
-  private inEvidenzaSubscription!: Subscription;
 
   constructor(
     private animeService: AnimeService, 
@@ -37,7 +35,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private authService: AuthService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
     
     // Sottoscrivi ai dati dell'utente
@@ -48,8 +46,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Carica i dati dal backend
-    this.loadProfileFromBackend();
+    // Attendi il caricamento di tutti i dati dal backend
+    await this.loadProfileFromBackend();
     
     window.scroll(0, 0);
   }
@@ -58,59 +56,65 @@ export class ProfileComponent implements OnInit, OnDestroy {
     if (this.userDataSubscription) {
       this.userDataSubscription.unsubscribe();
     }
-    if (this.userStatsSubscription) {
-      this.userStatsSubscription.unsubscribe();
-    }
-    if (this.inEvidenzaSubscription) {
-      this.inEvidenzaSubscription.unsubscribe();
+  }
+
+  async loadProfileFromBackend(): Promise<void> {
+    this.isLoading = true;
+
+    try {
+      // Carica tutti i dati in parallelo
+      const [statsData, evidenzaData] = await Promise.all([
+        this.loadUserStats(),
+        this.loadInEvidenza()
+      ]);
+
+      // Aggiorna le statistiche
+      this.watchedAnimeCount = statsData.watchedCount || 0;
+      this.animePreferiti = statsData.favoritesCount || 0;
+
+      // Aggiorna gli anime in evidenza
+      this.inEvidenza = evidenzaData;
+
+    } catch (error) {
+      console.error('Errore nel caricamento dei dati del profilo:', error);
+    } finally {
+      this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
-  loadProfileFromBackend(): void {
-    this.isLoading = true;
+  private async loadUserStats(): Promise<any> {
+    try {
+      return await firstValueFrom(this.userAnimeService.getUserStats());
+    } catch (error) {
+      console.error('Errore nel caricamento statistiche:', error);
+      return { watchedCount: 0, favoritesCount: 0 };
+    }
+  }
 
-    // Carica statistiche
-    this.userStatsSubscription = this.userAnimeService.getUserStats().subscribe({
-      next: (stats) => {
-        this.watchedAnimeCount = stats.watchedCount || 0;
-        this.animePreferiti = stats.favoritesCount || 0;
-        this.userAnimeService.userStats$.subscribe(s => this.userStatsSubscription = s);
-      },
-      error: (error) => {
-        console.error('Errore nel caricamento statistiche:', error);
+  private async loadInEvidenza(): Promise<any[]> {
+    try {
+      const evidenzaData = await firstValueFrom(this.userAnimeService.getInEvidenza());
+      
+      if (!evidenzaData || evidenzaData.length === 0) {
+        return [];
       }
-    });
 
-    // Carica anime in evidenza
-    this.inEvidenzaSubscription = this.userAnimeService.getInEvidenza().subscribe({
-      next: (evidenzaData) => {
-        if (evidenzaData && evidenzaData.length > 0) {
-          // Ordina per evidenzaOrder
-          evidenzaData.sort((a: any, b: any) => a.evidenzaOrder - b.evidenzaOrder);
-          
-          // Recupera i dettagli degli anime dall'API esterna
-          const requests = evidenzaData.map((userAnime: any) =>
-            this.animeService.getAnimeById(userAnime.animeId).toPromise()
-          );
+      // Ordina per evidenzaOrder
+      evidenzaData.sort((a: any, b: any) => a.evidenzaOrder - b.evidenzaOrder);
+      
+      // Recupera i dettagli degli anime dall'API esterna
+      const animeDetailsPromises = evidenzaData.map((userAnime: any) =>
+        firstValueFrom(this.animeService.getAnimeById(userAnime.animeId))
+      );
 
-          Promise.all(requests).then((responses) => {
-            this.inEvidenza = responses.map((res) => res.data);
-            this.isLoading = false;
-            this.cdr.detectChanges();
-          }).catch((error) => {
-            console.error('Errore nel caricamento dettagli anime:', error);
-            this.isLoading = false;
-          });
-        } else {
-          this.inEvidenza = [];
-          this.isLoading = false;
-        }
-      },
-      error: (error) => {
-        console.error('Errore nel caricamento anime in evidenza:', error);
-        this.isLoading = false;
-      }
-    });
+      const responses = await Promise.all(animeDetailsPromises);
+      return responses.map((res) => res.data);
+
+    } catch (error) {
+      console.error('Errore nel caricamento anime in evidenza:', error);
+      return [];
+    }
   }
 
   changeProfileImage(): void {
@@ -159,21 +163,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  drop(event: CdkDragDrop<any[]>): void {
+  async drop(event: CdkDragDrop<any[]>): Promise<void> {
     moveItemInArray(this.inEvidenza, event.previousIndex, event.currentIndex);
 
-    // Aggiorna l'ordine nel backend
-    const updatedOrder = this.inEvidenza.map(anime => anime.mal_id);
-    this.userAnimeService.updateEvidenzaOrder(updatedOrder).subscribe({
-      next: () => {
-        console.log('Ordine aggiornato con successo');
-      },
-      error: (error) => {
-        console.error('Errore nell\'aggiornamento ordine:', error);
-        // Ripristina l'ordine originale in caso di errore
-        moveItemInArray(this.inEvidenza, event.currentIndex, event.previousIndex);
-      }
-    });
+    try {
+      // Aggiorna l'ordine nel backend
+      const updatedOrder = this.inEvidenza.map(anime => anime.mal_id);
+      await firstValueFrom(this.userAnimeService.updateEvidenzaOrder(updatedOrder));
+      console.log('Ordine aggiornato con successo');
+    } catch (error) {
+      console.error('Errore nell\'aggiornamento ordine:', error);
+      // Ripristina l'ordine originale in caso di errore
+      moveItemInArray(this.inEvidenza, event.currentIndex, event.previousIndex);
+    }
 
     this.cdr.detectChanges();
   }
@@ -185,7 +187,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  refreshProfile(): void {
-    this.loadProfileFromBackend();
+  async refreshProfile(): Promise<void> {
+    await this.loadProfileFromBackend();
   }
 }

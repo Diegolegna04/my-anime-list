@@ -1,0 +1,39 @@
+<div class="genres-section">
+    <div class="section-header">
+      <h2 class="section-title">Esplora per Genere</h2>
+    </div>
+    <div class="genres-grid">
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'action'}">
+        <i class="fas fa-fist-raised genre-icon"></i>
+        <h3>Azione</h3>
+      </div>
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'romance'}">
+        <i class="fas fa-heart genre-icon"></i>
+        <h3>Romance</h3>
+      </div>
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'horror'}">
+        <i class="fas fa-ghost genre-icon"></i>
+        <h3>Horror</h3>
+      </div>
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'comedy'}">
+        <i class="fas fa-laugh-beam genre-icon"></i>
+        <h3>Commedia</h3>
+      </div>
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'sci-fi'}">
+        <i class="fas fa-rocket genre-icon"></i>
+        <h3>Sci-Fi</h3>
+      </div>
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'fantasy'}">
+        <i class="fas fa-magic genre-icon"></i>
+        <h3>Fantasy</h3>
+      </div>
+      <div class="genre-card" routerLink="/search" [queryParams]="{genre: 'slice-of-life'}">
+        <i class="fas fa-school genre-icon"></i>
+        <h3>Slice of Life</h3>
+      </div>
+      <div class="genre-card" routerLink="/genres">
+        <i class="fas fa-plus-circle genre-icon"></i>
+        <h3>Altri Generi</h3>
+      </div>
+    </div>
+</div>

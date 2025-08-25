@@ -306,6 +306,93 @@
   text-align: center;
 }
 
+/* Stili per il loader */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  text-align: center;
+  max-width: 1300px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+}
+
+.loading-spinner {
+  font-size: 3rem;
+  color: var(--accent-color);
+  margin-bottom: 1.5rem;
+}
+
+.loading-spinner i {
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  margin: 0;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Animazione fade-in per quando il contenuto viene mostrato */
+.profile-page {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive per il loader */
+@media (max-width: 768px) {
+  .loading-container {
+    padding: 1.5rem;
+    margin: 1.5rem auto;
+  }
+  
+  .loading-spinner {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .loading-text {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-container {
+    padding: 1rem;
+    margin: 1rem auto;
+    border-radius: 12px;
+  }
+  
+  .loading-spinner {
+    font-size: 2rem;
+  }
+  
+  .loading-text {
+    font-size: 1rem;
+  }
+}
+
 /* --- Responsive Adjustments --- */
 @media (max-width: 992px) {
   .profile-header-container {

@@ -1,24 +1,27 @@
 <header class="app-header">
-  <div class="header-left">
-    <a routerLink="/" class="app-logo" (click)="goToHome()">
-      <img src="logo-circle.png" alt="Logo" class="logo-image">
-      <span>Anime List</span>
-    </a>
-  </div>
+  <!-- Mobile Layout -->
+  <div class="mobile-header">
+    <div class="mobile-top-row">
+      <a routerLink="/" class="app-logo" (click)="goToHome()">
+        <img src="logo-circle.png" alt="Logo" class="logo-image">
+        <span>Anime List</span>
+      </a>
+      
+      <div class="mobile-actions">
+        <button (click)="toggleTheme()" class="mobile-icon-btn theme-toggle-btn">
+          <i [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'"></i>
+        </button>
+        
+        <button (click)="toggleMobileMenu()" class="mobile-menu-btn" [class.active]="showMobileMenu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
 
-  <div class="header-center"> </div>
-
-  <div class="header-right">
-    <button (click)="toggleTheme()" class="action-button secondary theme-toggle-btn">
-      <i [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'"></i>
-    </button>
-
-    <button (click)="goToGenres()" class="action-button secondary">
-      <i class="fas fa-filter"></i>
-      <span>Generi</span>
-    </button>
-
-    <div class="search-section">
+    <!-- Search Bar Mobile -->
+    <div class="mobile-search-bar">
       <div class="search-bar">
         <input
           type="text"
@@ -26,31 +29,109 @@
           (keyup.enter)="searchAnime()"
           placeholder="Cerca un anime..."
           class="search-input"
-          />
+        />
         <button (click)="searchAnime()" class="search-btn">
           <i class="fas fa-search"></i>
         </button>
       </div>
     </div>
 
-    @if (!accessoEffettuato) {
-      <button (click)="goToLoginRegister()" class="action-button primary">
-        <i class="fas fa-user-circle"></i>
-        <span>Login / Registrati</span>
-      </button>
-    } @else {
-      <div class="profile-menu-container" [ngClass]="{'show-dropdown': showDropdown}">
-        <div class="profile-pic-area" (click)="toggleDropdown()">
-          <img [src]="profileImage" alt="Profile Image" class="profile-pic-thumb">
-          <span class="profile-username">{{ username }}</span>
-          <i class="fas fa-caret-down dropdown-arrow" [class.rotated]="showDropdown"></i>
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" [class.show]="showMobileMenu" (click)="closeMobileMenu()">
+      <div class="mobile-menu" (click)="$event.stopPropagation()">
+        <div class="mobile-menu-header">
+          @if (accessoEffettuato) {
+            <div class="mobile-profile-info">
+              <img [src]="profileImage" alt="Profile Image" class="mobile-profile-pic">
+              <span class="mobile-username">{{ username }}</span>
+            </div>
+          }
+          <button (click)="closeMobileMenu()" class="close-menu-btn">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
 
-        <div class="dropdown-menu">
-          <a (click)="goToProfile()"><i class="fas fa-user"></i> Il mio Profilo</a>
-          <a (click)="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <div class="mobile-menu-items">
+          <a class="mobile-menu-item" (click)="goToGenres()">
+            <i class="fas fa-filter"></i>
+            <span>Generi</span>
+          </a>
+
+          @if (!accessoEffettuato) {
+            <a class="mobile-menu-item login-item" (click)="goToLoginRegister()">
+              <i class="fas fa-user-circle"></i>
+              <span>Login / Registrati</span>
+            </a>
+          } @else {
+            <a class="mobile-menu-item" (click)="goToProfile()">
+              <i class="fas fa-user"></i>
+              <span>Il mio Profilo</span>
+            </a>
+            <a class="mobile-menu-item logout-item" (click)="logout()">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          }
         </div>
       </div>
-    }
+    </div>
+  </div>
+
+  <!-- Desktop Layout -->
+  <div class="desktop-header">
+    <div class="header-left">
+      <a routerLink="/" class="app-logo" (click)="goToHome()">
+        <img src="logo-circle.png" alt="Logo" class="logo-image">
+        <span>Anime List</span>
+      </a>
+    </div>
+
+    <div class="header-center"></div>
+
+    <div class="header-right">
+      <button (click)="toggleTheme()" class="action-button secondary theme-toggle-btn">
+        <i [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'"></i>
+      </button>
+
+      <button (click)="goToGenres()" class="action-button secondary">
+        <i class="fas fa-filter"></i>
+        <span>Generi</span>
+      </button>
+
+      <div class="search-section">
+        <div class="search-bar">
+          <input
+            type="text"
+            [(ngModel)]="query"
+            (keyup.enter)="searchAnime()"
+            placeholder="Cerca un anime..."
+            class="search-input"
+          />
+          <button (click)="searchAnime()" class="search-btn">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+
+      @if (!accessoEffettuato) {
+        <button (click)="goToLoginRegister()" class="action-button primary">
+          <i class="fas fa-user-circle"></i>
+          <span>Login / Registrati</span>
+        </button>
+      } @else {
+        <div class="profile-menu-container" [ngClass]="{'show-dropdown': showDropdown}">
+          <div class="profile-pic-area" (click)="toggleDropdown()">
+            <img [src]="profileImage" alt="Profile Image" class="profile-pic-thumb">
+            <span class="profile-username">{{ username }}</span>
+            <i class="fas fa-caret-down dropdown-arrow" [class.rotated]="showDropdown"></i>
+          </div>
+
+          <div class="dropdown-menu">
+            <a (click)="goToProfile()"><i class="fas fa-user"></i> Il mio Profilo</a>
+            <a (click)="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+        </div>
+      }
+    </div>
   </div>
 </header>
