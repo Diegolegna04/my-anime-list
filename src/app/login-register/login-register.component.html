@@ -1,59 +1,70 @@
 <div class="auth-container">
   <div class="form-wrapper" role="region" aria-labelledby="auth-heading">
-    <h2 id="auth-heading">{{ isRegistering ? 'Registrati' : 'Accedi' }}</h2>
+    <div class="user-icon">
+      <img src="/login-user.png" alt="User Icon" />
+    </div>
+    <h2 id="auth-heading">
+      {{ isRegistering ? 'Unisciti a noi' : 'Bentornato!' }}
+    </h2>
+    <p class="sub-heading">
+      {{ isRegistering ? 'Crea un nuovo account per iniziare' : 'Accedi al tuo account per continuare' }}
+    </p>
 
     <form (ngSubmit)="isRegistering ? onRegister() : onLogin()" #authForm="ngForm" autocomplete="on" novalidate>
-      <!-- Username (solo registrazione) -->
-      <div *ngIf="isRegistering">
-        <label for="username">Username</label>
-        <input
-          id="username"
-          name="username"
-          type="text"
-          [(ngModel)]="registerData.username"
-          required
-          minlength="2"
-          placeholder="Scegli un username" />
+      <div class="input-group" *ngIf="isRegistering">
+        <label for="username">Nome utente</label>
+        <div class="input-with-icon">
+          <label for="username">
+            <img src="/login-user.png" alt="Username Icon" />
+          </label>
+          <input id="username" name="username" type="text" [(ngModel)]="registerData.username" required minlength="2"
+            placeholder="Il tuo nome utente" />
+        </div>
       </div>
 
-      <!-- Email (con binding condiviso via getter/setter emailModel) -->
-      <div>
+      <div class="input-group">
         <label for="email">Email</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          [(ngModel)]="emailModel"
-          required
-          email
-          placeholder="esempio@dominio.com" />
+        <div class="input-with-icon">
+          <label for="email">
+            <img src="/email-icon.png" alt="Email Icon" />
+          </label>
+          <input id="email" name="email" type="email" [(ngModel)]="emailModel" required email
+            placeholder="esempio@email.com" autocomplete="off"/>
+        </div>
       </div>
 
-      <!-- Password (con binding condiviso via getter/setter passwordModel) -->
-      <div>
+      <div class="input-group password-group">
         <label for="password">Password</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          [(ngModel)]="passwordModel"
-          required
-          minlength="6"
-          placeholder="Inserisci la password" />
+        <div class="input-with-icon">
+          <label for="password">
+            <img src="/padlock.png" alt="Password Icon" />
+          </label>
+          <input id="password" name="password" [type]="passwordType" [(ngModel)]="passwordModel" required
+            placeholder="La tua password" />
+          <span class="toggle-password" (click)="togglePasswordVisibility()">
+            <img *ngIf="passwordType === 'password'" src="/hide.png" alt="Hide Password" />
+            <img *ngIf="passwordType === 'text'" src="/show.png" alt="Show Password" />
+          </span>
+        </div>
       </div>
 
-      <!-- Pulsante principale -->
-      <button
-        type="submit"
-        [disabled]="isLoading || authForm.invalid">
+      <div class="options-group" *ngIf="!isRegistering">
+        <div class="remember-me">
+          <input type="checkbox" id="rememberMe" name="rememberMe" />
+          <label for="rememberMe">Ricordami</label>
+        </div>
+        <a class="forgot-password" routerLink="/">Password dimenticata?</a>
+      </div>
+
+      <button type="submit" [disabled]="isLoading || authForm.invalid">
         {{ isRegistering ? 'Registrati' : 'Accedi' }}
       </button>
 
-      <!-- Indicatore caricamento -->
-      <p *ngIf="isLoading" role="status">Caricamento in corso…</p>
+      <p *ngIf="isLoading" role="status" class="loading-message">
+        Caricamento in corso…
+      </p>
 
-      <!-- Link per switch tra login/registrazione -->
-      <p>
+      <p class="toggle-link-container">
         <span *ngIf="!isRegistering">Non hai un account?
           <a (click)="toggleRegister()" role="button" tabindex="0">Registrati</a>
         </span>
@@ -62,8 +73,9 @@
         </span>
       </p>
 
-      <!-- Messaggio quando l'accesso è già stato effettuato -->
-      <p *ngIf="accessoEffettuato">Sei già connesso.</p>
+      <p *ngIf="accessoEffettuato" class="connected-message">
+        Sei già connesso.
+      </p>
     </form>
   </div>
 </div>

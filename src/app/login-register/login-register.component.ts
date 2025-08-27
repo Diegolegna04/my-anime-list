@@ -22,6 +22,7 @@ export class LoginRegisterComponent implements OnInit {
   isRegistering: boolean = false;
   accessoEffettuato: boolean = false;
   isLoading: boolean = false;
+  passwordType: string = 'password';
 
   constructor(private http: HttpClient, private route: Router, private authService: AuthService) {}
 
@@ -42,6 +43,10 @@ export class LoginRegisterComponent implements OnInit {
 
   toggleRegister(): void {
     this.isRegistering = !this.isRegistering;
+  }
+
+  togglePasswordVisibility(): void {
+    this.passwordType = this.passwordType === 'password' ? 'text' : 'password';
   }
 
   onLogin(): void {
