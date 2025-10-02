@@ -174,6 +174,7 @@ export class AnimeDetailsComponent implements OnInit {
     };
 
     const backendStatus = backendStatusMap[state];
+    const previousState = this.animeState;
     
     if (state === 'completato') {
       this.episodiVisti = this.animeDetails?.episodes || 0;
@@ -203,12 +204,17 @@ export class AnimeDetailsComponent implements OnInit {
     this.userAnimeService.updateAnimeStatus(this.animeId, backendStatus).subscribe({
       next: (response) => {
         this.userAnimeData = response;
+        // Mantieni i valori locali invece di sovrascriverli
+        if (state === 'completato') {
+          this.episodiVisti = response.episodesWatched;
+        }
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Errore nell\'aggiornamento dello stato:', error);
         // Ripristina lo stato precedente in caso di errore
-        this.loadUserAnimeData();
+        this.animeState = previousState;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -290,43 +296,51 @@ export class AnimeDetailsComponent implements OnInit {
   // Aggiorna episodi visti
   updateEpisodiVisti(): void {
     if (this.animeState === 'in visione') {
-      if (this.episodiVisti >= (this.animeDetails?.episodes || 0)) {
-        // Se tutti gli episodi sono visti, cambia lo stato in "completato"
+      // Valida il numero di episodi
+      const maxEpisodes = this.animeDetails?.episodes || 0;
+      if (this.episodiVisti < 0) {
+        this.episodiVisti = 0;
+      } else if (maxEpisodes > 0 && this.episodiVisti > maxEpisodes) {
+        this.episodiVisti = maxEpisodes;
+      }
+
+      // Se tutti gli episodi sono visti, cambia lo stato in "completato"
+      if (maxEpisodes > 0 && this.episodiVisti >= maxEpisodes) {
         this.setAnimeState('completato');
         return;
       }
       
-      // Aggiorna solo gli episodi visti
+      // Aggiorna solo gli episodi visti senza ricaricare tutti i dati
       this.updateUserAnimeData({ episodesWatched: this.episodiVisti });
     }
   }
 
   // Metodo helper per aggiornare dati specifici dell'anime utente
-private updateUserAnimeData(updateData: Partial<UserAnime>): void {
-  // Se l'anime non è ancora nel DB → lo creiamo almeno con lo stato corrente
-  if (!this.userAnimeData) {
-    const defaultStatusMap: { [key: string]: string } = {
-      'in visione': 'watching',
-      'completato': 'completed',
-      'da vedere': 'plan_to_watch',
-      'droppato': 'dropped',
-      'in pausa': 'on_hold',
-      'non visto': 'plan_to_watch'
-    };
+  private updateUserAnimeData(updateData: Partial<UserAnime>): void {
+    // Se l'anime non è ancora nel DB → lo creiamo almeno con lo stato corrente
+    if (!this.userAnimeData) {
+      const defaultStatusMap: { [key: string]: string } = {
+        'in visione': 'watching',
+        'completato': 'completed',
+        'da vedere': 'plan_to_watch',
+        'droppato': 'dropped',
+        'in pausa': 'on_hold',
+        'non visto': 'plan_to_watch'
+      };
 
-    this.userAnimeService.updateAnimeStatus(this.animeId, defaultStatusMap[this.animeState]).subscribe({
-      next: (created) => {
-        this.userAnimeData = created;
-        this.applyUpdate(updateData);
-      },
-      error: (err) => console.error('Errore creazione anime:', err)
-    });
-    return;
+      this.userAnimeService.updateAnimeStatus(this.animeId, defaultStatusMap[this.animeState]).subscribe({
+        next: (created) => {
+          this.userAnimeData = created;
+          this.applyUpdate(updateData);
+        },
+        error: (err) => console.error('Errore creazione anime:', err)
+      });
+      return;
+    }
+
+    // Se esiste già, applica subito l'update
+    this.applyUpdate(updateData);
   }
-
-  // Se esiste già, applica subito l’update
-  this.applyUpdate(updateData);
-}
 
   translateText(): void {
     const apiUrl = 'https://api.mymemory.translated.net/get';
@@ -418,13 +432,16 @@ private updateUserAnimeData(updateData: Partial<UserAnime>): void {
     return stateTexts[this.animeState] || 'Non visto';
   }
 
-  // Funzione separata per applicare l’update giusto
+  // Funzione separata per applicare l'update giusto
   private applyUpdate(updateData: Partial<UserAnime>): void {
     if (updateData.rating !== undefined) {
       this.userAnimeService.updateRating(this.animeId, updateData.rating).subscribe({
         next: (response) => {
           this.userAnimeData = response;
-          this.voto = response.rating;
+          // Non sovrascrivere voto se l'utente sta ancora modificando
+          if (this.voto !== updateData.rating) {
+            this.voto = response.rating;
+          }
           this.cdr.detectChanges();
         },
         error: (err) => console.error('Errore aggiornamento rating:', err)
@@ -435,10 +452,17 @@ private updateUserAnimeData(updateData: Partial<UserAnime>): void {
       this.userAnimeService.updateEpisodesWatched(this.animeId, updateData.episodesWatched).subscribe({
         next: (response) => {
           this.userAnimeData = response;
-          this.episodiVisti = response.episodesWatched;
+          // Non sovrascrivere episodiVisti se l'utente sta ancora modificando
+          if (this.episodiVisti !== updateData.episodesWatched) {
+            this.episodiVisti = response.episodesWatched;
+          }
           this.cdr.detectChanges();
         },
-        error: (err) => console.error('Errore aggiornamento episodi:', err)
+        error: (err) => {
+          console.error('Errore aggiornamento episodi:', err);
+          // In caso di errore, ripristina il valore dal backend
+          this.loadUserAnimeData();
+        }
       });
     }
   }

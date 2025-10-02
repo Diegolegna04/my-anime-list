@@ -19,21 +19,27 @@
         </div>
       </div>
       <div class="seasonal-anime-container">
-        @for (anime of getCurrentSlideAnime(); track anime.mal_id) {
-          <div class="seasonal-anime-card" routerLink="/anime/{{ anime.mal_id }}">
-            <span class="seasonal-badge">HOT</span>
-            <img [src]="anime.images.jpg.image_url" [alt]="getTitle(anime)">
-            <div class="seasonal-anime-info">
-              <h3>{{ getTitle(anime) }}</h3>
-              <div class="anime-stats">
-                @if (anime.score) {
-                  <span><i class="fas fa-star"></i> {{ anime.score }}</span>
-                }
-                <span>{{ anime.type }}</span>
+        <div 
+          class="seasonal-anime-track" 
+          [style.transform]="'translateX(-' + currentSlideIndex * (100 / itemsPerSlide) + '%)'"
+          [class.animate]="animate"
+        >
+          @for (anime of filteredSeasonalAnime; track anime.mal_id) {
+            <div class="seasonal-anime-card" routerLink="/anime/{{ anime.mal_id }}">
+              <span class="seasonal-badge">HOT</span>
+              <img [src]="anime.images.jpg.image_url" [alt]="getTitle(anime)">
+              <div class="seasonal-anime-info">
+                <h3>{{ getTitle(anime) }}</h3>
+                <div class="anime-stats">
+                  @if (anime.score) {
+                    <span><i class="fas fa-star"></i> {{ anime.score }}</span>
+                  }
+                  <span>{{ anime.type }}</span>
+                </div>
               </div>
             </div>
-          </div>
-        }
+          }
+        </div>
       </div>
       <button class="load-more-btn" routerLink="/seasonal/{{ getCurrentAnimeSeasonT() }}">
         Vai agli anime di questa stagione

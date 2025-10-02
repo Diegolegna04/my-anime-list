@@ -20,6 +20,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   profileImage: string = 'pfp-no-bg.png';
   username: string = '';
   watchedAnimeCount: number = 0;
+  watchingAnimeCount: number = 0; // Nuovo campo per gli anime in visione
   inEvidenza: any[] = [];
   animePreferiti: number = 0;
   titleLanguage: 'english' | 'original' = 'original';
@@ -70,6 +71,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
       // Aggiorna le statistiche
       this.watchedAnimeCount = statsData.watchedCount || 0;
+      this.watchingAnimeCount = statsData.watchingCount || 0; // Nuova statistica
       this.animePreferiti = statsData.favoritesCount || 0;
 
       // Aggiorna gli anime in evidenza
@@ -88,7 +90,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       return await firstValueFrom(this.userAnimeService.getUserStats());
     } catch (error) {
       console.error('Errore nel caricamento statistiche:', error);
-      return { watchedCount: 0, favoritesCount: 0 };
+      return { watchedCount: 0, watchingCount: 0, favoritesCount: 0 }; // Aggiunto watchingCount
     }
   }
 

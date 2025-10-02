@@ -1,12 +1,30 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
 @Component({
   selector: 'app-seasonal-anime',
   standalone: true,
   imports: [RouterLink],
   templateUrl: './seasonal-anime.component.html',
-  styleUrl: './seasonal-anime.component.css'
+  styleUrl: './seasonal-anime.component.css',
+  animations: [
+    trigger('slideAnimation', [
+      transition('* <=> *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'translateX(40px)' }),
+          stagger(100, [
+            animate('400ms ease', style({ opacity: 1, transform: 'translateX(0)' }))
+          ])
+        ], { optional: true }),
+        query(':leave', [
+          stagger(100, [
+            animate('300ms ease', style({ opacity: 0, transform: 'translateX(-40px)' }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class SeasonalAnimeComponent implements OnInit, OnChanges {
   @Input() seasonalAnimeList: any[] = [];
@@ -15,6 +33,7 @@ export class SeasonalAnimeComponent implements OnInit, OnChanges {
   currentSlideIndex: number = 0;
   itemsPerSlide: number = 5;
   titleLanguage: 'english' | 'original' = 'original';
+  animate = true;
 
   ngOnInit(): void {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
@@ -27,11 +46,9 @@ export class SeasonalAnimeComponent implements OnInit, OnChanges {
   }
 
   getTitle(anime: any): string {
-    if (this.titleLanguage === 'english') {
-      return anime.title_english || anime.title;
-    } else {
-      return anime.title || anime.title_english;
-    }
+    return this.titleLanguage === 'english'
+      ? anime.title_english || anime.title
+      : anime.title || anime.title_english;
   }
 
   getCurrentAnimeSeason(): string {
@@ -40,15 +57,10 @@ export class SeasonalAnimeComponent implements OnInit, OnChanges {
     const year = currentDate.getFullYear();
     let season = '';
 
-    if (month >= 4 && month <= 6) {
-      season = 'Spring';
-    } else if (month >= 7 && month <= 9) {
-      season = 'Summer';
-    } else if (month >= 10 && month <= 12) {
-      season = 'Fall';
-    } else {
-      season = 'Winter';
-    }
+    if (month >= 4 && month <= 6) season = 'Spring';
+    else if (month >= 7 && month <= 9) season = 'Summer';
+    else if (month >= 10 && month <= 12) season = 'Fall';
+    else season = 'Winter';
 
     return season + ' ' + year;
   }
@@ -59,15 +71,10 @@ export class SeasonalAnimeComponent implements OnInit, OnChanges {
     const year = currentDate.getFullYear();
     let season = '';
 
-    if (month >= 4 && month <= 6) {
-      season = 'spring';
-    } else if (month >= 7 && month <= 9) {
-      season = 'summer';
-    } else if (month >= 10 && month <= 12) {
-      season = 'fall';
-    } else {
-      season = 'winter';
-    }
+    if (month >= 4 && month <= 6) season = 'spring';
+    else if (month >= 7 && month <= 9) season = 'summer';
+    else if (month >= 10 && month <= 12) season = 'fall';
+    else season = 'winter';
 
     return season + '-' + year;
   }
@@ -79,23 +86,24 @@ export class SeasonalAnimeComponent implements OnInit, OnChanges {
   }
 
   nextSlide(): void {
-    const maxIndex = Math.max(0, this.filteredSeasonalAnime.length - this.itemsPerSlide);
+    const maxIndex = Math.floor(this.filteredSeasonalAnime.length / this.itemsPerSlide) - 1;
+  
     if (this.currentSlideIndex < maxIndex) {
-      this.currentSlideIndex += 4;
+      this.currentSlideIndex+=2;
     }
   }
-
+  
   prevSlide(): void {
     if (this.currentSlideIndex > 0) {
-      this.currentSlideIndex -= 4;
+      this.currentSlideIndex-=2;
     }
   }
-
+  
   canGoNext(): boolean {
-    const maxIndex = Math.max(0, this.filteredSeasonalAnime.length - this.itemsPerSlide);
+    const maxIndex = Math.floor(this.filteredSeasonalAnime.length / this.itemsPerSlide) - 1;
     return this.currentSlideIndex < maxIndex;
   }
-
+  
   canGoPrev(): boolean {
     return this.currentSlideIndex > 0;
   }

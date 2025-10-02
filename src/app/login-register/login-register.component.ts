@@ -6,6 +6,12 @@ import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import * as CryptoJS from 'crypto-js';
 
+interface Toast {
+  message: string;
+  type: 'success' | 'error' | 'info';
+  show: boolean;
+}
+
 @Component({
   selector: 'app-login-register',
   imports: [
@@ -23,6 +29,12 @@ export class LoginRegisterComponent implements OnInit {
   accessoEffettuato: boolean = false;
   isLoading: boolean = false;
   passwordType: string = 'password';
+  
+  toast: Toast = {
+    message: '',
+    type: 'info',
+    show: false
+  };
 
   constructor(private http: HttpClient, private route: Router, private authService: AuthService) {}
 
@@ -40,6 +52,18 @@ export class LoginRegisterComponent implements OnInit {
     email: '',
     password: '',
   };
+
+  showToast(message: string, type: 'success' | 'error' | 'info'): void {
+    this.toast = { message, type, show: true };
+    
+    setTimeout(() => {
+      this.toast.show = false;
+    }, 4000);
+  }
+
+  closeToast(): void {
+    this.toast.show = false;
+  }
 
   toggleRegister(): void {
     this.isRegistering = !this.isRegistering;
@@ -75,28 +99,32 @@ export class LoginRegisterComponent implements OnInit {
             localStorage.setItem('email', response.email);
           }
           
-          await alert("Login avvenuto con successo");
+          this.showToast('Accesso effettuato con successo! Benvenuto.', 'success');
           
           this.accessoEffettuato = true;
           this.authService.notifyLogin();
 
-          await this.route.navigate(['/']);
+          // Attendi che la notifica sia visibile prima di navigare
+          setTimeout(async () => {
+            await this.route.navigate(['/']);
+          }, 1500);
         }
       },
-      error: async (error: any) => {
+      error: (error: any) => {
         this.isLoading = false;
         if (error.status === 401) {
-          alert("Credenziali non valide");
+          this.showToast('Credenziali non valide. Controlla email e password.', 'error');
         } else if (error.status === 500) {
-          alert("Errore del server, prova più tardi");
+          this.showToast('Errore del server. Riprova più tardi.', 'error');
         } else {
-          alert("Errore sconosciuto");
+          this.showToast('Si è verificato un errore. Riprova.', 'error');
         }
       }
     });
   }
 
   onRegister(): void {
+    this.isLoading = true;
     const hashedPassword = CryptoJS.SHA256(this.registerData.password).toString();
 
     const requestBody = {
@@ -114,29 +142,37 @@ export class LoginRegisterComponent implements OnInit {
     })
     .subscribe({
       next: async (response: any) => {
+        this.isLoading = false;
+        
         if (response) {
-          await alert("Registrazione avvenuta con successo");
+          this.showToast('Registrazione completata! Benvenuto nella community.', 'success');
 
           localStorage.setItem('username', this.registerData.username);
 
-          this.isRegistering = false;
-          this.registerData = { username: '', email: '', password: '' };
+          // Attendi un momento prima di passare al login
+          setTimeout(() => {
+            this.isRegistering = false;
+            this.registerData = { username: '', email: '', password: '' };
+          }, 1500);
         } else if (response && response.success) {
-          await alert("Registrazione avvenuta con successo");
+          this.showToast('Registrazione completata! Benvenuto nella community.', 'success');
 
           localStorage.setItem('username', this.registerData.username);
 
-          this.isRegistering = false;
-          this.registerData = { username: '', email: '', password: '' };
+          setTimeout(() => {
+            this.isRegistering = false;
+            this.registerData = { username: '', email: '', password: '' };
+          }, 1500);
         }
       },
-      error: async (error: { status: number; }) => {
+      error: (error: { status: number; }) => {
+        this.isLoading = false;
         if (error.status === 409) {
-          alert("Email già in uso, prova un'altra email");
+          this.showToast('Email già registrata. Prova con un\'altra email.', 'error');
         } else if (error.status === 500) {
-          alert("Errore del server, prova più tardi");
+          this.showToast('Errore del server. Riprova più tardi.', 'error');
         } else {
-          alert("Errore sconosciuto");
+          this.showToast('Si è verificato un errore. Riprova.', 'error');
         }
       }
     });

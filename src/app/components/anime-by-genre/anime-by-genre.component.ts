@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {AnimeService} from '../../services/anime.service';
+import {getGenreName, isValidGenreId} from '../../services/constants/anime-genres';
 
 @Component({
   selector: 'app-anime-by-genre',
@@ -14,61 +15,39 @@ export class AnimeByGenreComponent implements OnInit {
   animeList: any[] = [];
   genreId: number | null = null;
   genreName: string | null = null;
-  isGridView: boolean = true; // Variabile per alternare tra griglia e lista
+  isGridView: boolean = true;
   private animeByGenreUrl = 'https://api.jikan.moe/v4/anime';
-  private currentPage: number = 1; // Traccia la pagina corrente
-  titleLanguage: 'english' | 'original' = 'original'; // Variabile per la lingua del titolo
-  isLoading: boolean = false; // Variabile per gestire il caricamento
-  currentSortCriteria: string = 'score'; // Traccia il criterio di ordinamento corrente
-
-  private genreMap: { [key: number]: string } = {
-    1: 'Action',
-    2: 'Adventure',
-    3: 'Racing',
-    4: 'Comedy',
-    5: 'Avant Garde',
-    6: 'Mythology',
-    7: 'Mystery',
-    8: 'Drama',
-    9: 'Ecchi',
-    10: 'Fantasy',
-    12: 'Hentai',
-    14: 'Horror',
-    22: 'Romance',
-    24: 'Sci-Fi',
-    25: 'Shoujo',
-    27: 'Sounen',
-    30: 'Sports',
-    31: 'Super Power',
-    36: 'Slice of Life',
-    37: 'Supernatural',
-    38: 'Military',
-    40: 'Psychological',
-    41: 'Suspense',
-    42: 'Seinen',
-    43: 'Josei',
-    48: 'Workplace',
-    49: 'Erotica',
-    50: 'Adult Cast',
-    51: 'Anthropomorphic',
-    55: 'Delinquents',
-    58: 'Gore',
-    65: 'Magical Sex Shift',
-    76: 'Survival',
-  };
+  private currentPage: number = 1;
+  titleLanguage: 'english' | 'original' = 'original';
+  isLoading: boolean = false;
+  currentSortCriteria: string = 'score';
 
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     private animeService: AnimeService
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
     
+    // Ottieni l'ID del genere dai parametri della route
     this.genreId = Number(this.route.snapshot.paramMap.get('id'));
-    this.genreName = this.genreId ? this.genreMap[this.genreId] || 'Sconosciuto' : 'Sconosciuto';
+    
+    // Verifica se l'ID del genere è valido
+    if (this.genreId && !isValidGenreId(this.genreId)) {
+      console.warn(`ID genere non valido: ${this.genreId}`);
+    }
+    
+    // Ottieni il nome del genere dalla query string se disponibile, altrimenti usa la funzione helper
+    this.route.queryParams.subscribe(params => {
+      if (params['name']) {
+        this.genreName = params['name'];
+      } else {
+        this.genreName = this.genreId ? getGenreName(this.genreId) : 'Sconosciuto';
+      }
+    });
+    
     this.loadAnimeByGenre();
   }
 
@@ -76,20 +55,26 @@ export class AnimeByGenreComponent implements OnInit {
     this.isLoading = true;
     if (this.genreId) {
       const url = `${this.animeByGenreUrl}?genres=${this.genreId}&page=${this.currentPage}&order_by=score&sort=desc&limit=25`;
-      this.http.get<any>(url).subscribe((response) => {
-        const newAnime = response.data;
-        this.animeList = [...this.animeList, ...newAnime];
+      this.http.get<any>(url).subscribe({
+        next: (response) => {
+          const newAnime = response.data;
+          this.animeList = [...this.animeList, ...newAnime];
 
-        if (this.currentSortCriteria !== 'score') {
-          this.animeList = this.animeService.sortAnime(this.animeList, this.currentSortCriteria);
+          if (this.currentSortCriteria !== 'score') {
+            this.animeList = this.animeService.sortAnime(this.animeList, this.currentSortCriteria);
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Errore nel caricamento degli anime per genere:', error);
+          this.isLoading = false;
         }
-        this.isLoading = false;
       });
     }
   }
 
   toggleView(): void {
-    this.isGridView = !this.isGridView; // Cambia la modalità di visualizzazione
+    this.isGridView = !this.isGridView;
   }
 
   goToDetails(id: number): void {
@@ -100,9 +85,7 @@ export class AnimeByGenreComponent implements OnInit {
     const target = event.target as HTMLSelectElement;
     const criteria = target.value;
 
-    // Aggiorna il criterio di ordinamento corrente
     this.currentSortCriteria = criteria;
-    
     this.animeList = this.animeService.sortAnime(this.animeList, criteria);
   }
 
@@ -111,7 +94,6 @@ export class AnimeByGenreComponent implements OnInit {
     localStorage.setItem('titleLanguage', this.titleLanguage);
   }
 
-  // Restituisce il titolo nella lingua selezionata
   getTitle(anime: any): string {
     if (this.titleLanguage === 'english') {
       return anime.title_english || anime.title;
@@ -120,9 +102,8 @@ export class AnimeByGenreComponent implements OnInit {
     }
   }
 
-  // Carica altri anime
   loadMoreAnime(): void {
-    this.currentPage++; // Incrementa il numero di pagina
-    this.loadAnimeByGenre(); // Chiama il metodo per caricare altri anime
+    this.currentPage++;
+    this.loadAnimeByGenre();
   }
 }

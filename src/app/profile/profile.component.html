@@ -41,6 +41,11 @@
             <span class="stat-value">{{ watchedAnimeCount }}</span>
             <span class="stat-label">Anime Visti</span>
           </div>
+          <div class="stat-item" routerLink="/profile/watched-anime" [queryParams]="{ filter: 'in visione' }">
+            <i class="fas fa-play"></i>
+            <span class="stat-value">{{ watchingAnimeCount }}</span>
+            <span class="stat-label">In Visione</span>
+          </div>
           <div class="stat-item" routerLink="/profile/watched-anime/favourites">
             <i class="fas fa-heart"></i>
             <span class="stat-value">{{ animePreferiti }}</span>
@@ -54,7 +59,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="main-content">
       <div class="favorites-section">
         <h3 class="section-title" id="inEvidenzaSection">Anime Preferiti in Evidenza</h3>

@@ -17,7 +17,12 @@
             <p><strong>Generi:</strong>
               @for (genre of animeDetails.genres; track genre; let last = $last) {
                 <span>
-                  {{ genre.name }}@if (!last) {
+                  <a 
+                    [routerLink]="['/genres/anime-by-genre', genre.mal_id]"
+                    [queryParams]="{name: genre.name}"
+                    class="genre-link">
+                    {{ genre.name }}
+                  </a>@if (!last) {
                     <span>,</span>
                   }
                 </span>
@@ -50,6 +55,7 @@
           Completato
         </button>
       </div>
+
       <!-- Episodi visti -->
       @if (animeState === 'in visione') {
         <div class="episodi-section">
@@ -60,7 +66,7 @@
             [(ngModel)]="episodiVisti"
             [min]="0"
             [max]="animeDetails.episodes"
-            (change)="updateEpisodiVisti()" />
+            (blur)="updateEpisodiVisti()" />
           
           <!-- Progress bar visiva -->
           <div class="episodi-progress">
@@ -99,6 +105,7 @@
           </div>
         </div>
       }
+
       <!-- Preferito -->
       @if (visto && voto >= 8) {
         <div class="preferito-section">
@@ -109,6 +116,7 @@
           </button>
         </div>
       }
+
       <!-- Evidenza -->
       @if (visto || episodiVisti >= 5) {
         <div class="evidenza-section">
@@ -119,6 +127,7 @@
         </div>
       }
     </div>
+
     <!-- Sezione consigliati -->
     <aside class="recommended-section">
       <h2>Anime Consigliati</h2>

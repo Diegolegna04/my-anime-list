@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AnimeService } from '../../services/anime.service';
 import { UserAnimeService } from '../../services/userAnimeService.service';
 import { ChangeDetectorRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -28,11 +28,20 @@ export class WatchedAnimeComponent implements OnInit {
   constructor(
     private animeService: AnimeService, 
     private userAnimeService: UserAnimeService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute // Aggiunto ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
+    
+    // Controlla se c'è un filtro nei query parameters
+    this.route.queryParams.subscribe(params => {
+      if (params['filter']) {
+        this.filter = params['filter'];
+      }
+    });
+    
     this.loadWatchedAnime();
     window.scroll(0, 0);
   }
