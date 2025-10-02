@@ -20,7 +20,6 @@ export class AnimeDetailsComponent implements OnInit {
   displayedRecommendedAnime: any[] = [];
   animeStreaming: any[] = [];
   animeToShow = 5;
-
   visto: boolean = false;
   voto: number = 0;
   preferito: boolean = false;
@@ -29,11 +28,10 @@ export class AnimeDetailsComponent implements OnInit {
   animeState: string = 'non visto';
   inEvidenza: boolean = false;
   hoveredRating: number = 0;
-
-  // Dati dell'anime utente dal backend
   userAnimeData: UserAnime | null = null;
   isLoadingUserData: boolean = true;
-
+  titleLanguage: 'english' | 'original' = 'original';
+  news: any[] = [];
   private animeDetailUrl = 'https://api.jikan.moe/v4/anime';
 
   constructor(
@@ -45,6 +43,8 @@ export class AnimeDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
+  
     this.route.paramMap.subscribe((params) => {
       this.animeId = Number(params.get('id'));
       if (this.animeId) {
@@ -52,6 +52,29 @@ export class AnimeDetailsComponent implements OnInit {
         this.loadRecommendedAnime();
         this.loadUserAnimeData();
         this.loadStreaming();
+        this.loadAnimeNews();
+      }
+    });
+  }
+
+  getDisplayedTitle(): string {
+    if (!this.animeDetails) return '';
+    if (this.titleLanguage === 'english') {
+      return this.animeDetails.title_english || this.animeDetails.title;
+    } else {
+      return this.animeDetails.title || this.animeDetails.title_english;
+    }
+  }
+
+  loadAnimeNews(): void {
+    const url = `${this.animeDetailUrl}/${this.animeId}/news`;
+    this.http.get<any>(url).subscribe({
+      next: (response) => {
+        this.news = response.data || [];
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento delle news:', error);
+        this.news = [];
       }
     });
   }

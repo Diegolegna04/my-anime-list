@@ -663,6 +663,58 @@ section-label {
   box-shadow: 0 6px 12px rgba(124, 77, 255, 0.3);
 }
 
+.news-section {
+  margin-top: 2rem;
+}
+
+.news-section h2 {
+  font-size: 1.8rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.news-card {
+  background-color: var(--card-bg);
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.news-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px var(--shadow-color);
+}
+
+.news-card h3 {
+  font-size: 1.2rem;
+  margin: 0 0 0.5rem;
+  color: var(--accent-color);
+}
+
+.news-card a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.news-card .news-date {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.news-card .news-excerpt {
+  font-size: 1rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .anime-detail {

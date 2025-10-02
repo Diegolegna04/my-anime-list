@@ -1,7 +1,7 @@
 @if (animeDetails) {
   <div class="anime-detail">
     <div class="main-content">
-      <h1 class="anime-title">{{ animeDetails.title }}</h1>
+      <h1 class="anime-title">{{ getDisplayedTitle() }}</h1>
       
       <div class="anime-info">
         <img [src]="animeDetails.images.jpg.large_image_url" [alt]="animeDetails.title" class="cover-image" />
@@ -124,6 +124,30 @@
             <input type="checkbox" [(ngModel)]="inEvidenza" (change)="toggleInEvidenza()" />
             Mostra in evidenza sul profilo
           </label>
+        </div>
+      }
+
+      <!-- Sezione News -->
+      @if (news.length > 0) {
+        <div class="news-section">
+          <h2>News</h2>
+          <div class="news-list">
+            @for (item of news; track item.mal_id) {
+              <div class="news-card">
+                <h3>
+                  <a [href]="item.url" target="_blank" rel="noopener noreferrer">
+                    {{ item.title }}
+                  </a>
+                </h3>
+                
+                <p class="news-excerpt">{{ item.excerpt }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="news-section empty">
+          <p>Nessuna news disponibile per questo anime.</p>
         </div>
       }
     </div>
