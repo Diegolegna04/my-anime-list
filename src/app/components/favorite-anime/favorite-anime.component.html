@@ -7,53 +7,56 @@
     </div>
   </div>
 
-  @if (favoriteAnime.length > 0) {
-    <!-- Header con Controlli -->
-    <div class="section-header">
-      <h2 class="section-title">I Tuoi Preferiti</h2>
-      <div class="section-controls">
-        <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
-          <i class="fas fa-language"></i>
-          {{titleLanguage === 'english' ? 'Titolo Giapponese' : 'Titolo Inglese'}}
-        </button>
-        <div class="view-toggle">
-          <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
-            <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th-large'"></i>
+  <div class="main-content">
+    @if (isLoading) {
+      <div class="loading-state">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Caricamento dei tuoi anime preferiti...</p>
+      </div>
+    }
+
+    @if (!isLoading && favoriteAnime.length > 0) {
+      <!-- Header con Controlli -->
+      <div class="section-header">
+        <div class="section-title">
+          <h2>I Tuoi Preferiti</h2>
+        </div>
+        <div class="section-controls">
+          <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
+            <i class="fas fa-language"></i>
+            {{titleLanguage === 'english' ? 'Titolo Giapponese' : 'Titolo Inglese'}}
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- Lista Anime -->
-    <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
-      @for (anime of favoriteAnime; track anime) {
-        <div class="anime-card" (click)="goToDetails(anime.mal_id)">
-          <div class="favorite-badge">
-            <i class="fas fa-heart"></i>
-          </div>
-          <img [src]="anime.images.jpg.large_image_url" alt="{{ getTitle(anime) }}" />
-          <div class="anime-card-content">
-            <h3 class="anime-title">{{ getTitle(anime) }}</h3>
-            <div class="anime-meta">
-              @if (anime.score) {
-                <div class="anime-score">
-                  <i class="fas fa-star"></i> {{anime.score}}
-                </div>
-              }
-              <div class="anime-type">
-                {{anime.type || 'N/A'}}
+      <!-- Lista Anime -->
+      <div class="anime-container">
+        @for (anime of favoriteAnime; track anime.id) {
+          @if (anime.details?.data) {
+            <div class="anime-card" (click)="goToDetails(anime.details.data.mal_id)">
+              <div
+                class="favorite-badge"
+                (click)="removeFromFavorites(anime.details.data.mal_id); $event.stopPropagation()"
+              >
+                <i class="fas fa-heart"></i>
+              </div>
+              <img
+                [src]="anime.details.data.images?.jpg?.large_image_url || anime.details.data.images?.jpg?.image_url"
+                [alt]="getTitle(anime.details.data)"
+              />
+              <div class="anime-card-content">
+                <h3 class="anime-title">{{ getTitle(anime.details.data) }}</h3>
               </div>
             </div>
-          </div>
-        </div>
-      }
-    </div>
-  } @else {
-    <!-- Messaggio Nessun Anime -->
-    <div class="no-favorites">
-      <i class="fas fa-heart-broken" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
-      <h2>Nessun anime preferito trovato</h2>
-      <p>Inizia ad aggiungere alcuni anime ai tuoi preferiti per vederli qui!</p>
-    </div>
-  }
+          }
+        }
+      </div>
+    } @else if (!isLoading && favoriteAnime.length === 0) {
+      <div class="empty-state">
+        <i class="fas fa-box-open"></i>
+        <p>Nessun anime trovato per questa categoria.</p>
+        <p>Inizia ad aggiungere anime alla tua lista!</p>
+      </div>
+    }
+  </div>
 </div>

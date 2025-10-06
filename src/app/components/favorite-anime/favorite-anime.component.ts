@@ -3,16 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { AnimeService } from '../../services/anime.service';
 import { UserAnimeService } from '../../services/userAnimeService.service';
 import { ChangeDetectorRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-favorite-anime',
   templateUrl: './favorite-anime.component.html',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [CommonModule],
   styleUrls: ['./favorite-anime.component.css']
 })
 export class FavoriteAnimeComponent implements OnInit {
