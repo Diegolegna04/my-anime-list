@@ -1,0 +1,37 @@
+<div class="anime-header">
+  <h1 class="anime-title">{{ getDisplayedTitle() }}</h1>
+  
+  <div class="anime-header-content">
+    <!-- Cover Image -->
+    <div class="cover-image-container">
+      <img 
+        [src]="animeDetails.images.jpg.large_image_url" 
+        [alt]="animeDetails.title" 
+        class="cover-image"
+        (error)="onImageError($event)"
+        loading="lazy" />
+    </div>
+    
+    <!-- Info Text -->
+    <div class="info-text">
+      <!-- Translate Button -->
+      <button 
+        class="translate-btn" 
+        (click)="onTranslateClick()"
+        [disabled]="isTranslating"
+        [attr.aria-label]="isTranslating ? 'Traduzione in corso...' : 'Traduci in Italiano'">
+        <span class="translate-icon">🇮🇹</span>
+        <span class="translate-text">
+          {{ isTranslating ? 'Traduzione in corso...' : 'Traduci in Italiano' }}
+        </span>
+      </button>
+      
+      <!-- Synopsis -->
+      <div class="synopsis-container">
+        <p class="synopsis" [class.long]="isSynopsisLong">
+          {{ animeDetails.synopsis || 'Nessuna descrizione disponibile.' }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

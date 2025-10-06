@@ -1,177 +1,97 @@
-@if (animeDetails) {
+@if (isLoadingAnimeData) {
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p>Caricamento anime...</p>
+  </div>
+} @else if (animeDetails) {
   <div class="anime-detail">
     <div class="main-content">
       <h1 class="anime-title">{{ getDisplayedTitle() }}</h1>
-      
+
       <div class="anime-info">
         <img [src]="animeDetails.images.jpg.large_image_url" [alt]="animeDetails.title" class="cover-image" />
         
         <div class="info-text">
-          <button class="translate-btn" (click)="translateText()">🇮🇹 Traduci in Italiano</button>
+          <button class="translate-btn" 
+                  (click)="onTranslateRequested()"
+                  [disabled]="isTranslating">
+            🇮🇹 {{ isTranslating ? 'Traduzione in corso...' : 'Traduci in Italiano' }}
+          </button>
           <p class="synopsis">{{ animeDetails.synopsis }}</p>
-          
-          <div class="extra-info">
-            <p><strong>Episodi:</strong> {{ animeDetails.episodes }}</p>
-            <p><strong>Voto:</strong> {{ animeDetails.score }}</p>
-            <p><strong>Status:</strong> {{ animeDetails.status }}</p>
-            <p><strong>Generi:</strong>
-              @for (genre of animeDetails.genres; track genre; let last = $last) {
-                <span>
-                  <a 
-                    [routerLink]="['/genres/anime-by-genre', genre.mal_id]"
-                    [queryParams]="{name: genre.name}"
-                    class="genre-link">
-                    {{ genre.name }}
-                  </a>@if (!last) {
-                    <span>,</span>
-                  }
-                </span>
-              }
-            </p>
-            <p><strong>Dove vederlo:&nbsp;</strong>
-              @if (animeStreaming.length > 0) {
-                @for (streamingService of animeStreaming; track streamingService.name) {
-                  <a [href]="streamingService.url" target="_blank" rel="noopener noreferrer" class="extra-info">
-                    {{ streamingService.name }}
-                  </a>
-                }
-              } @else {
-                <span>Nessun servizio di streaming trovato.</span>
-              }
-            </p>
-          </div>
         </div>
       </div>
 
-      <!-- Stato -->
-      <div class="stato-section">
-        <button class="stato-btn" (click)="setAnimeState('non visto')" [disabled]="animeState === 'non visto'">
-          Non Visto
-        </button>
-        <button class="stato-btn" (click)="setAnimeState('in visione')" [disabled]="animeState === 'in visione'">
-          In Visione
-        </button>
-        <button class="stato-btn" (click)="setAnimeState('completato')" [disabled]="animeState === 'completato'">
-          Completato
-        </button>
-      </div>
+      <!-- Info Card Component (per extra info, generi, streaming) -->
+      <app-anime-info-card
+        [animeDetails]="animeDetails"
+        [streamingServices]="animeStreaming">
+      </app-anime-info-card>
 
-      <!-- Episodi visti -->
-      @if (animeState === 'in visione') {
-        <div class="episodi-section">
-          <label for="episodiVisti">Episodi visti:</label>
-          <input
-            type="number"
-            id="episodiVisti"
-            [(ngModel)]="episodiVisti"
-            [min]="0"
-            [max]="animeDetails.episodes"
-            (blur)="updateEpisodiVisti()" />
-          
-          <!-- Progress bar visiva -->
-          <div class="episodi-progress">
-            <div 
-              class="episodi-progress-bar" 
-              [style.width.%]="(episodiVisti / animeDetails.episodes) * 100">
-            </div>
-          </div>
-          
-          <p>{{ episodiVisti }}/{{ animeDetails.episodes }} episodi visti</p>
-        </div>
+      <!-- State Manager Section -->
+      <app-anime-state-manager
+        [currentState]="animeState"
+        [isLoading]="isLoadingUserData"
+        (stateChanged)="onStateChanged($event)">
+      </app-anime-state-manager>
+
+      <!-- Episodes Tracker (solo se "in visione") -->
+      @if (showEpisodesTracker) {
+        <app-episodes-tracker
+          [currentEpisodes]="episodiVisti"
+          [totalEpisodes]="animeDetails.episodes"
+          (episodesUpdated)="onEpisodesUpdated($event)">
+        </app-episodes-tracker>
       }
 
-      <!-- Voto con sistema a stelle -->
-      @if (visto || animeState === 'in visione') {
+      <!-- Rating Section (se visto o in visione) -->
+      @if (showRating) {
         <div class="voto-section">
           <label>Il tuo voto:</label>
-          <div class="star-rating-container">
-            <div class="star-rating">
-              @for (star of [1,2,3,4,5,6,7,8,9,10]; track star) {
-                <span 
-                  class="rating-star"
-                  [class.filled]="star <= voto"
-                  [class.half]="star - 0.5 === voto"
-                  (click)="setVoto(star)"
-                  (mouseenter)="onStarHover(star)"
-                  (mouseleave)="onStarLeave()">
-                  ★
-                </span>
-              }
-            </div>
-            <div class="rating-display" [class.active]="voto > 0">
-              <span class="rating-number">{{ voto }}</span>
-              <span class="rating-max">/10</span>
-            </div>
-          </div>
+          <app-star-rating
+            [rating]="voto"
+            [maxRating]="10"
+            [readonly]="false"
+            (ratingChanged)="onRatingChanged($event)">
+          </app-star-rating>
         </div>
       }
 
-      <!-- Preferito -->
-      @if (visto && voto >= 8) {
-        <div class="preferito-section">
-          <label for="preferito-toggle" class="section-label">Aggiungi ai Preferiti:</label>
-          <button id="preferito-toggle" class="favorite-toggle-btn" [class.active]="preferito" (click)="togglePreferito()">
-            <span class="star-icon">&#9733;</span>
-            {{ preferito ? 'Rimuovi dai Preferiti' : 'Aggiungi ai Preferiti' }}
-          </button>
-        </div>
+      <!-- Favorite Toggle (se voto >= 8) -->
+      @if (showFavoriteToggle) {
+        <app-favorite-toggle
+          [isFavorite]="preferito"
+          [canFavorite]="canFavorite"
+          (favoriteToggled)="onFavoriteToggled()">
+        </app-favorite-toggle>
       }
 
-      <!-- Evidenza -->
-      @if (visto || episodiVisti >= 5) {
+      <!-- In Evidenza (se visto o episodi >= 5) -->
+      @if (showInEvidenza) {
         <div class="evidenza-section">
           <label>
-            <input type="checkbox" [(ngModel)]="inEvidenza" (change)="toggleInEvidenza()" />
+            <input 
+              type="checkbox" 
+              [checked]="inEvidenza"
+              (change)="onInEvidenzaChanged($event)" />
             Mostra in evidenza sul profilo
           </label>
         </div>
       }
 
-      <!-- Sezione News -->
-      @if (news.length > 0) {
-        <div class="news-section">
-          <h2>News</h2>
-          <div class="news-list">
-            @for (item of news; track item.mal_id) {
-              <div class="news-card">
-                <h3>
-                  <a [href]="item.url" target="_blank" rel="noopener noreferrer">
-                    {{ item.title }}
-                  </a>
-                </h3>
-                
-                <p class="news-excerpt">{{ item.excerpt }}</p>
-              </div>
-            }
-          </div>
-        </div>
-      } @else {
-        <div class="news-section empty">
-          <p>Nessuna news disponibile per questo anime.</p>
-        </div>
-      }
+      <!-- News Section -->
+      <app-news-list
+        [news]="news">
+      </app-news-list>
     </div>
 
-    <!-- Sezione consigliati -->
-    <aside class="recommended-section">
-      <h2>Anime Consigliati</h2>
-      <div class="recommended-list">
-        @for (anime of displayedRecommendedAnime; track anime) {
-          <div
-            class="recommended-card"
-            routerLink="/anime/{{ anime.mal_id }}">
-            <img [src]="anime.images.jpg.image_url" [alt]="anime.title" />
-            <h4>{{ anime.title }}</h4>
-          </div>
-        }
-      </div>
-      @if (displayedRecommendedAnime.length < recommendedAnime.length) {
-        <button
-          class="load-more-btn"
-          (click)="loadMoreAnime()">
-          Carica Altri
-        </button>
-      }
-    </aside>
+    <!-- Recommended Sidebar -->
+    <app-recommended-anime-sidebar
+      [recommendedAnime]="recommendedAnime"
+      (animeClicked)="onRecommendedAnimeClick($event)">
+    </app-recommended-anime-sidebar>
+  </div>
+} @else {
+  <div class="error-container">
+    <p>Errore nel caricamento dei dettagli dell'anime.</p>
   </div>
 }

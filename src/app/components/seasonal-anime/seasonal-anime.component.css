@@ -82,9 +82,9 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  margin: 0 2rem 1.5rem;
+  margin: 0 auto;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 0 2rem;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 

@@ -26,7 +26,7 @@
   <!-- Lista Anime -->
   <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
     @for (anime of searchResults; track anime.mal_id) {
-      <div class="anime-card" (click)="goToDetails(anime.mal_id)">
+      <div class="anime-card" (click)="goToDetails(anime.mal_id)" title="{{ getTitle(anime) }}">
         <img [src]="anime.images?.jpg?.image_url" alt="{{ getTitle(anime) }}" />
         <div class="anime-card-content">
           <h3 class="anime-title">{{ getTitle(anime) }}</h3>

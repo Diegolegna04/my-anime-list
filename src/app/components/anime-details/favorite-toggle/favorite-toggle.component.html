@@ -1,0 +1,14 @@
+<div class="preferito-section">
+    <label for="preferito-toggle" class="section-label">
+    Aggiungi ai Preferiti:
+    </label>
+    <button
+    id="preferito-toggle"
+    class="favorite-toggle-btn"
+    [class.active]="isFavorite"
+    [disabled]="!canFavorite"
+    (click)="onToggle()">
+    <span class="star-icon">&#9733;</span>
+    {{ isFavorite ? 'Rimuovi dai Preferiti' : 'Aggiungi ai Preferiti' }}
+    </button>
+</div>

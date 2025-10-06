@@ -1,0 +1,262 @@
+.anime-info-card {
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-light);
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.anime-info-card:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+/* Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.info-item:hover {
+  background-color: var(--bg-tertiary);
+  transform: translateX(3px);
+}
+
+.info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.info-label .icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.info-value {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+/* Badges */
+.type-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.score-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+.score-excellent {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+}
+
+.score-good {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+}
+
+.score-average {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+}
+
+.score-low {
+  background: linear-gradient(135deg, #9E9E9E 0%, #757575 100%);
+}
+
+.status-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-airing {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.status-finished {
+  background-color: #2196F3;
+  color: white;
+}
+
+.status-upcoming {
+  background-color: #FF9800;
+  color: white;
+}
+
+.status-default {
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+/* Sections */
+.genres-section,
+.streaming-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.section-label .icon {
+  font-size: 1.2rem;
+}
+
+/* Genres */
+.genres-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.genre-tag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(124, 77, 255, 0.2);
+}
+
+.genre-tag:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(124, 77, 255, 0.3);
+}
+
+/* Streaming */
+.streaming-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.streaming-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--accent-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 8px rgba(124, 77, 255, 0.2);
+}
+
+.streaming-link:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 12px rgba(124, 77, 255, 0.3);
+}
+
+.service-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.no-streaming {
+  display: block;
+  padding: 1rem;
+  background-color: var(--bg-tertiary);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .anime-info-card {
+    padding: 1rem;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .info-item {
+    padding: 0.6rem;
+  }
+
+  .info-label {
+    font-size: 0.9rem;
+  }
+
+  .info-value {
+    font-size: 0.95rem;
+  }
+
+  .section-label {
+    font-size: 1rem;
+  }
+
+  .genre-tag,
+  .streaming-link {
+    font-size: 0.85rem;
+    padding: 0.45rem 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .genres-list,
+  .streaming-list {
+    gap: 0.5rem;
+  }
+}

@@ -1,0 +1,25 @@
+@if (news.length > 0) {
+    <div class="news-section">
+    <h2>News</h2>
+    <div class="news-list">
+        @for (item of news; track item.mal_id) {
+        <div class="news-card">
+            <h3>
+            <a 
+                [href]="item.url" 
+                target="_blank" 
+                rel="noopener noreferrer">
+                {{ item.title }}
+            </a>
+            </h3>
+            
+            <p class="news-excerpt">{{ item.excerpt }}</p>
+        </div>
+        }
+    </div>
+    </div>
+} @else {
+    <div class="news-section empty">
+    <p>Nessuna news disponibile per questo anime.</p>
+    </div>
+}

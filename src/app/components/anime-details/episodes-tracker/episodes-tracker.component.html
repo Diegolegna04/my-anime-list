@@ -1,0 +1,122 @@
+<div class="episodes-tracker" [class.disabled]="disabled">
+  
+  <!-- Header con titolo e status -->
+  <div class="tracker-header">
+    <label class="tracker-label">
+      <span class="label-icon">📺</span>
+      Episodi Visti
+    </label>
+    
+    <div class="status-badge" [ngClass]="progressBarClass">
+      <span class="status-icon">{{ statusIcon }}</span>
+      <span class="status-text">{{ statusMessage }}</span>
+    </div>
+  </div>
+
+  <!-- Input controls -->
+  <div class="input-controls">
+    
+    <!-- Quick Actions: Decrement -->
+    @if (showQuickActions) {
+      <button
+        type="button"
+        class="quick-action-btn decrement"
+        [disabled]="isDecrementDisabled"
+        (click)="decrementEpisode()"
+        aria-label="Rimuovi un episodio"
+        title="Rimuovi un episodio (-1)">
+        <span class="btn-icon">−</span>
+      </button>
+    }
+
+    <!-- Main Input -->
+    <div class="input-wrapper">
+      <input
+        type="number"
+        class="episodes-input"
+        [value]="localEpisodes"
+        [min]="0"
+        [max]="totalEpisodes"
+        [disabled]="disabled"
+        (input)="onInputChange($event)"
+        (blur)="onInputBlur()"
+        (keypress)="onInputKeyPress($event)"
+        aria-label="Numero di episodi visti"
+        [attr.aria-valuemin]="0"
+        [attr.aria-valuemax]="totalEpisodes"
+        [attr.aria-valuenow]="currentEpisodes" />
+      
+      <span class="input-separator">/</span>
+      
+      <span class="total-episodes">{{ totalEpisodes || '?' }}</span>
+    </div>
+
+    <!-- Quick Actions: Increment -->
+    @if (showQuickActions) {
+      <button
+        type="button"
+        class="quick-action-btn increment"
+        [disabled]="isIncrementDisabled"
+        (click)="incrementEpisode()"
+        aria-label="Aggiungi un episodio"
+        title="Aggiungi un episodio (+1)">
+        <span class="btn-icon">+</span>
+      </button>
+    }
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-container">
+    <div class="progress-track">
+      <div 
+        class="progress-bar"
+        [ngClass]="progressBarClass"
+        [style.width.%]="progressPercentage"
+        role="progressbar"
+        [attr.aria-valuenow]="progressPercentage"
+        [attr.aria-valuemin]="0"
+        [attr.aria-valuemax]="100">
+        
+        <!-- Shimmer effect per progress in corso -->
+        @if (progressPercentage > 0 && progressPercentage < 100) {
+          <div class="progress-shimmer"></div>
+        }
+      </div>
+    </div>
+    
+    <div class="progress-label">
+      <span class="progress-percentage">{{ progressPercentage | number:'1.0-0' }}%</span>
+    </div>
+  </div>
+
+  <!-- Quick Actions Buttons -->
+  @if (showQuickActions) {
+    <div class="action-buttons">
+      <button
+        type="button"
+        class="action-btn complete-btn"
+        [disabled]="isCompleteDisabled"
+        (click)="markAsComplete()"
+        title="Segna tutti gli episodi come visti">
+        <span class="btn-icon">✓</span>
+        <span class="btn-label">Completa</span>
+      </button>
+      
+      <button
+        type="button"
+        class="action-btn reset-btn"
+        [disabled]="isResetDisabled"
+        (click)="resetProgress()"
+        title="Azzera il progresso">
+        <span class="btn-icon">↺</span>
+        <span class="btn-label">Reset</span>
+      </button>
+    </div>
+  }
+
+  <!-- Info tooltip (opzionale) -->
+  <p class="tracker-hint">
+    <span class="hint-icon">💡</span>
+    Premi Invio o clicca fuori per salvare
+  </p>
+</div>

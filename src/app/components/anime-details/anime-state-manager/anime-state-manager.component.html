@@ -1,0 +1,68 @@
+<div class="state-manager">
+  <div class="state-manager-header">
+    <h3 class="section-title">
+      <span class="title-icon">📊</span>
+      Stato Anime
+    </h3>
+    
+    @if (showLoadingIndicator) {
+      <div class="loading-indicator">
+        <span class="spinner"></span>
+        <span class="loading-text">Aggiornamento...</span>
+      </div>
+    }
+  </div>
+
+  <div class="state-buttons-container">
+    @for (option of stateOptions; track trackByState($index, option)) {
+      <button
+        type="button"
+        [class]="getButtonClass(option.value)"
+        [disabled]="isDisabled(option.value)"
+        [attr.aria-label]="option.label"
+        [attr.aria-pressed]="isActive(option.value)"
+        [title]="getTooltip(option.value)"
+        (click)="onStateClick(option.value)">
+        
+        <span class="button-icon" [attr.aria-hidden]="true">
+          {{ option.icon }}
+        </span>
+        
+        <span class="button-label">
+          {{ option.label }}
+        </span>
+        
+        @if (isActive(option.value)) {
+          <span class="active-indicator" aria-label="Selezionato">
+            ✓
+          </span>
+        }
+      </button>
+    }
+  </div>
+
+  <!-- Stati estesi (opzionale, da mostrare con toggle) -->
+  <!--
+  <details class="extended-states">
+    <summary class="toggle-extended">Altri stati</summary>
+    <div class="state-buttons-container extended">
+      @for (option of extendedStates; track trackByState($index, option)) {
+        <button
+          type="button"
+          [class]="getButtonClass(option.value)"
+          [disabled]="isDisabled(option.value)"
+          [title]="getTooltip(option.value)"
+          (click)="onStateClick(option.value)">
+          
+          <span class="button-icon">{{ option.icon }}</span>
+          <span class="button-label">{{ option.label }}</span>
+          
+          @if (isActive(option.value)) {
+            <span class="active-indicator">✓</span>
+          }
+        </button>
+      }
+    </div>
+  </details>
+  -->
+</div>

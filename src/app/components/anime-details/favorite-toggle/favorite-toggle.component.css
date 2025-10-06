@@ -1,0 +1,92 @@
+.preferito-section {
+    margin-top: 1.8rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-light);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.preferito-section:hover {
+    box-shadow: var(--shadow-medium);
+}
+
+.section-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.favorite-toggle-btn {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 0.7rem 1.2rem;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+.favorite-toggle-btn:hover:not(:disabled) {
+    background-color: var(--bg-tertiary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.favorite-toggle-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.favorite-toggle-btn.active {
+    background-color: #ffc107;
+    color: white;
+    border-color: #e6b300;
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+}
+
+.favorite-toggle-btn.active:hover:not(:disabled) {
+    background-color: #e6b300;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(255, 193, 7, 0.4);
+}
+
+.favorite-toggle-btn .star-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+    color: var(--text-muted);
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.favorite-toggle-btn.active .star-icon {
+    color: white;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.6));
+}
+
+.favorite-toggle-btn:active:not(:disabled) .star-icon {
+    transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+    .preferito-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 1rem;
+    }
+
+    .favorite-toggle-btn {
+    width: 100%;
+    justify-content: center;
+    }
+}

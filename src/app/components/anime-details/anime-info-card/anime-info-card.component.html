@@ -1,0 +1,102 @@
+<div class="anime-info-card">
+  <div class="info-grid">
+    
+    <!-- Tipo -->
+    @if (animeDetails.type) {
+      <div class="info-item">
+        <span class="info-label">
+          <i class="icon">📺</i>
+          Tipo:
+        </span>
+        <span class="info-value type-badge">{{ formattedType }}</span>
+      </div>
+    }
+
+    <!-- Episodi -->
+    <div class="info-item">
+      <span class="info-label">
+        <i class="icon">🎬</i>
+        Episodi:
+      </span>
+      <span class="info-value">{{ formattedEpisodes }}</span>
+    </div>
+
+    <!-- Voto -->
+    <div class="info-item">
+      <span class="info-label">
+        <i class="icon">{{ scoreIcon }}</i>
+        Voto:
+      </span>
+      <span class="info-value score-badge" [ngClass]="scoreClass">
+        {{ formattedScore }}
+      </span>
+    </div>
+
+    <!-- Status -->
+    <div class="info-item">
+      <span class="info-label">
+        <i class="icon">📡</i>
+        Stato:
+      </span>
+      <span class="info-value status-badge" [ngClass]="statusClass">
+        {{ translatedStatus }}
+      </span>
+    </div>
+
+    <!-- Studios (opzionale) -->
+    @if (animeDetails.studios && animeDetails.studios.length > 0) {
+      <div class="info-item full-width">
+        <span class="info-label">
+          <i class="icon">🏢</i>
+          Studio:
+        </span>
+        <span class="info-value">{{ studioNames }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- Generi Section -->
+  @if (hasGenres) {
+    <div class="genres-section">
+      <span class="section-label">
+        <i class="icon">🎭</i>
+        Generi:
+      </span>
+      <div class="genres-list">
+        @for (genre of animeDetails.genres; track trackByGenreId($index, genre); let last = $last) {
+          <a 
+            [routerLink]="['/genres/anime-by-genre', genre.mal_id]"
+            [queryParams]="{name: genre.name}"
+            class="genre-tag">
+            {{ genre.name }}
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Streaming Services Section -->
+  <div class="streaming-section">
+    <span class="section-label">
+      <i class="icon">▶️</i>
+      Dove vederlo:
+    </span>
+    
+    @if (hasStreamingServices) {
+      <div class="streaming-list">
+        @for (service of streamingServices; track trackByServiceName($index, service)) {
+          <a 
+            [href]="service.url" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="streaming-link">
+            <span class="service-icon">🎥</span>
+            {{ service.name }}
+          </a>
+        }
+      </div>
+    } @else {
+      <span class="no-streaming">Nessun servizio di streaming trovato.</span>
+    }
+  </div>
+</div>

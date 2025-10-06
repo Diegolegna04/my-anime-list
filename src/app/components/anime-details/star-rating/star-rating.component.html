@@ -1,0 +1,71 @@
+<div class="star-rating-container" [class.interactive]="isInteractive">
+  
+  <!-- Stars -->
+  <div 
+    class="star-rating"
+    [class.readonly]="readonly"
+    [class.disabled]="disabled"
+    role="radiogroup"
+    [attr.aria-label]="'Valutazione da 0 a ' + maxRating"
+    [attr.aria-readonly]="readonly"
+    [attr.aria-disabled]="disabled">
+    
+    @for (star of stars; track trackByStar($index, star)) {
+      <button
+        type="button"
+        [class]="getStarClass(star)"
+        [disabled]="!isInteractive"
+        [title]="getStarTitle(star)"
+        [attr.aria-label]="getStarTitle(star)"
+        [attr.aria-checked]="star <= rating"
+        role="radio"
+        [tabindex]="isInteractive ? 0 : -1"
+        (click)="onStarClick(star)"
+        (mouseenter)="onStarHover(star)"
+        (mouseleave)="onStarLeave()"
+        (keydown)="onKeyDown($event, star)">
+        
+        <!-- Star Icon (SVG o Unicode) -->
+        <span class="star-icon" aria-hidden="true">
+          @if (getStarState(star) === 'full') {
+            ★
+          } @else if (getStarState(star) === 'half') {
+            <span class="star-half">
+              <span class="star-half-fill">★</span>
+              <span class="star-half-empty">☆</span>
+            </span>
+          } @else {
+            ☆
+          }
+        </span>
+      </button>
+    }
+  </div>
+
+  <!-- Rating Display -->
+  @if (showLabel) {
+    <div class="rating-display">
+      <div class="rating-info">
+        <span class="rating-number" [class.active]="rating > 0">
+          {{ displayRating || '—' }}
+        </span>
+        <span class="rating-max">/{{ maxRating }}</span>
+      </div>
+      
+      <div class="rating-label" [ngClass]="labelClass">
+        {{ ratingLabel }}
+      </div>
+    </div>
+  }
+
+  <!-- Progress Bar (optional, alternative view) -->
+  <!--
+  <div class="rating-progress">
+    <div 
+      class="rating-progress-bar" 
+      [style.width.%]="ratingPercentage"
+      [ngClass]="labelClass">
+    </div>
+  </div>
+  -->
+</div>
