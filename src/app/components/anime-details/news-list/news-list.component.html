@@ -1,25 +1,47 @@
 @if (news.length > 0) {
-    <div class="news-section">
-    <h2>News</h2>
-    <div class="news-list">
-        @for (item of news; track item.mal_id) {
-        <div class="news-card">
+  <div class="news-section">
+    <div class="news-header">
+      <h2>News</h2>
+      <div class="news-actions">
+        @if (!isExpanded) {
+          <button class="expand-btn" (click)="toggleExpand()">
+            Mostra News ({{ news.length }})
+          </button>
+        } @else {
+          <button class="collapse-header-btn" (click)="collapse()">
+            Nascondi News
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (isExpanded) {
+      <div class="news-list">
+        @for (item of displayedNews; track item.mal_id) {
+          <div class="news-card">
             <h3>
-            <a 
+              <a 
                 [href]="item.url" 
                 target="_blank" 
                 rel="noopener noreferrer">
                 {{ item.title }}
-            </a>
+              </a>
             </h3>
             
             <p class="news-excerpt">{{ item.excerpt }}</p>
-        </div>
+          </div>
         }
-    </div>
-    </div>
+      </div>
+
+      @if (hasMoreNews) {
+        <button class="load-more-btn" (click)="loadMore()">
+          Carica Altre News
+        </button>
+      }
+    }
+  </div>
 } @else {
-    <div class="news-section empty">
+  <div class="news-section empty">
     <p>Nessuna news disponibile per questo anime.</p>
-    </div>
+  </div>
 }
