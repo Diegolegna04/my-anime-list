@@ -1,0 +1,22 @@
+<div class="section-header">
+    <h2 class="section-title">Risultati per {{ genreName?.toLowerCase() }}</h2>
+    <div class="section-controls">
+        <div class="sort-select">
+        <label for="sortCriteria">Ordina per:</label>
+        <select id="sortCriteria" (change)="sortAnime($event)">
+            <option value="score">Voti</option>
+            <option value="members">Membri</option>
+            <option value="date">Novità</option>
+        </select>
+        </div>
+        <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
+        <i class="fas fa-language"></i>
+        {{titleLanguage === 'english' ? 'Titolo Giapponese' : 'Titolo Inglese'}}
+        </button>
+        <div class="view-toggle">
+        <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
+            <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th-large'"></i>
+        </button>
+        </div>
+    </div>
+</div>

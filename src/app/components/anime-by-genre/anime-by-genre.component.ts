@@ -3,6 +3,7 @@ import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {AnimeService} from '../../services/anime.service';
 import {getGenreName, isValidGenreId} from '../../services/constants/anime-genres';
+import { getGenreDescription } from '../../services/constants/anime-genre-descriptions';
 
 @Component({
   selector: 'app-anime-by-genre',
@@ -21,6 +22,7 @@ export class AnimeByGenreComponent implements OnInit {
   titleLanguage: 'english' | 'original' = 'original';
   isLoading: boolean = false;
   currentSortCriteria: string = 'score';
+  genreDescription: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,6 +32,12 @@ export class AnimeByGenreComponent implements OnInit {
 
   ngOnInit(): void {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
+    
+    // Recupera il criterio di ordinamento salvato, se presente
+    const savedSortCriteria = localStorage.getItem('genreSortCriteria');
+    if (savedSortCriteria) {
+      this.currentSortCriteria = savedSortCriteria;
+    }
     
     // Ottieni l'ID del genere dai parametri della route
     this.genreId = Number(this.route.snapshot.paramMap.get('id'));
@@ -47,6 +55,9 @@ export class AnimeByGenreComponent implements OnInit {
         this.genreName = this.genreId ? getGenreName(this.genreId) : 'Sconosciuto';
       }
     });
+    if (this.genreId) {
+      this.genreDescription = getGenreDescription(this.genreId);
+    }
     
     this.loadAnimeByGenre();
   }
@@ -86,6 +97,8 @@ export class AnimeByGenreComponent implements OnInit {
     const criteria = target.value;
 
     this.currentSortCriteria = criteria;
+    // Salva il criterio di ordinamento nel localStorage
+    localStorage.setItem('genreSortCriteria', criteria);
     this.animeList = this.animeService.sortAnime(this.animeList, criteria);
   }
 
