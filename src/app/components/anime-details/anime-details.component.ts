@@ -32,7 +32,7 @@ import { RecommendedAnimeSidebarComponent } from './recommended-anime-sidebar/re
 })
 
 export class AnimeDetailsComponent implements OnInit, OnDestroy {
-  // Dati Anime
+  
   animeId: number = 0;
   animeDetails: any = null;
   recommendedAnime: any[] = [];
@@ -97,7 +97,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   private loadAnimeDetails(): void {
     const url = `${this.animeDetailUrl}/${this.animeId}`;
-    
+
     this.http.get<any>(url)
       .pipe(
         takeUntil(this.destroy$),
@@ -119,7 +119,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   private loadRecommendedAnime(): void {
     const url = `${this.animeDetailUrl}/${this.animeId}/recommendations`;
-    
+
     this.http.get<any>(url)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -135,7 +135,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   private loadStreaming(): void {
     const url = `${this.animeDetailUrl}/${this.animeId}/streaming`;
-    
+
     this.http.get<any>(url)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -151,7 +151,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   private loadAnimeNews(): void {
     const url = `${this.animeDetailUrl}/${this.animeId}/news`;
-    
+
     this.http.get<any>(url)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -167,7 +167,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   private loadUserAnimeData(): void {
     this.isLoadingUserData = true;
-    
+
     this.userAnimeService.getAnimeStatus(this.animeId)
       .pipe(
         takeUntil(this.destroy$),
@@ -228,7 +228,6 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   onTranslateRequested(): void {
     if (this.isTranslating || !this.animeDetails) return;
-
     this.isTranslating = true;
     this.translateText();
   }
@@ -257,7 +256,6 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
             next: (response) => {
               translatedParts[index] = response.responseData.translatedText;
               completedRequests++;
-
               if (completedRequests === parts.length) {
                 callback(translatedParts.join(' '));
               }
@@ -304,10 +302,6 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
     const backendStatus = backendStatusMap[newState];
     const previousState = this.animeState;
 
-    if (newState === 'completato') {
-      this.episodiVisti = this.animeDetails?.episodes || 0;
-    }
-
     if (newState === 'non visto' && this.userAnimeData) {
       this.removeAnimeFromDatabase(previousState);
       return;
@@ -320,15 +314,52 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           this.userAnimeData = response;
+
           if (newState === 'completato') {
-            this.episodiVisti = response.episodesWatched;
+            // Usa i dettagli già caricati se disponibili,
+            // altrimenti li recupera da Jikan prima di aggiornare
+            if (this.animeDetails?.episodes > 0) {
+              this.syncCompletedEpisodes(this.animeDetails.episodes);
+            } else {
+              this.http.get<any>(`${this.animeDetailUrl}/${this.animeId}`)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                  next: (res) => {
+                    const totalEpisodes = res.data?.episodes || 0;
+                    if (totalEpisodes > 0) {
+                      this.animeDetails = res.data;
+                      this.syncCompletedEpisodes(totalEpisodes);
+                    }
+                  },
+                  error: () => {
+                    console.error('Impossibile recuperare il numero di episodi');
+                  }
+                });
+            }
           }
+
           this.cdr.markForCheck();
         },
         error: (error) => {
           console.error('Errore aggiornamento stato:', error);
           this.animeState = previousState;
           this.cdr.markForCheck();
+        }
+      });
+  }
+
+  // Aggiorna episodi sia in memoria che nel DB
+  private syncCompletedEpisodes(totalEpisodes: number): void {
+    this.episodiVisti = totalEpisodes;
+    this.userAnimeService.updateEpisodesWatched(this.animeId, totalEpisodes)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (updatedAnime) => {
+          this.userAnimeData = updatedAnime;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('Errore aggiornamento episodi al completamento:', error);
         }
       });
   }
@@ -353,7 +384,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
     this.episodiVisti = episodes;
 
     const maxEpisodes = this.animeDetails?.episodes || 0;
-    
+
     if (maxEpisodes > 0 && episodes >= maxEpisodes) {
       this.onStateChanged('completato');
       return;
@@ -382,12 +413,10 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   }
 
   onRatingChanged(rating: number): void {
-    this.voto = rating;
+    // Voto consentito solo se l'anime è completato
+    if (this.animeState !== 'completato') return;
 
-    if (!this.userAnimeData) {
-      const defaultState = this.animeState !== 'non visto' ? this.animeState : 'in visione';
-      this.onStateChanged(defaultState);
-    }
+    this.voto = rating;
 
     this.userAnimeService.updateRating(this.animeId, rating)
       .pipe(takeUntil(this.destroy$))
@@ -450,8 +479,9 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
     return this.animeState === 'in visione';
   }
 
+  // Rating visibile solo se completato
   get showRating(): boolean {
-    return ['in visione', 'completato'].includes(this.animeState);
+    return this.animeState === 'completato';
   }
 
   get showFavoriteToggle(): boolean {
