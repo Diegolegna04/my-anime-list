@@ -45,6 +45,7 @@ export class LoginRegisterComponent implements OnInit {
   loginData = {
     email: '',
     password: '',
+    rememberMe: false,
   };
 
   registerData = {
@@ -79,7 +80,8 @@ export class LoginRegisterComponent implements OnInit {
 
     const requestBody = {
       email: this.loginData.email,
-      password: hashedPassword
+      password: hashedPassword,
+      rememberMe: this.loginData.rememberMe
     };
 
     this.http.post(`${this.apiUrl}/login`, requestBody, {

@@ -65,7 +65,11 @@
 
       <div class="options-group" *ngIf="!isRegistering">
         <div class="remember-me">
-          <input type="checkbox" id="rememberMe" name="rememberMe" />
+          <div class="remember-me">
+            <input type="checkbox" id="rememberMe" name="rememberMe" 
+                   [(ngModel)]="loginData.rememberMe" />
+            <label for="rememberMe">Ricordami</label>
+          </div>
           <label for="rememberMe">Ricordami</label>
         </div>
         <a class="forgot-password" routerLink="/">Password dimenticata?</a>
