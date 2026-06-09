@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AnimeService {
   private apiUrl = 'https://api.jikan.moe/v4';
+  private backendUrl = environment.apiUrl;
 
   constructor(private http: HttpClient, private router: Router) {}
 

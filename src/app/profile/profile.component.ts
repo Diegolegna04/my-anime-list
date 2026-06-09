@@ -97,22 +97,25 @@ export class ProfileComponent implements OnInit, OnDestroy {
   private async loadInEvidenza(): Promise<any[]> {
     try {
       const evidenzaData = await firstValueFrom(this.userAnimeService.getInEvidenza());
-      
+  
       if (!evidenzaData || evidenzaData.length === 0) {
         return [];
       }
-
-      // Ordina per evidenzaOrder
+  
       evidenzaData.sort((a: any, b: any) => a.evidenzaOrder - b.evidenzaOrder);
-      
-      // Recupera i dettagli degli anime dall'API esterna
+  
       const animeDetailsPromises = evidenzaData.map((userAnime: any) =>
         firstValueFrom(this.animeService.getAnimeById(userAnime.animeId))
       );
-
+  
       const responses = await Promise.all(animeDetailsPromises);
-      return responses.map((res) => res.data);
-
+  
+      // Mantieni sia i dati Jikan che l'animeId originale
+      return responses.map((res, index) => ({
+        ...res.data,
+        animeId: evidenzaData[index].animeId  // ← tieni l'animeId per il drag&drop
+      }));
+  
     } catch (error) {
       console.error('Errore nel caricamento anime in evidenza:', error);
       return [];
@@ -167,18 +170,17 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   async drop(event: CdkDragDrop<any[]>): Promise<void> {
     moveItemInArray(this.inEvidenza, event.previousIndex, event.currentIndex);
-
+  
     try {
-      // Aggiorna l'ordine nel backend
-      const updatedOrder = this.inEvidenza.map(anime => anime.mal_id);
+      // Usa animeId invece di mal_id
+      const updatedOrder = this.inEvidenza.map(anime => anime.animeId);
       await firstValueFrom(this.userAnimeService.updateEvidenzaOrder(updatedOrder));
       console.log('Ordine aggiornato con successo');
     } catch (error) {
       console.error('Errore nell\'aggiornamento ordine:', error);
-      // Ripristina l'ordine originale in caso di errore
       moveItemInArray(this.inEvidenza, event.currentIndex, event.previousIndex);
     }
-
+  
     this.cdr.detectChanges();
   }
 

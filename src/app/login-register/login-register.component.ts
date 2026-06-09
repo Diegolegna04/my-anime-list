@@ -18,18 +18,18 @@ interface Toast {
     FormsModule,
     NgClass,
     NgIf
-],
+  ],
   templateUrl: './login-register.component.html',
   standalone: true,
   styleUrl: './login-register.component.css'
 })
 export class LoginRegisterComponent implements OnInit {
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = '/api/auth';
   isRegistering: boolean = false;
   accessoEffettuato: boolean = false;
   isLoading: boolean = false;
   passwordType: string = 'password';
-  
+
   toast: Toast = {
     message: '',
     type: 'info',
@@ -55,7 +55,7 @@ export class LoginRegisterComponent implements OnInit {
 
   showToast(message: string, type: 'success' | 'error' | 'info'): void {
     this.toast = { message, type, show: true };
-    
+
     setTimeout(() => {
       this.toast.show = false;
     }, 4000);
@@ -81,7 +81,7 @@ export class LoginRegisterComponent implements OnInit {
       email: this.loginData.email,
       password: hashedPassword
     };
-    
+
     this.http.post(`${this.apiUrl}/login`, requestBody, {
       headers: {'Content-Type': 'application/json'},
       withCredentials: true
@@ -89,22 +89,20 @@ export class LoginRegisterComponent implements OnInit {
     .subscribe({
       next: async (response: any) => {
         this.isLoading = false;
-        
+
         if (response) {
-          // Salva i dati dell'utente dal backend
           if (response.username) {
             localStorage.setItem('username', response.username);
           }
           if (response.email) {
             localStorage.setItem('email', response.email);
           }
-          
+
           this.showToast('Accesso effettuato con successo! Benvenuto.', 'success');
-          
+
           this.accessoEffettuato = true;
           this.authService.notifyLogin();
 
-          // Attendi che la notifica sia visibile prima di navigare
           setTimeout(async () => {
             await this.route.navigate(['/']);
           }, 1500);
@@ -137,45 +135,35 @@ export class LoginRegisterComponent implements OnInit {
 
     this.http
       .post(`${this.apiUrl}/register`, requestBody, {
-      headers: {'Content-Type': 'application/json'},
-      withCredentials: true,
-    })
-    .subscribe({
-      next: async (response: any) => {
-        this.isLoading = false;
-        
-        if (response) {
-          this.showToast('Registrazione completata! Benvenuto nella community.', 'success');
+        headers: {'Content-Type': 'application/json'},
+        withCredentials: true,
+      })
+      .subscribe({
+        next: async (response: any) => {
+          this.isLoading = false;
 
-          localStorage.setItem('username', this.registerData.username);
+          if (response) {
+            this.showToast('Registrazione completata! Benvenuto nella community.', 'success');
 
-          // Attendi un momento prima di passare al login
-          setTimeout(() => {
-            this.isRegistering = false;
-            this.registerData = { username: '', email: '', password: '' };
-          }, 1500);
-        } else if (response && response.success) {
-          this.showToast('Registrazione completata! Benvenuto nella community.', 'success');
+            localStorage.setItem('username', this.registerData.username);
 
-          localStorage.setItem('username', this.registerData.username);
-
-          setTimeout(() => {
-            this.isRegistering = false;
-            this.registerData = { username: '', email: '', password: '' };
-          }, 1500);
+            setTimeout(() => {
+              this.isRegistering = false;
+              this.registerData = { username: '', email: '', password: '' };
+            }, 1500);
+          }
+        },
+        error: (error: { status: number; }) => {
+          this.isLoading = false;
+          if (error.status === 409) {
+            this.showToast('Email già registrata. Prova con un\'altra email.', 'error');
+          } else if (error.status === 500) {
+            this.showToast('Errore del server. Riprova più tardi.', 'error');
+          } else {
+            this.showToast('Si è verificato un errore. Riprova.', 'error');
+          }
         }
-      },
-      error: (error: { status: number; }) => {
-        this.isLoading = false;
-        if (error.status === 409) {
-          this.showToast('Email già registrata. Prova con un\'altra email.', 'error');
-        } else if (error.status === 500) {
-          this.showToast('Errore del server. Riprova più tardi.', 'error');
-        } else {
-          this.showToast('Si è verificato un errore. Riprova.', 'error');
-        }
-      }
-    });
+      });
   }
 
   get emailModel(): string {
