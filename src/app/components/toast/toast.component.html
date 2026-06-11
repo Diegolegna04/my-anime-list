@@ -1,0 +1,16 @@
+<div class="toast-container"
+     [class.show]="toastService.toast().show"
+     [class.success]="toastService.toast().type === 'success'"
+     [class.error]="toastService.toast().type === 'error'"
+     [class.info]="toastService.toast().type === 'info'">
+  <div class="toast-content">
+    <div class="toast-icon">
+      <span *ngIf="toastService.toast().type === 'success'">✓</span>
+      <span *ngIf="toastService.toast().type === 'error'">✕</span>
+      <span *ngIf="toastService.toast().type === 'info'">ℹ</span>
+    </div>
+    <div class="toast-message">{{ toastService.toast().message }}</div>
+    <button class="toast-close" (click)="toastService.close()">×</button>
+  </div>
+  <div class="toast-progress" [class.animate]="toastService.toast().show"></div>
+</div>

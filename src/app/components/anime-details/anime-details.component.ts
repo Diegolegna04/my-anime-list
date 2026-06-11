@@ -12,6 +12,7 @@ import { StarRatingComponent } from './star-rating/star-rating.component';
 import { FavoriteToggleComponent } from './favorite-toggle/favorite-toggle.component';
 import { NewsListComponent } from './news-list/news-list.component';
 import { RecommendedAnimeSidebarComponent } from './recommended-anime-sidebar/recommended-anime-sidebar.component';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-anime-details',
@@ -56,7 +57,8 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private animeService: AnimeService,
     private userAnimeService: UserAnimeService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -438,10 +440,15 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
         next: (response) => {
           this.preferito = response.isFavorite;
           this.userAnimeData = response;
+          this.toastService.show(
+            response.isFavorite ? 'Aggiunto ai preferiti' : 'Rimosso dai preferiti',
+            'success'
+          );
           this.cdr.markForCheck();
         },
-        error: (error) => {
-          console.error('Errore toggle preferito:', error);
+        error: () => {
+          this.toastService.show('Errore durante l\'aggiornamento dei preferiti', 'error');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -453,7 +460,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   onInEvidenzaToggled(value: boolean): void {
     this.inEvidenza = value;
-
+  
     this.userAnimeService.toggleInEvidenza(this.animeId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -461,10 +468,14 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
           this.inEvidenza = response.inEvidenza;
           this.userAnimeData = response;
           this.userAnimeService.refreshInEvidenza();
+          this.toastService.show(
+            response.inEvidenza ? 'Aggiunto in evidenza' : 'Rimosso dall\'evidenza',
+            'success'
+          );
           this.cdr.markForCheck();
         },
-        error: (error) => {
-          console.error('Errore toggle in evidenza:', error);
+        error: () => {
+          this.toastService.show('Errore durante l\'aggiornamento dell\'evidenza', 'error');
           this.inEvidenza = !value;
           this.cdr.markForCheck();
         }

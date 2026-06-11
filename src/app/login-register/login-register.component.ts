@@ -1,23 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { NgClass, NgIf } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { ToastService } from '../services/toast.service';
 import * as CryptoJS from 'crypto-js';
-
-interface Toast {
-  message: string;
-  type: 'success' | 'error' | 'info';
-  show: boolean;
-}
 
 @Component({
   selector: 'app-login-register',
   imports: [
     FormsModule,
     NgClass,
-    NgIf
+    NgIf,
   ],
   templateUrl: './login-register.component.html',
   standalone: true,
@@ -30,13 +25,12 @@ export class LoginRegisterComponent implements OnInit {
   isLoading: boolean = false;
   passwordType: string = 'password';
 
-  toast: Toast = {
-    message: '',
-    type: 'info',
-    show: false
-  };
-
-  constructor(private http: HttpClient, private route: Router, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private route: Router,
+    private authService: AuthService,
+    private toastService: ToastService
+  ) {}
 
   ngOnInit(): void {
     this.accessoEffettuato = JSON.parse(localStorage.getItem('accessoEffettuato') || 'false');
@@ -53,18 +47,6 @@ export class LoginRegisterComponent implements OnInit {
     email: '',
     password: '',
   };
-
-  showToast(message: string, type: 'success' | 'error' | 'info'): void {
-    this.toast = { message, type, show: true };
-
-    setTimeout(() => {
-      this.toast.show = false;
-    }, 4000);
-  }
-
-  closeToast(): void {
-    this.toast.show = false;
-  }
 
   toggleRegister(): void {
     this.isRegistering = !this.isRegistering;
@@ -85,7 +67,7 @@ export class LoginRegisterComponent implements OnInit {
     };
 
     this.http.post(`${this.apiUrl}/login`, requestBody, {
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
       withCredentials: true
     })
     .subscribe({
@@ -93,14 +75,10 @@ export class LoginRegisterComponent implements OnInit {
         this.isLoading = false;
 
         if (response) {
-          if (response.username) {
-            localStorage.setItem('username', response.username);
-          }
-          if (response.email) {
-            localStorage.setItem('email', response.email);
-          }
+          if (response.username) localStorage.setItem('username', response.username);
+          if (response.email) localStorage.setItem('email', response.email);
 
-          this.showToast('Accesso effettuato con successo! Benvenuto.', 'success');
+          this.toastService.show('Accesso effettuato con successo! Benvenuto.', 'success');
 
           this.accessoEffettuato = true;
           this.authService.notifyLogin();
@@ -113,11 +91,11 @@ export class LoginRegisterComponent implements OnInit {
       error: (error: any) => {
         this.isLoading = false;
         if (error.status === 401) {
-          this.showToast('Credenziali non valide. Controlla email e password.', 'error');
+          this.toastService.show('Credenziali non valide. Controlla email e password.', 'error');
         } else if (error.status === 500) {
-          this.showToast('Errore del server. Riprova più tardi.', 'error');
+          this.toastService.show('Errore del server. Riprova più tardi.', 'error');
         } else {
-          this.showToast('Si è verificato un errore. Riprova.', 'error');
+          this.toastService.show('Si è verificato un errore. Riprova.', 'error');
         }
       }
     });
@@ -133,11 +111,9 @@ export class LoginRegisterComponent implements OnInit {
       password: hashedPassword
     };
 
-    console.log('Dati registrazione inviati:', requestBody);
-
     this.http
       .post(`${this.apiUrl}/register`, requestBody, {
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
       })
       .subscribe({
@@ -145,8 +121,7 @@ export class LoginRegisterComponent implements OnInit {
           this.isLoading = false;
 
           if (response) {
-            this.showToast('Registrazione completata! Benvenuto nella community.', 'success');
-
+            this.toastService.show('Registrazione completata! Benvenuto nella community.', 'success');
             localStorage.setItem('username', this.registerData.username);
 
             setTimeout(() => {
@@ -155,14 +130,14 @@ export class LoginRegisterComponent implements OnInit {
             }, 1500);
           }
         },
-        error: (error: { status: number; }) => {
+        error: (error: { status: number }) => {
           this.isLoading = false;
           if (error.status === 409) {
-            this.showToast('Email già registrata. Prova con un\'altra email.', 'error');
+            this.toastService.show('Email già registrata. Prova con un\'altra email.', 'error');
           } else if (error.status === 500) {
-            this.showToast('Errore del server. Riprova più tardi.', 'error');
+            this.toastService.show('Errore del server. Riprova più tardi.', 'error');
           } else {
-            this.showToast('Si è verificato un errore. Riprova.', 'error');
+            this.toastService.show('Si è verificato un errore. Riprova.', 'error');
           }
         }
       });
