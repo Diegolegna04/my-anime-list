@@ -27,7 +27,9 @@
           @for (anime of filteredSeasonalAnime; track anime.mal_id) {
             <div class="seasonal-anime-card" routerLink="/anime/{{ anime.mal_id }}">
               <span class="seasonal-badge">HOT</span>
-              <img [src]="anime.images.jpg.image_url" [alt]="getTitle(anime)">
+              <div class="img-wrapper">
+                <img [src]="anime.images.jpg.image_url" [alt]="getTitle(anime)">
+              </div>
               <div class="seasonal-anime-info">
                 <h3>{{ getTitle(anime) }}</h3>
                 <div class="anime-stats">

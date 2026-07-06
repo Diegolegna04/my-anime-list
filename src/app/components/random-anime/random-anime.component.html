@@ -8,37 +8,53 @@
         {{ loading ? 'Caricamento...' : 'Genera Anime Casuale' }}
     </button>
 
-    <div *ngIf="error" class="error-message">
-        {{ error }}
-    </div>
+    @if (error) {
+      <div class="error-message">
+          {{ error }}
+      </div>
+    }
 
-    <div *ngIf="loading" class="loading">
-        <p>Caricamento anime in corso...</p>
-    </div>
+    @if (loading) {
+      <div class="loading">
+          <p>Caricamento anime in corso...</p>
+      </div>
+    }
 
-    <div *ngIf="anime && !loading" class="anime-card">
-        <div class="anime-image">
-            <img 
-                [src]="anime.images.jpg.large_image_url || anime.images.jpg.image_url" 
-                [alt]="getAnimeTitle()"
-                loading="lazy">
-        </div>
+    @if (anime && !loading) {
+      <div class="anime-card">
+          <div class="anime-image">
+              <img 
+                  [src]="anime.images.jpg.large_image_url || anime.images.jpg.image_url" 
+                  [alt]="getAnimeTitle()"
+                  loading="lazy">
+          </div>
 
-        <div class="anime-info">
-            <h3 class="anime-title">{{ getAnimeTitle() }}</h3>
+          <div class="anime-info">
+              <h3 class="anime-title">{{ getAnimeTitle() }}</h3>
 
-            <div class="anime-details">
-                <p *ngIf="anime.year"><strong>Anno:</strong> {{ anime.year }}</p>
-                <p *ngIf="anime.episodes"><strong>Episodi:</strong> {{ anime.episodes }}</p>
-                <p><strong>Stato:</strong> {{ anime.status }}</p>
-                <p *ngIf="anime.score"><strong>Punteggio:</strong> {{ anime.score }}/10</p>
-                <p *ngIf="getGenres()"><strong>Generi:</strong> {{ getGenres() }}</p>
-            </div>
+              <div class="anime-details">
+                  @if (anime.year) {
+                    <p><strong>Anno:</strong> {{ anime.year }}</p>
+                  }
+                  @if (anime.episodes) {
+                    <p><strong>Episodi:</strong> {{ anime.episodes }}</p>
+                  }
+                  <p><strong>Stato:</strong> {{ anime.status }}</p>
+                  @if (anime.score) {
+                    <p><strong>Punteggio:</strong> {{ anime.score }}/10</p>
+                  }
+                  @if (getGenres()) {
+                    <p><strong>Generi:</strong> {{ getGenres() }}</p>
+                  }
+              </div>
 
-            <div *ngIf="anime.synopsis" class="anime-synopsis">
-                <h4>Sinossi:</h4>
-                <p>{{ anime.synopsis }}</p>
-            </div>
-        </div>
-    </div>
+              @if (anime.synopsis) {
+                <div class="anime-synopsis">
+                    <h4>Sinossi:</h4>
+                    <p>{{ anime.synopsis }}</p>
+                </div>
+              }
+          </div>
+      </div>
+    }
 </div>
