@@ -76,14 +76,14 @@
   font-weight: 600;
   font-size: 1rem;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 4px 12px var(--shadow-color);
+  box-shadow: 0 4px 12px var(--shadow-light);
   text-decoration: none;
   color: white;
 }
 
 .action-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 16px var(--shadow-color);
+  box-shadow: 0 6px 16px var(--shadow-medium);
 }
 
 .action-button.primary {
@@ -134,7 +134,7 @@
 
 .profile-pic:hover {
   transform: scale(1.03);
-  box-shadow: 0 10px 25px var(--shadow-color);
+  box-shadow: 0 10px 25px var(--shadow-heavy);
 }
 
 .username {
@@ -238,7 +238,7 @@
 
 .anime-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 25px var(--shadow-color);
+  box-shadow: 0 12px 25px var(--shadow-heavy);
 }
 
 .anime-card img {

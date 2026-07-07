@@ -34,13 +34,13 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    box-shadow: 0 2px 5px var(--shadow-color);
+    box-shadow: 0 2px 5px var(--shadow-light);
 }
 
 .favorite-toggle-btn:hover:not(:disabled) {
     background-color: var(--bg-tertiary);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px var(--shadow-color);
+    box-shadow: 0 4px 8px var(--shadow-medium);
 }
 
 .favorite-toggle-btn:disabled {

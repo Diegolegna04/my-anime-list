@@ -45,7 +45,7 @@
 
 .cover-image:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 15px var(--shadow-color);
+  box-shadow: 0 6px 15px var(--shadow-medium);
 }
 
 .info-text {

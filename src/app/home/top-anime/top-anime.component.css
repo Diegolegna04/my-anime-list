@@ -117,7 +117,7 @@
 
 .anime-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 10px 20px var(--shadow-color);
+  box-shadow: 0 10px 20px var(--border-color);
 }
 
 .anime-card-rank {
@@ -240,7 +240,7 @@
 }
 
 .loading-spinner {
-  border: 4px solid var(--shadow-color);
+  border: 4px solid var(--shadow-medium);
   border-top: 4px solid var(--accent-color);
   border-radius: 50%;
   width: 40px;

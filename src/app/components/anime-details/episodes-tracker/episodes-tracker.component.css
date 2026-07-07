@@ -118,7 +118,7 @@
   border: 2px solid var(--border-color);
   border-radius: 12px;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px var(--shadow-color);
+  box-shadow: 0 2px 4px var(--shadow-light);
 }
 
 .input-wrapper:focus-within {
@@ -179,12 +179,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px var(--shadow-color);
+  box-shadow: 0 2px 4px var(--shadow-light);
 }
 
 .quick-action-btn:hover:not(:disabled) {
   transform: scale(1.1);
-  box-shadow: 0 4px 8px var(--shadow-color);
+  box-shadow: 0 4px 8px var(--shadow-medium);
 }
 
 .quick-action-btn:active:not(:disabled) {
@@ -325,7 +325,7 @@
 
 .action-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px var(--shadow-color);
+  box-shadow: 0 4px 8px var(--shadow-medium);
 }
 
 .action-btn:disabled {
