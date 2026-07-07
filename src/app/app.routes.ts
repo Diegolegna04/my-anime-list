@@ -9,7 +9,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { FavoriteAnimeComponent } from './components/favorite-anime/favorite-anime.component';
 import { WatchedAnimeComponent } from './components/watched-anime/watched-anime.component';
 import { ProfileComponent } from './profile/profile.component';
-import { SeasonalAnimeComponent } from './components/seasonal-anime/seasonal-anime.component';
+import { SeasonalAnimePageComponent } from './components/seasonal-anime-page/seasonal-anime-page.component';
 import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
@@ -22,7 +22,7 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'profile/watched-anime', component: WatchedAnimeComponent },
   { path: 'profile/watched-anime/favourites', component: FavoriteAnimeComponent },
-  { path: 'seasonal/:season', component: SeasonalAnimeComponent },
+  { path: 'seasonal/:season', component: SeasonalAnimePageComponent },
   { path: '**', component: NotFoundComponent }
 ];
 

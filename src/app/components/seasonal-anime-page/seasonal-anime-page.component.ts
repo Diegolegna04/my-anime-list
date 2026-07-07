@@ -8,10 +8,10 @@ import { AnimeService } from '../../services/anime.service';
   selector: 'app-seasonal-anime',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './seasonal-anime.component.html',
-  styleUrls: ['./seasonal-anime.component.css']
+  templateUrl: './seasonal-anime-page.component.html',
+  styleUrls: ['./seasonal-anime-page.component.css']
 })
-export class SeasonalAnimeComponent implements OnInit {
+export class SeasonalAnimePageComponent implements OnInit {
   seasonalAnimeList: any[] = [];
   isLoading: boolean = false;
   currentSeason: string = '';

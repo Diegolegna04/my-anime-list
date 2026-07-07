@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SeasonalAnimeComponent } from './seasonal-anime.component';
+import { SeasonalAnimeComponent } from './seasonal-anime-page.component';
 
 describe('SeasonalAnimeComponent', () => {
   let component: SeasonalAnimeComponent;
