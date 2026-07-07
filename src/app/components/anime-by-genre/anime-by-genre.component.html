@@ -30,7 +30,9 @@
   <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
     @for (anime of animeList; track anime) {
       <div class="anime-card" (click)="goToDetails(anime.mal_id)">
-        <img [src]="anime.images.jpg.image_url" alt="{{ getTitle(anime) }}" />
+        <div class="img-wrapper">
+          <img [src]="anime.images.jpg.image_url" alt="{{ getTitle(anime) }}" />
+        </div>
         <div class="anime-card-content">
           <h3 class="anime-title">{{ getTitle(anime) }}</h3>
           <div class="anime-meta">

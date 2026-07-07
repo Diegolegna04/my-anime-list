@@ -44,10 +44,10 @@
     @if (seasonalAnimeList.length > 0) {
       <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
         @for (anime of seasonalAnimeList; track anime.mal_id) {
-          <div
-            class="anime-card"
-            (click)="goToDetails(anime.mal_id)">
-            <img [src]="anime.images.jpg.image_url" [alt]="getTitle(anime)"/>
+          <div class="anime-card" (click)="goToDetails(anime.mal_id)">
+            <div class="img-wrapper">
+              <img [src]="anime.images.jpg.image_url" [alt]="getTitle(anime)"/>
+            </div>
             <div class="anime-card-content">
               <h3 class="anime-title">{{ getTitle(anime) }}</h3>
               <div class="anime-meta">
