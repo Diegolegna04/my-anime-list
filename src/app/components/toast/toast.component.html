@@ -5,9 +5,15 @@
      [class.info]="toastService.toast().type === 'info'">
   <div class="toast-content">
     <div class="toast-icon">
-      <span *ngIf="toastService.toast().type === 'success'">✓</span>
-      <span *ngIf="toastService.toast().type === 'error'">✕</span>
-      <span *ngIf="toastService.toast().type === 'info'">ℹ</span>
+      @if (toastService.toast().type === 'success') {
+        <span>✓</span>
+      }
+      @if (toastService.toast().type === 'error') {
+        <span>✕</span>
+      }
+      @if (toastService.toast().type === 'info') {
+        <span>ℹ</span>
+      }
     </div>
     <div class="toast-message">{{ toastService.toast().message }}</div>
     <button class="toast-close" (click)="toastService.close()">×</button>
