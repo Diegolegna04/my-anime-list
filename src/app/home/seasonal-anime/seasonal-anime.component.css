@@ -120,21 +120,22 @@
   transform: translateX(10px);
 }
 
-/* --- CAROSELLO --- */
+/* --- CAROSELLO: scroll nativo con snap, drag/swipe funzionano gratis --- */
 .seasonal-anime-container {
-  overflow: hidden;
-  width: 100%;
-  padding: 0.5rem;
-}
-
-.seasonal-anime-track {
   display: flex;
   gap: 1.2rem;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.seasonal-anime-track.animate {
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+.seasonal-anime-container::-webkit-scrollbar {
+  display: none;
 }
 
 .seasonal-anime-card {
@@ -147,6 +148,7 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  scroll-snap-align: start;
 }
 
 .seasonal-anime-card:hover {
@@ -184,6 +186,7 @@
   object-fit: cover;
   transition: transform 0.4s ease;
   display: block;
+  pointer-events: none;
 }
 
 .seasonal-anime-card:hover img {
@@ -289,6 +292,15 @@
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
+  .seasonal-section {
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+
+  .section-header {
+    gap: 0.6rem;
+  }
+
   .seasonal-anime-card {
     min-width: 150px;
     width: 150px;
@@ -307,13 +319,15 @@
     font-size: 0.8rem;
   }
 
-  .seasonal-anime-track {
+  .seasonal-anime-container {
     gap: 1rem;
+    scroll-padding-left: 0.5rem;
   }
 
   .slider-arrow {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
+    opacity: 0.85;
   }
 }
 
@@ -332,7 +346,22 @@
     height: 50px;
   }
 
-  .seasonal-anime-track {
+  .seasonal-anime-container {
     gap: 0.8rem;
+  }
+
+  .slider-controls {
+    display: none;
+  }
+
+  .load-more-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .slider-arrow {
+    opacity: 0.75;
   }
 }

@@ -2,9 +2,9 @@
     <div class="section-header">
       <h2 class="section-title">Top Anime</h2>
       <div class="section-controls">
-        <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
+        <button (click)="toggleTitleLanguage()" class="language-toggle-btn" [attr.aria-label]="titleLanguage === 'english' ? 'Mostra titoli originali' : 'Mostra titoli inglesi'">
           <i class="fas fa-language"></i>
-          {{ titleLanguage === 'english' ? 'Mostra titoli originali' : 'Mostra titoli inglesi' }}
+          <span>{{ titleLanguage === 'english' ? 'Mostra titoli originali' : 'Mostra titoli inglesi' }}</span>
         </button>
         <div class="view-toggle">
           <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
