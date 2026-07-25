@@ -399,6 +399,26 @@
   justify-content: center;
 }
 
+.save-image-btn {
+  margin-top: 0.75rem;
+}
+
+.pending-image-note {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  margin: 0;
+}
+
+.pending-image-note i {
+  color: var(--accent-color);
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }

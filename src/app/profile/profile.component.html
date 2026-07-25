@@ -15,10 +15,23 @@
         @if (!showSettings) {
           <img [src]="profileImage" class="overlay-profile-pic" alt="Profile Image">
           <p class="overlay-username">{{ username }}</p>
+
           <button class="action-button primary" (click)="changeProfileImage()">
             <i class="fas fa-camera"></i>
             Cambia immagine
           </button>
+
+          @if (pendingProfileImage) {
+            <br/>
+            <button class="action-button primary save-image-btn" (click)="saveProfileImage()" [disabled]="isSaving">
+              @if (isSaving) {
+                <i class="fas fa-spinner fa-spin"></i> Salvataggio...
+              } @else {
+                <i class="fas fa-check"></i> Salva immagine
+              }
+            </button>
+          }
+
           <br/>
           <button class="action-button secondary" (click)="showSettings = true">
             <i class="fas fa-cog"></i>
@@ -64,6 +77,13 @@
               />
             </div>
 
+            @if (pendingProfileImage) {
+              <p class="pending-image-note">
+                <i class="fas fa-info-circle"></i>
+                Verrà salvata anche la nuova immagine profilo selezionata.
+              </p>
+            }
+
             <div class="settings-actions">
               <button type="submit" class="action-button primary" [disabled]="isSaving">
                 @if (isSaving) {
@@ -86,7 +106,6 @@
   <div class="profile-page">
     <div class="profile-header-container">
       <div class="profile-header-details">
-        <input type="file" id="profileImageInput" accept="image/*" (change)="uploadProfileImage($event)" hidden/>
         <img [src]="profileImage" class="profile-pic" alt="Profile Image" (click)="openOverlay()">
         <h2 class="username">{{ username }}</h2>
         <button class="action-button secondary settings-shortcut" (click)="openSettings()">

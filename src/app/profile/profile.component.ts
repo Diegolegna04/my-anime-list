@@ -31,7 +31,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
   showOverlay: boolean = false;
   isLoading: boolean = true;
 
-  // Stato per il pannello impostazioni account
   showSettings: boolean = false;
   isSaving: boolean = false;
   pendingProfileImage: string | null = null;
@@ -146,7 +145,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
   closeOverlay(): void {
     this.showOverlay = false;
     this.showSettings = false;
+
+    // Se c'era un'anteprima non salvata, ripristina l'immagine effettivamente persistita
+    if (this.pendingProfileImage) {
+      const currentUserData = this.authService.getCurrentUserData();
+      this.profileImage = currentUserData?.profileImage || 'pfp-no-bg.png';
+    }
     this.pendingProfileImage = null;
+
     this.settingsData.username = this.username;
     this.settingsData.newPassword = '';
     this.settingsData.confirmPassword = '';
@@ -160,16 +166,86 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.showSettings = true;
   }
 
-  uploadProfileImage(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file) {
+  // Ridimensiona e comprime l'immagine via canvas prima di convertirla in Base64,
+  // così il documento MongoDB resta leggero indipendentemente dalla foto originale
+  private async resizeImage(file: File, maxDimension: number = 512, quality: number = 0.8): Promise<string> {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
+
       reader.onload = (e) => {
-        const result = e.target?.result as string;
-        this.profileImage = result;
-        this.pendingProfileImage = result;
+        const img = new Image();
+
+        img.onload = () => {
+          let { width, height } = img;
+
+          if (width > height && width > maxDimension) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else if (height > maxDimension) {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            reject(new Error('Impossibile creare il contesto canvas'));
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+
+        img.onerror = () => reject(new Error('Impossibile caricare l\'immagine selezionata'));
+        img.src = e.target?.result as string;
       };
+
+      reader.onerror = () => reject(new Error('Impossibile leggere il file selezionato'));
       reader.readAsDataURL(file);
+    });
+  }
+
+  async uploadProfileImage(event: Event): Promise<void> {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    try {
+      const resized = await this.resizeImage(file);
+      this.profileImage = resized;
+      this.pendingProfileImage = resized;
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Errore nella compressione immagine:', error);
+      this.toastService.show('Errore durante l\'elaborazione dell\'immagine.', 'error');
+    }
+  }
+
+  // Salvataggio dedicato per la sola immagine profilo,
+  // così non dipende dal form impostazioni per essere persistita
+  async saveProfileImage(): Promise<void> {
+    if (!this.pendingProfileImage) return;
+
+    this.isSaving = true;
+
+    try {
+      const response = await firstValueFrom(
+        this.authService.updateProfile({ profileImage: this.pendingProfileImage })
+      );
+
+      this.authService.updateLocalUserData(response);
+      this.profileImage = response.profileImage || this.profileImage;
+      this.pendingProfileImage = null;
+
+      this.toastService.show('Immagine profilo aggiornata!', 'success');
+    } catch (error) {
+      this.toastService.show('Errore durante il salvataggio dell\'immagine. Riprova.', 'error');
+    } finally {
+      this.isSaving = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -212,6 +288,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.authService.updateLocalUserData(response);
       this.username = response.username || this.username;
       this.profileImage = response.profileImage || this.profileImage;
+      this.pendingProfileImage = null;
 
       this.toastService.show('Impostazioni aggiornate con successo!', 'success');
       this.closeOverlay();
