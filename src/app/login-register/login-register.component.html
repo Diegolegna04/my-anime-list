@@ -58,7 +58,7 @@
           </div>
           <label for="rememberMe">Ricordami</label>
         </div>
-        <a class="forgot-password" routerLink="/">Password dimenticata?</a>
+        <a class="forgot-password" routerLink="/forgot-password">Password dimenticata?</a>
       </div>
 
       <button type="submit" [disabled]="isLoading || authForm.invalid">
@@ -68,6 +68,13 @@
           {{ isRegistering ? 'Registrazione...' : 'Accesso...' }}
         </span>
       </button>
+
+      <div class="resend-verification-box" *ngIf="showResendVerification && !isRegistering">
+        <p>Non hai ricevuto l'email di verifica?</p>
+        <button type="button" class="resend-btn" [disabled]="isResending" (click)="resendVerificationEmail()">
+          {{ isResending ? 'Invio in corso...' : 'Invia di nuovo' }}
+        </button>
+      </div>
 
       <p class="toggle-link-container">
         <span *ngIf="!isRegistering">Non hai un account?

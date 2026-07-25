@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgClass, NgIf } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ToastService } from '../services/toast.service';
 import * as CryptoJS from 'crypto-js';
@@ -13,6 +13,7 @@ import * as CryptoJS from 'crypto-js';
     FormsModule,
     NgClass,
     NgIf,
+    RouterLink,
   ],
   templateUrl: './login-register.component.html',
   standalone: true,
@@ -24,6 +25,10 @@ export class LoginRegisterComponent implements OnInit {
   accessoEffettuato: boolean = false;
   isLoading: boolean = false;
   passwordType: string = 'password';
+
+  // Mostrato quando il login fallisce perché l'email non è ancora stata verificata
+  showResendVerification: boolean = false;
+  isResending: boolean = false;
 
   constructor(
     private http: HttpClient,
@@ -50,6 +55,7 @@ export class LoginRegisterComponent implements OnInit {
 
   toggleRegister(): void {
     this.isRegistering = !this.isRegistering;
+    this.showResendVerification = false;
   }
 
   togglePasswordVisibility(): void {
@@ -58,6 +64,7 @@ export class LoginRegisterComponent implements OnInit {
 
   onLogin(): void {
     this.isLoading = true;
+    this.showResendVerification = false;
     const hashedPassword = CryptoJS.SHA256(this.loginData.password).toString();
 
     const requestBody = {
@@ -92,11 +99,30 @@ export class LoginRegisterComponent implements OnInit {
         this.isLoading = false;
         if (error.status === 401) {
           this.toastService.show('Credenziali non valide. Controlla email e password.', 'error');
+        } else if (error.status === 403 && error?.error?.code === 'EMAIL_NOT_VERIFIED') {
+          this.toastService.show('Devi verificare la tua email prima di accedere.', 'error');
+          this.showResendVerification = true;
         } else if (error.status === 500) {
           this.toastService.show('Errore del server. Riprova più tardi.', 'error');
         } else {
           this.toastService.show('Si è verificato un errore. Riprova.', 'error');
         }
+      }
+    });
+  }
+
+  resendVerificationEmail(): void {
+    if (!this.loginData.email || this.isResending) return;
+    this.isResending = true;
+
+    this.authService.resendVerification(this.loginData.email).subscribe({
+      next: () => {
+        this.isResending = false;
+        this.toastService.show('Se l\'indirizzo non è ancora verificato, riceverai una nuova email a breve.', 'success');
+      },
+      error: () => {
+        this.isResending = false;
+        this.toastService.show('Impossibile inviare l\'email in questo momento. Riprova più tardi.', 'error');
       }
     });
   }
@@ -121,7 +147,7 @@ export class LoginRegisterComponent implements OnInit {
           this.isLoading = false;
 
           if (response) {
-            this.toastService.show('Registrazione completata! Benvenuto nella community.', 'success');
+            this.toastService.show('Registrazione completata! Controlla la tua email per verificare l\'account.', 'success');
             localStorage.setItem('username', this.registerData.username);
 
             setTimeout(() => {

@@ -10,6 +10,9 @@ import { FavoriteAnimeComponent } from './components/favorite-anime/favorite-ani
 import { WatchedAnimeComponent } from './components/watched-anime/watched-anime.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SeasonalAnimePageComponent } from './components/seasonal-anime-page/seasonal-anime-page.component';
+import { VerifyEmailComponent } from './verify-email/verify-email.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
@@ -19,6 +22,9 @@ export const routes: Routes = [
   { path: 'genres', component: GenresComponent }, // Lista Generi
   { path: 'genres/anime-by-genre/:id', component: AnimeByGenreComponent },
   { path: 'register-login', component: LoginRegisterComponent },
+  { path: 'verify-email', component: VerifyEmailComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'profile/watched-anime', component: WatchedAnimeComponent },
   { path: 'profile/watched-anime/favourites', component: FavoriteAnimeComponent },

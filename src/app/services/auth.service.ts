@@ -46,6 +46,28 @@ export class AuthService {
     return this.http.put(`${this.userApiUrl}/update`, payload, { withCredentials: true });
   }
 
+  // ---- Verifica email ----
+  verifyEmail(token: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/verify-email`, { params: { token } });
+  }
+
+  resendVerification(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/resend-verification`, { email });
+  }
+
+  // ---- Recupero password ----
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  /**
+   * @param hashedPassword La password già hashata (SHA256) lato client, come da convenzione
+   * usata nel resto dell'app (vedi login-register.component.ts).
+   */
+  resetPassword(token: string, hashedPassword: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset-password`, { token, password: hashedPassword });
+  }
+
   notifyLogin(): void {
     localStorage.setItem('accessoEffettuato', JSON.stringify(true));
     this.accessoEffettuatoSubject.next(true);

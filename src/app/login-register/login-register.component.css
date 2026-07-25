@@ -383,6 +383,41 @@ button[type="submit"]:disabled {
   filter: brightness(0.9);
 }
 
+.resend-verification-box {
+  margin-top: 16px;
+  text-align: center;
+  padding: 12px;
+  background: var(--warning-bg);
+  border-radius: 10px;
+}
+
+.resend-verification-box p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.resend-verification-box .resend-btn {
+  background: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.resend-verification-box .resend-btn:hover:not(:disabled) {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.resend-verification-box .resend-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .toast-container {

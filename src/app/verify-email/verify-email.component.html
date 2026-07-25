@@ -1,0 +1,25 @@
+<div class="status-container">
+  <div class="status-card">
+    <ng-container [ngSwitch]="status">
+      <div *ngSwitchCase="'loading'" class="state loading">
+        <span class="spinner"></span>
+        <p>Verifica dell'account in corso...</p>
+      </div>
+
+      <div *ngSwitchCase="'success'" class="state success">
+        <div class="icon">&#10003;</div>
+        <h2>Email verificata!</h2>
+        <p>{{ message }}</p>
+        <p class="redirect-hint">Verrai reindirizzato al login tra qualche secondo...</p>
+        <a routerLink="/register-login" class="action-link">Vai al login ora</a>
+      </div>
+
+      <div *ngSwitchCase="'error'" class="state error">
+        <div class="icon">&#10007;</div>
+        <h2>Verifica non riuscita</h2>
+        <p>{{ message }}</p>
+        <a routerLink="/register-login" class="action-link">Torna al login</a>
+      </div>
+    </ng-container>
+  </div>
+</div>
