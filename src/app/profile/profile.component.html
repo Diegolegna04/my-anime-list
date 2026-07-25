@@ -7,19 +7,77 @@
     <p class="loading-text">Caricamento profilo...</p>
   </div>
 } @else {
-  <!-- Overlay per cambio immagine profilo -->
+  <!-- Overlay per cambio immagine profilo / impostazioni -->
   @if (showOverlay) {
     <div class="profile-overlay" (click)="closeOverlay()">
       <div class="overlay-content" (click)="$event.stopPropagation()">
-        <img [src]="profileImage" class="overlay-profile-pic" alt="Profile Image">
-        <p class="overlay-username">{{ username }}</p>
-        <button class="action-button primary" (click)="changeProfileImage()">
-          <i class="fas fa-camera"></i>
-          Cambia immagine
-        </button>
-        <br/>
-        <input type="file" id="profileImageInput" (change)="uploadProfileImage($event)" hidden />
-        <button class="action-button secondary" (click)="closeOverlay()">Chiudi</button>
+
+        @if (!showSettings) {
+          <img [src]="profileImage" class="overlay-profile-pic" alt="Profile Image">
+          <p class="overlay-username">{{ username }}</p>
+          <button class="action-button primary" (click)="changeProfileImage()">
+            <i class="fas fa-camera"></i>
+            Cambia immagine
+          </button>
+          <br/>
+          <button class="action-button secondary" (click)="showSettings = true">
+            <i class="fas fa-cog"></i>
+            Impostazioni account
+          </button>
+          <br/>
+          <input type="file" id="profileImageInput" accept="image/*" (change)="uploadProfileImage($event)" hidden />
+          <button class="action-button secondary" (click)="closeOverlay()">Chiudi</button>
+        } @else {
+          <h3 class="settings-title">Impostazioni account</h3>
+
+          <form class="settings-form" (ngSubmit)="saveSettings()">
+            <div class="settings-field">
+              <label for="settings-username">Nome utente</label>
+              <input
+                id="settings-username"
+                type="text"
+                name="settingsUsername"
+                [(ngModel)]="settingsData.username"
+                minlength="2"
+              />
+            </div>
+
+            <div class="settings-field">
+              <label for="settings-password">Nuova password</label>
+              <input
+                id="settings-password"
+                type="password"
+                name="settingsNewPassword"
+                [(ngModel)]="settingsData.newPassword"
+                placeholder="Lascia vuoto per non cambiarla"
+              />
+            </div>
+
+            <div class="settings-field">
+              <label for="settings-confirm-password">Conferma password</label>
+              <input
+                id="settings-confirm-password"
+                type="password"
+                name="settingsConfirmPassword"
+                [(ngModel)]="settingsData.confirmPassword"
+                placeholder="Ripeti la nuova password"
+              />
+            </div>
+
+            <div class="settings-actions">
+              <button type="submit" class="action-button primary" [disabled]="isSaving">
+                @if (isSaving) {
+                  <i class="fas fa-spinner fa-spin"></i> Salvataggio...
+                } @else {
+                  <i class="fas fa-check"></i> Salva modifiche
+                }
+              </button>
+              <button type="button" class="action-button secondary" (click)="showSettings = false">
+                Indietro
+              </button>
+            </div>
+          </form>
+        }
       </div>
     </div>
   }
@@ -28,11 +86,15 @@
   <div class="profile-page">
     <div class="profile-header-container">
       <div class="profile-header-details">
-        <input type="file" id="profileImageInput" (change)="uploadProfileImage($event)" hidden/>
+        <input type="file" id="profileImageInput" accept="image/*" (change)="uploadProfileImage($event)" hidden/>
         <img [src]="profileImage" class="profile-pic" alt="Profile Image" (click)="openOverlay()">
         <h2 class="username">{{ username }}</h2>
+        <button class="action-button secondary settings-shortcut" (click)="openSettings()">
+          <i class="fas fa-cog"></i>
+          Impostazioni
+        </button>
       </div>
-      
+
       <div class="stats-card">
         <h3 class="stats-title">Le tue Statistiche</h3>
         <div class="stats-grid">
@@ -71,7 +133,7 @@
             </button>
           </div>
         </div>
-        
+
         @if (inEvidenza.length > 0) {
           <div>
             <div

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private apiUrl = '/api/auth';
+  private userApiUrl = '/api/user';
   private accessoEffettuatoSubject = new BehaviorSubject<boolean>(this.checkInitialAuthState());
   accessoEffettuato$ = this.accessoEffettuatoSubject.asObservable();
 
@@ -41,13 +42,16 @@ export class AuthService {
     return this.http.get(`${this.apiUrl}/profile`, { withCredentials: true });
   }
 
+  updateProfile(payload: { username?: string; password?: string; profileImage?: string }): Observable<any> {
+    return this.http.put(`${this.userApiUrl}/update`, payload, { withCredentials: true });
+  }
+
   notifyLogin(): void {
     localStorage.setItem('accessoEffettuato', JSON.stringify(true));
     this.accessoEffettuatoSubject.next(true);
 
     this.getUserProfile().subscribe({
       next: (userData) => {
-        console.log('Dati utente recuperati:', userData);
         localStorage.setItem('userData', JSON.stringify(userData));
         localStorage.setItem('username', userData.username);
 
@@ -61,6 +65,36 @@ export class AuthService {
         console.error('Errore nel recupero dati utente:', error);
       }
     });
+  }
+
+  validateSession(): void {
+    this.getUserProfile().subscribe({
+      next: (userData) => {
+        localStorage.setItem('accessoEffettuato', JSON.stringify(true));
+        localStorage.setItem('userData', JSON.stringify(userData));
+        localStorage.setItem('username', userData.username);
+        this.accessoEffettuatoSubject.next(true);
+        this.userDataSubject.next(userData);
+      },
+      error: () => {
+        localStorage.removeItem('accessoEffettuato');
+        localStorage.removeItem('userData');
+        localStorage.removeItem('username');
+        localStorage.removeItem('profileImage');
+        this.accessoEffettuatoSubject.next(false);
+        this.userDataSubject.next(null);
+      }
+    });
+  }
+
+  // Aggiorna lo stato locale con i dati freschi tornati dal backend
+  // dopo un salvataggio riuscito delle impostazioni
+  updateLocalUserData(userData: any): void {
+    const merged = { ...this.userDataSubject.value, ...userData };
+    localStorage.setItem('userData', JSON.stringify(merged));
+    if (merged.username) localStorage.setItem('username', merged.username);
+    if (merged.profileImage) localStorage.setItem('profileImage', merged.profileImage);
+    this.userDataSubject.next(merged);
   }
 
   onLogout(): void {
