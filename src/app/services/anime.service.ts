@@ -16,7 +16,13 @@ export class AnimeService {
 
   private requestQueue: (() => void)[] = [];
   private isProcessingQueue = false;
-  private readonly MIN_REQUEST_INTERVAL_MS = 400; // ~2.5 richieste/secondo, con margine di sicurezza
+
+  // Intervallo base tra una richiesta e l'altra (~2 richieste/secondo)
+  private readonly BASE_INTERVAL_MS = 500;
+  // Se arriva un 429, rallentiamo temporaneamente l'intera coda invece
+  // di lasciare che i singoli retry facciano di testa loro
+  private currentIntervalMs = 500;
+  private readonly MAX_INTERVAL_MS = 2000;
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -61,41 +67,44 @@ export class AnimeService {
     }
 
     const request$ = new Observable<any>((observer) => {
-      const execute = (attempt: number = 0) => {
-        this.http.get(`${this.apiUrl}/anime/${id}`).subscribe({
-          next: (res) => {
-            observer.next(res);
-            observer.complete();
-          },
-          error: (err: HttpErrorResponse) => {
-            // Se Jikan risponde 429, ritentiamo invece di far sparire l'anime silenziosamente
-            if (err.status === 429 && attempt < 3) {
-              const retryAfterHeader = err.headers?.get('Retry-After');
-              const retryAfterMs = retryAfterHeader
-                ? parseInt(retryAfterHeader, 10) * 1000
-                : 1000 * (attempt + 1);
-
-              setTimeout(() => execute(attempt + 1), retryAfterMs);
-            } else {
-              observer.error(err);
+      const attempt = (retryCount: number = 0) => {
+        // Ogni tentativo, incluso un retry dopo un 429, passa dalla STESSA coda:
+        // niente più richieste "libere" che sfuggono al rate limit
+        this.enqueue(() => {
+          this.http.get(`${this.apiUrl}/anime/${id}`).subscribe({
+            next: (res) => {
+              this.onRequestSuccess();
+              observer.next(res);
+              observer.complete();
+            },
+            error: (err: HttpErrorResponse) => {
+              if (err.status === 429 && retryCount < 4) {
+                this.onRateLimitHit();
+                attempt(retryCount + 1);
+              } else {
+                observer.error(err);
+              }
             }
-          }
+          });
         });
       };
 
-      // La richiesta entra in coda invece di partire subito
-      this.requestQueue.push(() => execute());
-      this.processQueue();
+      attempt();
     }).pipe(
       shareReplay({ bufferSize: 1, refCount: false }),
       catchError((err) => {
-        this.animeCache.delete(id); // Non teniamo in cache i fallimenti definitivi
+        this.animeCache.delete(id);
         return throwError(() => err);
       })
     );
 
     this.animeCache.set(id, request$);
     return request$;
+  }
+
+  private enqueue(fn: () => void): void {
+    this.requestQueue.push(fn);
+    this.processQueue();
   }
 
   private processQueue(): void {
@@ -109,9 +118,22 @@ export class AnimeService {
         return;
       }
       next();
-      setTimeout(runNext, this.MIN_REQUEST_INTERVAL_MS);
+      setTimeout(runNext, this.currentIntervalMs);
     };
 
     runNext();
+  }
+
+  private onRateLimitHit(): void {
+    this.currentIntervalMs = Math.min(this.currentIntervalMs * 2, this.MAX_INTERVAL_MS);
+  }
+
+  private successStreak = 0;
+  private onRequestSuccess(): void {
+    this.successStreak++;
+    if (this.successStreak >= 5 && this.currentIntervalMs > this.BASE_INTERVAL_MS) {
+      this.currentIntervalMs = Math.max(this.BASE_INTERVAL_MS, this.currentIntervalMs / 2);
+      this.successStreak = 0;
+    }
   }
 }
