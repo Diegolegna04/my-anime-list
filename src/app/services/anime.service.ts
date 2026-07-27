@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
-import { shareReplay, catchError } from 'rxjs/operators';
+import { Observable, throwError, of, timer } from 'rxjs';
+import { shareReplay, catchError, mergeMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment.prod';
 
@@ -28,12 +28,30 @@ export class AnimeService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
+  private withRetry<T>(source: Observable<T>, maxRetries: number = 2): Observable<T> {
+    let attempts = 0;
+
+    const tryOnce = (obs: Observable<T>): Observable<T> =>
+      obs.pipe(
+        catchError((err: HttpErrorResponse) => {
+          const isRetryable = [502, 503, 504].includes(err.status);
+          if (isRetryable && attempts < maxRetries) {
+            attempts++;
+            return timer(600 * attempts).pipe(mergeMap(() => tryOnce(obs)));
+          }
+          return throwError(() => err);
+        })
+      );
+
+    return tryOnce(source);
+  }
+
   getPopularAnime(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/top/anime`);
+    return this.withRetry(this.http.get(`${this.apiUrl}/top/anime`));
   }
 
   searchAnime(query: string, page: number = 1): Observable<any> {
-    return this.http.get(`${this.apiUrl}/anime?q=${query}&page=${page}`);
+    return this.withRetry(this.http.get(`${this.apiUrl}/anime?q=${query}&page=${page}`));
   }
 
   goToDetails(id: number): void {
@@ -86,7 +104,7 @@ export class AnimeService {
               observer.complete();
             },
             error: (err: HttpErrorResponse) => {
-              if (err.status === 429 && retryCount < 4) {
+              if ((err.status === 429 || [502, 503, 504].includes(err.status)) && retryCount < 4) {
                 this.onRateLimitHit();
                 attempt(retryCount + 1);
               } else {
@@ -134,7 +152,7 @@ export class AnimeService {
         timestamp: Date.now()
       }));
     } catch {
-      
+      // localStorage pieno o non disponibile: non blocchiamo per questo
     }
   }
 
