@@ -65,11 +65,10 @@ export class LoginRegisterComponent implements OnInit {
   onLogin(): void {
     this.isLoading = true;
     this.showResendVerification = false;
-    const hashedPassword = CryptoJS.SHA256(this.loginData.password).toString();
 
     const requestBody = {
       email: this.loginData.email,
-      password: hashedPassword,
+      password: this.loginData.password,
       rememberMe: this.loginData.rememberMe
     };
 
@@ -129,12 +128,11 @@ export class LoginRegisterComponent implements OnInit {
 
   onRegister(): void {
     this.isLoading = true;
-    const hashedPassword = CryptoJS.SHA256(this.registerData.password).toString();
 
     const requestBody = {
       username: this.registerData.username,
       email: this.registerData.email,
-      password: hashedPassword
+      password: this.loginData.password
     };
 
     this.http

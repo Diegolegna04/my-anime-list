@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import * as CryptoJS from 'crypto-js';
 import { AuthService } from '../services/auth.service';
 import { ToastService } from '../services/toast.service';
 
@@ -50,9 +49,8 @@ export class ResetPasswordComponent implements OnInit {
 
     this.isLoading = true;
     this.errorMessage = '';
-    const hashedPassword = CryptoJS.SHA256(this.password).toString();
 
-    this.authService.resetPassword(this.token, hashedPassword).subscribe({
+    this.authService.resetPassword(this.token, this.password).subscribe({
       next: () => {
         this.isLoading = false;
         this.success = true;

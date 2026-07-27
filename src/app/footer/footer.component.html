@@ -12,12 +12,18 @@
       <ul>
         <li><a routerLink="/">Home</a></li>
         <li><a routerLink="/genres">Generi</a></li>
-        <li><a routerLink="/register-login">Login/Register</a></li>
+        <li>
+          @if (authService.accessoEffettuato$ | async) {
+            <a routerLink="/profile">Profilo</a>
+          } @else {
+            <a routerLink="/register-login">Login/Register</a>
+          }
+        </li>
       </ul>
     </div>
     <div class="footer-section contact">
       <h2>Contattaci</h2>
-      <p>Email: support&#64;animelist.com</p>
+      <p>Email: <a href="mailto:myanimedb.test@gmail.com">support&#64;animelist.com</a></p>
       <p>Telefono: +123 456 7890</p>
     </div>
   </div>
