@@ -2,7 +2,7 @@
   <div class="hero-section">
     <div class="hero-content">
       <h1 class="hero-title">La tua Libreria Anime</h1>
-      <p class="hero-subtitle">Esplora tutti gli anime che hai aggiunto alla tua lista, siano essi completati o in corso.</p>
+      <p class="hero-subtitle">Tieni traccia di cosa hai visto, cosa stai guardando e cosa vuoi ancora recuperare.</p>
     </div>
   </div>
 
@@ -37,6 +37,15 @@
         (click)="setFilter('in visione')">
         In Visione
       </button>
+      <button class="filter-button" [class.active]="filter === 'da vedere'" (click)="setFilter('da vedere')">
+        Da Vedere
+      </button>
+      <button class="filter-button" [class.active]="filter === 'in pausa'" (click)="setFilter('in pausa')">
+        In Pausa
+      </button>
+      <button class="filter-button" [class.active]="filter === 'droppato'" (click)="setFilter('droppato')">
+        Droppati
+      </button>
     </div>
   </div>
 
@@ -67,8 +76,12 @@
               <h3 class="card-title" title="{{ getTitle(anime.details?.data) }}">
                 {{ getTitle(anime.details?.data) || 'Titolo non disponibile' }}
               </h3>
-              <p class="card-status" [class.status-completato]="anime.state === 'completato'"
-                [class.status-in-visione]="anime.state === 'in visione'">
+              <p class="card-status"
+                  [class.status-completato]="anime.state === 'completato'"
+                  [class.status-in-visione]="anime.state === 'in visione'"
+                  [class.status-da-vedere]="anime.state === 'da vedere'"
+                  [class.status-in-pausa]="anime.state === 'in pausa'"
+                  [class.status-droppato]="anime.state === 'droppato'">
                 Stato: {{ anime.state | titlecase }} </p>
               @if (anime.state === 'in visione' && anime.episodiVisti && anime.details?.data?.episodes) {
                  <div class="progress-bar-container">

@@ -62,6 +62,24 @@ export class WatchedAnimeComponent implements OnInit {
           console.error('Errore nel caricamento anime in visione:', error);
           return of([]);
         })
+      ),
+      planToWatch: this.userAnimeService.getAnimeByStatus('plan_to_watch').pipe(
+        catchError(error => {
+          console.error('Errore nel caricamento anime da vedere:', error);
+          return of([]);
+        })
+      ),
+      onHold: this.userAnimeService.getAnimeByStatus('on_hold').pipe(
+        catchError(error => {
+          console.error('Errore nel caricamento anime in pausa:', error);
+          return of([]);
+        })
+      ),
+      dropped: this.userAnimeService.getAnimeByStatus('dropped').pipe(
+        catchError(error => {
+          console.error('Errore nel caricamento anime droppati:', error);
+          return of([]);
+        })
       )
     }).subscribe({
       next: (result) => {
@@ -77,6 +95,27 @@ export class WatchedAnimeComponent implements OnInit {
           ...result.watching.map((anime: any) => ({
             id: anime.animeId.toString(),
             state: 'in visione',
+            episodiVisti: anime.episodesWatched || 0,
+            details: null,
+            userAnimeData: anime
+          })),
+          ...result.planToWatch.map((anime: any) => ({
+            id: anime.animeId.toString(),
+            state: 'da vedere',
+            episodiVisti: anime.episodesWatched || 0,
+            details: null,
+            userAnimeData: anime
+          })),
+          ...result.onHold.map((anime: any) => ({
+            id: anime.animeId.toString(),
+            state: 'in pausa',
+            episodiVisti: anime.episodesWatched || 0,
+            details: null,
+            userAnimeData: anime
+          })),
+          ...result.dropped.map((anime: any) => ({
+            id: anime.animeId.toString(),
+            state: 'droppato',
             episodiVisti: anime.episodesWatched || 0,
             details: null,
             userAnimeData: anime
