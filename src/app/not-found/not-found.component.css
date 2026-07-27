@@ -32,3 +32,23 @@
   background-color: #005fcc;
   transform: scale(1.05);
 }
+
+@media (max-width: 480px) {
+  .not-found-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .not-found-container h1 {
+    font-size: 2rem;
+  }
+
+  .not-found-container p {
+    font-size: 1rem;
+  }
+
+  .btn-home {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+

@@ -44,3 +44,17 @@
   margin-top: 20px;
   color: var(--text-muted);
 }
+
+@media (max-width: 600px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .footer-section {
+    margin: 0;
+    width: 100%;
+  }
+}

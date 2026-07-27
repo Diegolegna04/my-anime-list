@@ -104,3 +104,18 @@
     padding: 0.9rem 1.2rem;
   }
 }
+
+@media (max-width: 480px) {
+  .newsletter-section {
+    padding: 2.2rem 1.2rem;
+    border-radius: 12px;
+  }
+
+  .newsletter-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .newsletter-section p {
+    font-size: 0.9rem;
+  }
+}
