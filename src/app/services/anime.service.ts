@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { shareReplay, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment.prod';
+
+const CACHE_PREFIX = 'animeCache:';
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 @Injectable({
   providedIn: 'root',
@@ -15,14 +18,13 @@ export class AnimeService {
   private animeCache = new Map<string, Observable<any>>();
 
   private requestQueue: (() => void)[] = [];
-  private isProcessingQueue = false;
+  private activeWorkers = 0;
+  private readonly MAX_CONCURRENT_WORKERS = 2;
 
-  // Intervallo base tra una richiesta e l'altra (~2 richieste/secondo)
-  private readonly BASE_INTERVAL_MS = 500;
-  // Se arriva un 429, rallentiamo temporaneamente l'intera coda invece
-  // di lasciare che i singoli retry facciano di testa loro
-  private currentIntervalMs = 500;
-  private readonly MAX_INTERVAL_MS = 2000;
+  private readonly BASE_INTERVAL_MS = 700;
+  private currentIntervalMs = 700;
+  private readonly MAX_INTERVAL_MS = 2500;
+  private successStreak = 0;
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -66,14 +68,20 @@ export class AnimeService {
       return this.animeCache.get(id)!;
     }
 
+    const cached = this.readFromLocalStorage(id);
+    if (cached) {
+      const cached$ = of(cached);
+      this.animeCache.set(id, cached$);
+      return cached$;
+    }
+
     const request$ = new Observable<any>((observer) => {
       const attempt = (retryCount: number = 0) => {
-        // Ogni tentativo, incluso un retry dopo un 429, passa dalla STESSA coda:
-        // niente più richieste "libere" che sfuggono al rate limit
         this.enqueue(() => {
           this.http.get(`${this.apiUrl}/anime/${id}`).subscribe({
             next: (res) => {
               this.onRequestSuccess();
+              this.writeToLocalStorage(id, res);
               observer.next(res);
               observer.complete();
             },
@@ -102,33 +110,66 @@ export class AnimeService {
     return request$;
   }
 
-  private enqueue(fn: () => void): void {
-    this.requestQueue.push(fn);
-    this.processQueue();
+  private readFromLocalStorage(id: string): any | null {
+    try {
+      const raw = localStorage.getItem(CACHE_PREFIX + id);
+      if (!raw) return null;
+
+      const parsed = JSON.parse(raw);
+      if (Date.now() - parsed.timestamp > CACHE_TTL_MS) {
+        localStorage.removeItem(CACHE_PREFIX + id);
+        return null;
+      }
+
+      return parsed.data;
+    } catch {
+      return null;
+    }
   }
 
-  private processQueue(): void {
-    if (this.isProcessingQueue) return;
-    this.isProcessingQueue = true;
+  private writeToLocalStorage(id: string, data: any): void {
+    try {
+      localStorage.setItem(CACHE_PREFIX + id, JSON.stringify({
+        data,
+        timestamp: Date.now()
+      }));
+    } catch {
+      
+    }
+  }
 
-    const runNext = () => {
-      const next = this.requestQueue.shift();
-      if (!next) {
-        this.isProcessingQueue = false;
-        return;
-      }
-      next();
-      setTimeout(runNext, this.currentIntervalMs);
-    };
+  private enqueue(fn: () => void): void {
+    this.requestQueue.push(fn);
+    this.tryStartWorkers();
+  }
 
-    runNext();
+  private tryStartWorkers(): void {
+    while (this.activeWorkers < this.MAX_CONCURRENT_WORKERS && this.requestQueue.length > 0) {
+      this.activeWorkers++;
+      this.runWorker();
+    }
+  }
+
+  private runWorker(): void {
+    const next = this.requestQueue.shift();
+    if (!next) {
+      this.activeWorkers--;
+      return;
+    }
+
+    next();
+
+    setTimeout(() => {
+      this.activeWorkers--;
+      this.tryStartWorkers();
+    }, this.currentIntervalMs);
   }
 
   private onRateLimitHit(): void {
     this.currentIntervalMs = Math.min(this.currentIntervalMs * 2, this.MAX_INTERVAL_MS);
+    this.successStreak = 0;
   }
 
-  private successStreak = 0;
   private onRequestSuccess(): void {
     this.successStreak++;
     if (this.successStreak >= 5 && this.currentIntervalMs > this.BASE_INTERVAL_MS) {
