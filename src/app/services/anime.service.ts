@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { shareReplay, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment.prod';
 
@@ -11,34 +12,34 @@ export class AnimeService {
   private apiUrl = 'https://api.jikan.moe/v4';
   private backendUrl = environment.apiUrl;
 
+  private animeCache = new Map<string, Observable<any>>();
+
+  private requestQueue: (() => void)[] = [];
+  private isProcessingQueue = false;
+  private readonly MIN_REQUEST_INTERVAL_MS = 400; // ~2.5 richieste/secondo, con margine di sicurezza
+
   constructor(private http: HttpClient, private router: Router) {}
 
-  // Ottieni una lista di anime popolari
   getPopularAnime(): Observable<any> {
     return this.http.get(`${this.apiUrl}/top/anime`);
   }
 
-  // Cerca un anime
   searchAnime(query: string, page: number = 1): Observable<any> {
     return this.http.get(`${this.apiUrl}/anime?q=${query}&page=${page}`);
   }
 
-  // Naviga alla pagina dei dettagli di un anime
   goToDetails(id: number): void {
     this.router.navigate(['/anime', id]);
   }
 
-  // Naviga alla pagina di login/registrazione
   goToLoginRegister(): void {
     this.router.navigate(['/register-login']);
   }
 
-  // Naviga alla home
   goToHome(): void {
     this.router.navigate(['/']);
   }
 
-  // Ordina la lista degli anime
   sortAnime(animeList: any[], criteria: string): any[] {
     if (criteria === 'members') {
       return animeList.sort((a, b) => b.members - a.members);
@@ -51,10 +52,66 @@ export class AnimeService {
         return dateB - dateA;
       });
     }
-    return animeList; // Ritorna la lista originale se il criterio non è valido
+    return animeList;
   }
 
   getAnimeById(id: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/anime/${id}`);
+    if (this.animeCache.has(id)) {
+      return this.animeCache.get(id)!;
+    }
+
+    const request$ = new Observable<any>((observer) => {
+      const execute = (attempt: number = 0) => {
+        this.http.get(`${this.apiUrl}/anime/${id}`).subscribe({
+          next: (res) => {
+            observer.next(res);
+            observer.complete();
+          },
+          error: (err: HttpErrorResponse) => {
+            // Se Jikan risponde 429, ritentiamo invece di far sparire l'anime silenziosamente
+            if (err.status === 429 && attempt < 3) {
+              const retryAfterHeader = err.headers?.get('Retry-After');
+              const retryAfterMs = retryAfterHeader
+                ? parseInt(retryAfterHeader, 10) * 1000
+                : 1000 * (attempt + 1);
+
+              setTimeout(() => execute(attempt + 1), retryAfterMs);
+            } else {
+              observer.error(err);
+            }
+          }
+        });
+      };
+
+      // La richiesta entra in coda invece di partire subito
+      this.requestQueue.push(() => execute());
+      this.processQueue();
+    }).pipe(
+      shareReplay({ bufferSize: 1, refCount: false }),
+      catchError((err) => {
+        this.animeCache.delete(id); // Non teniamo in cache i fallimenti definitivi
+        return throwError(() => err);
+      })
+    );
+
+    this.animeCache.set(id, request$);
+    return request$;
+  }
+
+  private processQueue(): void {
+    if (this.isProcessingQueue) return;
+    this.isProcessingQueue = true;
+
+    const runNext = () => {
+      const next = this.requestQueue.shift();
+      if (!next) {
+        this.isProcessingQueue = false;
+        return;
+      }
+      next();
+      setTimeout(runNext, this.MIN_REQUEST_INTERVAL_MS);
+    };
+
+    runNext();
   }
 }

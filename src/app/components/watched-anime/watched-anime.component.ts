@@ -5,7 +5,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-watched-anime',
@@ -22,34 +22,29 @@ export class WatchedAnimeComponent implements OnInit {
 
   titleLanguage: 'english' | 'original' = 'original';
 
-  private readonly REQUEST_CONCURRENCY_LIMIT = 3;
-  private readonly REQUEST_DELAY_MS = 500;
-
   constructor(
-    private animeService: AnimeService, 
+    private animeService: AnimeService,
     private userAnimeService: UserAnimeService,
     private cdr: ChangeDetectorRef,
-    private route: ActivatedRoute // Aggiunto ActivatedRoute
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
-    
-    // Controlla se c'è un filtro nei query parameters
+
     this.route.queryParams.subscribe(params => {
       if (params['filter']) {
         this.filter = params['filter'];
       }
     });
-    
+
     this.loadWatchedAnime();
     window.scroll(0, 0);
   }
 
   loadWatchedAnime(): void {
     this.isLoading = true;
-    
-    // Carica anime "completed" e "watching" dal backend
+
     forkJoin({
       completed: this.userAnimeService.getAnimeByStatus('completed').pipe(
         catchError(error => {
@@ -83,7 +78,6 @@ export class WatchedAnimeComponent implements OnInit {
       )
     }).subscribe({
       next: (result) => {
-        // Combina i risultati e mappa al formato esistente
         this.watchedAnime = [
           ...result.completed.map((anime: any) => ({
             id: anime.animeId.toString(),
@@ -155,28 +149,13 @@ export class WatchedAnimeComponent implements OnInit {
   }
 
   private async processAnimeDetailsRequests(): Promise<void> {
-    const totalRequests = this.watchedAnime.length;
-    let completedRequests = 0;
-
-    const requestQueue: (() => Promise<void>)[] = this.watchedAnime.map(anime => async () => {
-      anime.details = await this.getAnimeDetailsById(anime.id);
-      completedRequests++;
-
-      this.applyFilter();
-      this.cdr.detectChanges();
-    });
-
-    const concurrency = this.REQUEST_CONCURRENCY_LIMIT;
-    const delay = this.REQUEST_DELAY_MS;
-
-    for (let i = 0; i < totalRequests; i += concurrency) {
-      const batch = requestQueue.slice(i, i + concurrency);
-      await Promise.all(batch.map(request => request()));
-
-      if (i + concurrency < totalRequests) {
-        await new Promise(resolve => setTimeout(resolve, delay));
-      }
-    }
+    await Promise.all(
+      this.watchedAnime.map(async (anime) => {
+        anime.details = await this.getAnimeDetailsById(anime.id);
+        this.applyFilter();
+        this.cdr.detectChanges();
+      })
+    );
   }
 
   setFilter(filter: string): void {
@@ -199,12 +178,8 @@ export class WatchedAnimeComponent implements OnInit {
       const titleA = this.getTitle(a.details?.data).toLowerCase();
       const titleB = this.getTitle(b.details?.data).toLowerCase();
 
-      if (titleA < titleB) {
-        return -1;
-      }
-      if (titleA > titleB) {
-        return 1;
-      }
+      if (titleA < titleB) return -1;
+      if (titleA > titleB) return 1;
       return 0;
     });
 
@@ -233,7 +208,6 @@ export class WatchedAnimeComponent implements OnInit {
     this.animeService.goToDetails(id);
   }
 
-  // Metodo per ricaricare i dati (utile per refresh)
   refreshData(): void {
     this.loadWatchedAnime();
   }
