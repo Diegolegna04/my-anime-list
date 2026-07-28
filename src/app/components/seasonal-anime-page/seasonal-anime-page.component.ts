@@ -79,7 +79,7 @@ export class SeasonalAnimePageComponent implements OnInit {
     if (this.isLoading || !this.hasNextPage) return;
 
     this.isLoading = true;
-    const url = `https://api.jikan.moe/v4/seasons/${this.year}/${this.season}?page=${this.currentPage}`;
+    const url = `/api/anime-proxy/seasons/${this.year}/${this.season}?page=${this.currentPage}`;
     
     this.http.get<any>(url).subscribe({
       next: (response) => {

@@ -49,7 +49,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   isTranslating: boolean = false;
   isLoadingUserData: boolean = true;
   isLoadingAnimeData: boolean = true;
-  private readonly animeDetailUrl = 'https://api.jikan.moe/v4/anime';
+  private readonly animeDetailUrl = '/api/anime-proxy/anime';
   private destroy$ = new Subject<void>();
 
   constructor(

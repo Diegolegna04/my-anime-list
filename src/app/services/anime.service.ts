@@ -12,7 +12,7 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
   providedIn: 'root',
 })
 export class AnimeService {
-  private apiUrl = 'https://api.jikan.moe/v4';
+  private apiUrl = '/api/anime-proxy';
   private backendUrl = environment.apiUrl;
 
   private animeCache = new Map<string, Observable<any>>();

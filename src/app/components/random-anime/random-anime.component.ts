@@ -31,7 +31,7 @@ interface AnimeResponse {
   styleUrl: './random-anime.component.css'
 })
 export class RandomAnimeComponent {
-  private animeRandom = 'https://api.jikan.moe/v4/random/anime';
+  private animeRandom = '/api/anime-proxy/random/anime';
   
   anime: AnimeData | null = null;
   loading = false;

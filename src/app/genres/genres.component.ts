@@ -21,7 +21,7 @@ export class GenresComponent implements OnInit {
   themes: any[] = [];
   demographics: any[] = [];
 
-  private genresUrl = 'https://api.jikan.moe/v4/genres/anime';
+  private genresUrl = '/api/anime-proxy/genres/anime';
 
   constructor(private http: HttpClient, private router: Router) {}
 

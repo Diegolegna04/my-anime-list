@@ -30,8 +30,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   currentView: 'list' | 'search' = 'list';
   
-  private topAnimeUrl = 'https://api.jikan.moe/v4/top/anime';
-  private seasonalAnimeUrl = 'https://api.jikan.moe/v4/seasons/now';
+  private topAnimeUrl = '/api/anime-proxy/top/anime';
+  private seasonalAnimeUrl = '/api/anime-proxy/seasons/now';
   currentPage: number = 1;
 
   constructor(

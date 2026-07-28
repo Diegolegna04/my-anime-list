@@ -12,7 +12,7 @@ import {Router} from '@angular/router';
 })
 export class AnimeListComponent implements OnInit {
   animeList: any[] = [];
-  private apiUrl = 'https://api.jikan.moe/v4/top/anime';
+  private apiUrl = '/api/anime-proxy/anime';
 
   constructor(private http: HttpClient, private router: Router) {}
 
