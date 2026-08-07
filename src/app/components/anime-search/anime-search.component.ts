@@ -3,8 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AnimeService } from '../../services/anime.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin, of } from 'rxjs';
-import { catchError, delay } from 'rxjs/operators';
+import { from, of } from 'rxjs';
+import { catchError, delay, concatMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-anime-search',
@@ -26,7 +26,6 @@ export class AnimeSearchComponent implements OnInit {
   isLoading: boolean = false;
   loadingProgress: number = 0;
   
-  // Paginazione per "Carica Altri"
   private itemsPerPage: number = 25;
   private currentDisplayPage: number = 1;
 
@@ -53,73 +52,57 @@ export class AnimeSearchComponent implements OnInit {
     this.searchResults = [];
     this.displayedResults = [];
     this.currentDisplayPage = 1;
-
-    // Prima richiesta per ottenere il numero totale di pagine
-    this.animeService.searchAnime(query, 1).subscribe(
-      (response: { data: any[]; pagination?: any; }) => {
+  
+    this.animeService.searchAnime(query, 1).subscribe({
+      next: (response: { data: any[]; pagination?: any }) => {
         const firstPageData = response.data;
         const totalPages = response.pagination?.last_visible_page || 1;
-        const maxPages = Math.min(totalPages, 5); // Limita a max 5 pagine (125 risultati)
-
+        const maxPages = Math.min(totalPages, 5);
+  
+        this.searchResults = this.removeDuplicates(firstPageData);
+        this.loadingProgress = Math.round((1 / maxPages) * 100);
+  
         if (maxPages === 1) {
-          // Solo una pagina, mostra subito i risultati
-          this.searchResults = this.removeDuplicates(firstPageData);
           this.applySort();
           this.updateDisplayedResults();
           this.isLoading = false;
           return;
         }
-
-        // Carica tutte le pagine in parallelo con rate limiting
-        const pageRequests = [];
-        
-        // Aggiungi la prima pagina che abbiamo già
-        pageRequests.push(of(firstPageData));
-
-        // Crea richieste per le altre pagine con delay per evitare rate limiting
-        for (let page = 2; page <= maxPages; page++) {
-          const delayTime = (page - 2) * 350; // 350ms tra ogni richiesta
-          pageRequests.push(
+  
+        const pageNumbers = Array.from({ length: maxPages - 1 }, (_, i) => i + 2);
+  
+        from(pageNumbers).pipe(
+          concatMap(page =>
             this.animeService.searchAnime(query, page).pipe(
-              delay(delayTime),
+              delay(400),
               catchError(error => {
-                console.error(`Error loading page ${page}:`, error);
+                console.error(`Errore caricando la pagina ${page}:`, error);
                 return of({ data: [] });
               })
             )
-          );
-        }
-
-        // Esegui tutte le richieste
-        let completedRequests = 0;
-        pageRequests.forEach((request, index) => {
-          request.subscribe((pageResponse: any) => {
-            completedRequests++;
-            this.loadingProgress = Math.round((completedRequests / maxPages) * 100);
-
-            // Aggiungi i risultati della pagina
+          )
+        ).subscribe({
+          next: (pageResponse: any) => {
             const pageData = Array.isArray(pageResponse) ? pageResponse : pageResponse.data;
             this.searchResults = [...this.searchResults, ...pageData];
-
-            // Se tutte le richieste sono completate
-            if (completedRequests === maxPages) {
-              this.searchResults = this.removeDuplicates(this.searchResults);
-              this.applySort();
-              this.updateDisplayedResults();
-              this.isLoading = false;
-              this.loadingProgress = 100;
-            }
-          });
+            this.loadingProgress = Math.min(100, this.loadingProgress + Math.round(100 / maxPages));
+          },
+          complete: () => {
+            this.searchResults = this.removeDuplicates(this.searchResults);
+            this.applySort();
+            this.updateDisplayedResults();
+            this.isLoading = false;
+            this.loadingProgress = 100;
+          }
         });
       },
-      (error) => {
-        console.error('Error during search:', error);
+      error: (error) => {
+        console.error('Errore durante la ricerca:', error);
         this.isLoading = false;
       }
-    );
+    });
   }
 
-  // Rimuove duplicati basandosi su mal_id
   private removeDuplicates(animeList: any[]): any[] {
     const uniqueMap = new Map();
     animeList.forEach(anime => {
@@ -130,18 +113,15 @@ export class AnimeSearchComponent implements OnInit {
     return Array.from(uniqueMap.values());
   }
 
-  // Applica l'ordinamento selezionato
   private applySort(): void {
     this.searchResults = this.sortAnime([...this.searchResults], this.selectedSortCriteria);
   }
 
-  // Aggiorna i risultati visualizzati (paginazione lato client)
   private updateDisplayedResults(): void {
     const endIndex = this.currentDisplayPage * this.itemsPerPage;
     this.displayedResults = this.searchResults.slice(0, endIndex);
   }
 
-  // Funzione di ordinamento
   private sortAnime(animeList: any[], criteria: string): any[] {
     if (!animeList || animeList.length === 0) {
       return [];
