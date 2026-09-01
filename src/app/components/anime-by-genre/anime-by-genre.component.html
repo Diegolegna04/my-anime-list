@@ -1,5 +1,4 @@
 <div class="genre-results-page">
-  <!-- Titolo e Controlli -->
   <div class="section-header">
     <h2 class="section-title">Risultati per {{ genreName?.toLowerCase() }}</h2>
     <div class="section-controls">
@@ -22,35 +21,25 @@
       </div>
     </div>
     @if (genreDescription) {
-      <p class="genre-description">{{ genreDescription }}</p>
-    }
-  </div>
-
-  <!-- Lista Anime -->
-  <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
-    @for (anime of animeList; track anime) {
-      <div class="anime-card" (click)="goToDetails(anime.mal_id)">
-        <div class="img-wrapper">
-          <img [src]="anime.images.jpg.image_url" alt="{{ getTitle(anime) }}" />
-        </div>
-        <div class="anime-card-content">
-          <h3 class="anime-title">{{ getTitle(anime) }}</h3>
-          <div class="anime-meta">
-            @if (anime.score) {
-              <div class="anime-score">
-                <i class="fas fa-star"></i> {{anime.score}}
-              </div>
-            }
-            <div class="anime-type">
-              {{anime.type || 'N/A'}}
-            </div>
-          </div>
-        </div>
+      <div class="genre-description-wrapper">
+        <p class="genre-description" [class.expanded]="isDescriptionExpanded">{{ genreDescription }}</p>
+        <button class="toggle-description-btn" (click)="isDescriptionExpanded = !isDescriptionExpanded">
+          {{ isDescriptionExpanded ? 'Mostra meno' : 'Leggi tutto' }}
+        </button>
       </div>
     }
   </div>
 
-  <!-- Bottone Carica Altri -->
+  <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
+    @for (anime of animeList; track anime.mal_id) {
+      <app-anime-card
+        [anime]="anime"
+        [titleLanguage]="titleLanguage"
+        [viewMode]="isGridView ? 'grid' : 'list'">
+      </app-anime-card>
+    }
+  </div>
+
   @if (!isLoading) {
     <button (click)="loadMoreAnime()" class="load-more-btn">
       <i class="fas fa-plus-circle"></i> Carica Altri Anime

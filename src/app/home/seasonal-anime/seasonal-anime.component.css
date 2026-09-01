@@ -7,36 +7,6 @@
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.section-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--text-primary);
-  position: relative;
-  padding-left: 1rem;
-}
-
-.section-title::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 1.4rem;
-  background: linear-gradient(180deg, var(--accent-color), var(--accent-hover));
-  border-radius: 4px;
-}
-
 .season-tag {
   background: linear-gradient(135deg, #ff7043, #ff5722);
   color: white;
@@ -194,10 +164,14 @@
 }
 
 .seasonal-anime-card .img-wrapper::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.55) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 60%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -277,7 +251,7 @@
 }
 
 .load-more-btn::after {
-  content: '→';
+  content: "→";
   transition: transform 0.3s ease;
 }
 
@@ -295,10 +269,6 @@
   .seasonal-section {
     padding: 1.25rem;
     border-radius: 12px;
-  }
-
-  .section-header {
-    gap: 0.6rem;
   }
 
   .seasonal-anime-card {

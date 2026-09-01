@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { GenreService } from '../services/genre.service';
+import { GenreService, Genre } from '../services/genre.service';
 
 @Component({
   selector: 'app-genres',
@@ -14,12 +14,11 @@ import { GenreService } from '../services/genre.service';
   ]
 })
 export class GenresComponent implements OnInit {
-  genres: any[] = [];
   isLoading: boolean = true;
-  mainGenres: any[] = [];
-  explicitGenres: any[] = [];
-  themes: any[] = [];
-  demographics: any[] = [];
+  mainGenres: Genre[] = [];
+  explicitGenres: Genre[] = [];
+  themes: Genre[] = [];
+  demographics: Genre[] = [];
 
   constructor(private router: Router, private genreService: GenreService) {}
 
@@ -30,8 +29,10 @@ export class GenresComponent implements OnInit {
   loadGenres(): void {
     this.genreService.getAllGenres().subscribe({
       next: (genres) => {
-        this.genres = genres.map(g => ({ mal_id: g.id, name: g.name }));
-        this.categorizeGenres();
+        this.mainGenres = genres.filter(g => g.category === 'genres');
+        this.explicitGenres = genres.filter(g => g.category === 'explicit_genres');
+        this.themes = genres.filter(g => g.category === 'themes');
+        this.demographics = genres.filter(g => g.category === 'demographics');
         this.isLoading = false;
       },
       error: (error) => {
@@ -39,43 +40,6 @@ export class GenresComponent implements OnInit {
         this.isLoading = false;
       }
     });
-  }
-
-  categorizeGenres(): void {
-    this.mainGenres = this.genres.filter((genre: any) =>
-      ['action',
-        'adventure',
-        'comedy',
-        'drama',
-        'fantasy',
-        'horror',
-        'mystery',
-        'romance',
-        'sci-fi',
-        'slice of life',
-        'sports',
-        'suspense'].includes(genre.name.toLowerCase())
-    );
-    this.explicitGenres = this.genres.filter((genre: any) =>
-      ['ecchi', 'hentai', 'erotica'].includes(genre.name.toLowerCase())
-    );
-    this.themes = this.genres.filter((genre: any) =>
-      ['adult cast',
-        'anthropomorphic',
-        'cyberpunk',
-        'delinquents',
-        'gore',
-        'magical sex shift',
-        'military',
-        'mythology',
-        'psychological',
-        'super power',
-        'survival',
-        'workplace'].includes(genre.name.toLowerCase())
-    );
-    this.demographics = this.genres.filter((genre: any) =>
-      ['josei', 'seinen', 'shoujo', 'shounen'].includes(genre.name.toLowerCase())
-    );
   }
 
   viewAnimeByGenre(genreId: number, genreName: string): void {

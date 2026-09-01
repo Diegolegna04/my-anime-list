@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AnimeService } from '../../services/anime.service';
 import { GenreService } from '../../services/genre.service';
+import { AnimeCardComponent } from '../../services/shared/anime-card.component';
 import { getGenreDescription } from '../../services/constants/anime-genre-descriptions';
 
 @Component({
@@ -10,7 +11,7 @@ import { getGenreDescription } from '../../services/constants/anime-genre-descri
   standalone: true,
   templateUrl: './anime-by-genre.component.html',
   styleUrls: ['./anime-by-genre.component.css'],
-  imports: [],
+  imports: [AnimeCardComponent],
 })
 export class AnimeByGenreComponent implements OnInit {
   animeList: any[] = [];
@@ -23,6 +24,7 @@ export class AnimeByGenreComponent implements OnInit {
   isLoading: boolean = false;
   currentSortCriteria: string = 'score';
   genreDescription: string | null = null;
+  isDescriptionExpanded: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -84,10 +86,6 @@ export class AnimeByGenreComponent implements OnInit {
     this.isGridView = !this.isGridView;
   }
 
-  goToDetails(id: number): void {
-    this.animeService.goToDetails(id);
-  }
-
   sortAnime(event: Event): void {
     const target = event.target as HTMLSelectElement;
     const criteria = target.value;
@@ -100,14 +98,6 @@ export class AnimeByGenreComponent implements OnInit {
   toggleTitleLanguage(): void {
     this.titleLanguage = this.titleLanguage === 'english' ? 'original' : 'english';
     localStorage.setItem('titleLanguage', this.titleLanguage);
-  }
-
-  getTitle(anime: any): string {
-    if (this.titleLanguage === 'english') {
-      return anime.title_english || anime.title;
-    } else {
-      return anime.title || anime.title_english;
-    }
   }
 
   loadMoreAnime(): void {

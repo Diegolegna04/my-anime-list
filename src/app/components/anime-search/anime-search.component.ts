@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AnimeService } from '../../services/anime.service';
+import { AnimeCardComponent } from '../../services/shared/anime-card.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { from, of } from 'rxjs';
@@ -12,7 +13,8 @@ import { catchError, delay, concatMap } from 'rxjs/operators';
   styleUrls: ['./anime-search.component.css'],
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    AnimeCardComponent
   ],
   standalone: true,
 })

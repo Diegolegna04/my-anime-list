@@ -1,5 +1,4 @@
 <div class="genre-results-page">
-  <!-- Titolo e Controlli -->
   <div class="section-header">
     <h2 class="section-title">Risultati per "{{ query }}"</h2>
     <div class="section-controls">
@@ -23,7 +22,6 @@
     </div>
   </div>
 
-  <!-- Loading Progress Bar -->
   @if (isLoading) {
     <div class="loading-container">
       <div class="loading-spinner"></div>
@@ -31,38 +29,19 @@
     </div>
   }
 
-  <!-- Lista Anime -->
   @if (!isLoading) {
     <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
       @for (anime of displayedResults; track anime.mal_id) {
-        <div class="anime-card" (click)="goToDetails(anime.mal_id)" title="{{ getTitle(anime) }}">
-          <div class="img-wrapper">
-            <img [src]="anime.images?.jpg?.image_url" alt="{{ getTitle(anime) }}" />
-          </div>
-          <div class="anime-card-content">
-            <h3 class="anime-title">{{ getTitle(anime) }}</h3>
-            <div class="anime-meta">
-              @if (anime.score) {
-                <div class="anime-score">
-                  <i class="fas fa-star"></i> {{ anime.score.toFixed(1) }}
-                </div>
-              }
-              <div class="anime-type">
-                {{ anime.type || 'N/A' }}
-              </div>
-            </div>
-            @if (!isGridView && anime.synopsis) {
-              <div class="anime-synopsis">
-                {{ anime.synopsis.length > 150 ? (anime.synopsis | slice:0:150) + '...' : anime.synopsis }}
-              </div>
-            }
-          </div>
-        </div>
+        <app-anime-card
+          [anime]="anime"
+          [titleLanguage]="titleLanguage"
+          [viewMode]="isGridView ? 'grid' : 'list'"
+          [showSynopsis]="true">
+        </app-anime-card>
       }
     </div>
   }
 
-  <!-- Messaggio Nessun Risultato -->
   @if (displayedResults.length === 0 && !isLoading) {
     <div class="no-results">
       <p>
@@ -72,14 +51,12 @@
     </div>
   }
 
-  <!-- Bottone Carica Altri Risultati -->
   @if (hasMoreResults && !isLoading) {
     <button (click)="loadMoreResults()" class="load-more-btn">
       <i class="fas fa-plus"></i> Carica Altri Risultati ({{ displayedResults.length }}/{{ searchResults.length }})
     </button>
   }
 
-  <!-- Bottone Torna alla Home -->
   @if (displayedResults.length > 0 && !isLoading) {
     <button (click)="goBackToHome()" class="load-more-btn secondary">
       <i class="fas fa-home"></i> Torna alla Home

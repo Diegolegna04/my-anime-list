@@ -1,0 +1,24 @@
+<div class="anime-card" [class.list-card]="viewMode === 'list'" [routerLink]="['/anime', anime.mal_id]" [title]="title">
+    @if (rank !== null) {
+      <span class="anime-card-rank">#{{ rank }}</span>
+    }
+    <div class="img-wrapper">
+      <img [src]="anime.images?.jpg?.image_url" [alt]="title" />
+    </div>
+    <div class="anime-card-content">
+      <h3 class="anime-title">{{ title }}</h3>
+      <div class="anime-meta">
+        @if (anime.score) {
+          <div class="anime-score">
+            <i class="fas fa-star"></i> {{ anime.score }}
+          </div>
+        }
+        <div class="anime-type">
+          {{ anime.type || 'N/A' }}
+        </div>
+      </div>
+      @if (viewMode === 'list' && showSynopsis && anime.synopsis) {
+        <div class="anime-synopsis">{{ truncatedSynopsis }}</div>
+      }
+    </div>
+</div>

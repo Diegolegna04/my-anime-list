@@ -18,7 +18,7 @@
 
 .seasonal-header::before,
 .seasonal-header::after {
-  content: '';
+  content: "";
   position: absolute;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.08);
@@ -101,42 +101,6 @@
   margin: 0 auto;
   box-shadow: var(--card-shadow);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.section-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--text-primary);
-  position: relative;
-  padding-left: 1rem;
-}
-
-.section-title::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 1.4rem;
-  background: linear-gradient(180deg, var(--accent-color), var(--accent-hover));
-  border-radius: 4px;
-}
-
-.section-controls {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
 }
 
 .language-toggle-btn {
@@ -232,10 +196,14 @@
 }
 
 .img-wrapper::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.5) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 60%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -385,8 +353,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text {
@@ -467,21 +439,50 @@
 }
 
 @media (max-width: 768px) {
-  .seasonal-header { padding: 2rem 1rem; }
-  .season-navigation { flex-direction: column; gap: 1.5rem; }
-  .current-season { margin: 0; }
-  .current-season h1 { font-size: 2rem; }
-  .nav-season-btn { width: 100%; justify-content: center; }
-  .seasonal-controls-section { padding: 1.5rem; }
-  .section-controls { flex-direction: column; gap: 0.8rem; align-items: flex-end; }
-  .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-  .img-wrapper { height: 200px; }
-  .list .anime-card { flex-direction: column; height: auto; }
-  .list .img-wrapper { width: 100%; height: 150px; }
+  .seasonal-header {
+    padding: 2rem 1rem;
+  }
+  .season-navigation {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .current-season {
+    margin: 0;
+  }
+  .current-season h1 {
+    font-size: 2rem;
+  }
+  .nav-season-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .seasonal-controls-section {
+    padding: 1.5rem;
+  }
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  .img-wrapper {
+    height: 200px;
+  }
+  .list .anime-card {
+    flex-direction: column;
+    height: auto;
+  }
+  .list .img-wrapper {
+    width: 100%;
+    height: 150px;
+  }
 }
 
 @media (max-width: 480px) {
-  .grid { grid-template-columns: 1fr; }
-  .current-season h1 { font-size: 1.8rem; }
-  .seasonal-header { padding: 1.5rem 1rem; }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .current-season h1 {
+    font-size: 1.8rem;
+  }
+  .seasonal-header {
+    padding: 1.5rem 1rem;
+  }
 }

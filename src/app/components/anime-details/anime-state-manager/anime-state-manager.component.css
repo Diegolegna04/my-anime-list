@@ -19,16 +19,6 @@
   gap: 1rem;
 }
 
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
-}
-
 .title-icon {
   font-size: 1.4rem;
   line-height: 1;
@@ -320,10 +310,6 @@
 
   .button-icon {
     font-size: 1.5rem;
-  }
-
-  .section-title {
-    font-size: 1.1rem;
   }
 }
 
