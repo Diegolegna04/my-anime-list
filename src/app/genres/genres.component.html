@@ -24,10 +24,10 @@
           <i class="fas fa-bookmark category-icon"></i> Generi Principali
         </h2>
         <div class="genres-grid">
-          @for (genre of mainGenres; track genre.mal_id) {
+          @for (genre of mainGenres; track genre.id) {
             <div
               class="genres-card"
-              (click)="viewAnimeByGenre(genre.mal_id, genre.name)"
+              (click)="viewAnimeByGenre(genre.id, genre.name)"
             >
               <div class="card-icon">
                 <i class="fas fa-play"></i> </div>
@@ -42,10 +42,10 @@
           <i class="fas fa-mask category-icon explicit-icon"></i> Generi Espliciti
         </h2>
         <div class="genres-grid">
-          @for (genre of explicitGenres; track genre.mal_id) {
+          @for (genre of explicitGenres; track genre.id) {
             <div
               class="genres-card explicit-card"
-              (click)="viewAnimeByGenre(genre.mal_id, genre.name)"
+              (click)="viewAnimeByGenre(genre.id, genre.name)"
             >
               <div class="card-icon">
                 <i class="fas fa-eye-slash"></i> </div>
@@ -60,10 +60,10 @@
           <i class="fas fa-lightbulb category-icon"></i> Temi Anime
         </h2>
         <div class="genres-grid">
-          @for (genre of themes; track genre.mal_id) {
+          @for (genre of themes; track genre.id) {
             <div
               class="genres-card"
-              (click)="viewAnimeByGenre(genre.mal_id, genre.name)"
+              (click)="viewAnimeByGenre(genre.id, genre.name)"
             >
               <div class="card-icon">
                 <i class="fas fa-star"></i> </div>
@@ -78,10 +78,10 @@
           <i class="fas fa-users category-icon"></i> Demografia
         </h2>
         <div class="genres-grid">
-          @for (genre of demographics; track genre.mal_id) {
+          @for (genre of demographics; track genre.id) {
             <div
               class="genres-card"
-              (click)="viewAnimeByGenre(genre.mal_id, genre.name)"
+              (click)="viewAnimeByGenre(genre.id, genre.name)"
             >
               <div class="card-icon">
                 <i class="fas fa-child"></i> </div>
