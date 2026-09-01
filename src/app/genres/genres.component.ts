@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { GenreService } from '../services/genre.service';
 
 @Component({
   selector: 'app-genres',
@@ -21,26 +21,24 @@ export class GenresComponent implements OnInit {
   themes: any[] = [];
   demographics: any[] = [];
 
-  private genresUrl = '/api/anime-proxy/genres/anime';
-
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private router: Router, private genreService: GenreService) {}
 
   ngOnInit(): void {
     this.loadGenres();
   }
 
   loadGenres(): void {
-    this.http.get<any>(this.genresUrl).subscribe(
-      (response) => {
-        this.genres = response.data;
+    this.genreService.getAllGenres().subscribe({
+      next: (genres) => {
+        this.genres = genres.map(g => ({ mal_id: g.id, name: g.name }));
         this.categorizeGenres();
         this.isLoading = false;
       },
-      (error) => {
+      error: (error) => {
         console.error('Error loading genres:', error);
         this.isLoading = false;
       }
-    );
+    });
   }
 
   categorizeGenres(): void {
@@ -63,7 +61,7 @@ export class GenresComponent implements OnInit {
     );
     this.themes = this.genres.filter((genre: any) =>
       ['adult cast',
-        'anthropomorphic', 
+        'anthropomorphic',
         'cyberpunk',
         'delinquents',
         'gore',
