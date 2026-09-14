@@ -3,7 +3,6 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, of, timer } from 'rxjs';
 import { shareReplay, catchError, mergeMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { environment } from '../../environments/environment.prod';
 
 const CACHE_PREFIX = 'animeCache:';
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
@@ -13,7 +12,6 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 })
 export class AnimeService {
   private apiUrl = '/api/anime-proxy';
-  private backendUrl = environment.apiUrl;
 
   private animeCache = new Map<string, Observable<any>>();
 
