@@ -132,7 +132,7 @@ export class LoginRegisterComponent implements OnInit {
     const requestBody = {
       username: this.registerData.username,
       email: this.registerData.email,
-      password: this.loginData.password
+      password: this.registerData.password
     };
 
     this.http
