@@ -1,90 +1,187 @@
-.sort-select label {
+/* Colori locali: l'accento puro (#7c4dff) non regge il contrasto come testo
+   né sotto testo bianco, quindi qui si usano le sue varianti più scure/chiare. */
+:host {
+  --accent-fill: #6a45e5;
+  --accent-text: #5b35d6;
+  --accent-soft: rgba(124, 77, 255, 0.12);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
+}
+
+:host-context(.dark-theme) {
+  --accent-text: #b8a2ff;
+  --accent-soft: rgba(124, 77, 255, 0.22);
+}
+
+/* Header e griglia condividono larghezza e margini */
+.genre-results-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 2rem 3rem;
+}
+
+/* --- Intestazione del genere --- */
+.genre-hero {
+  margin-bottom: 1.75rem;
+  padding: 1.5rem 1.75rem 1.4rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.18s var(--ease-out);
+}
+
+.back-link:hover {
+  color: var(--accent-text);
+}
+
+.genre-hero-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+}
+
+.genre-title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
+  text-wrap: balance;
+}
+
+.genre-meta {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.genre-meta span {
+  margin: 0 0.3rem;
+}
+
+.genre-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.sort-select {
+  display: flex;
+  align-items: center;
+}
+
+.sort-select label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
   margin-right: 0.5rem;
 }
 
 .sort-select select {
-  padding: 0.6rem 2rem 0.6rem 1rem;
-  font-size: 0.95rem;
-  border-radius: 20px;
-  border: 2px solid var(--border-color);
-  background-color: var(--bg-secondary);
+  height: 38px;
+  padding: 0 2.1rem 0 0.95rem;
+  font-size: 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
   color: var(--text-primary);
   outline: none;
-  transition: all 0.3s ease;
+  transition: border-color 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right 10px center;
+  background-position: right 12px center;
   background-size: 14px;
 }
 
-.sort-select select:hover,
-.sort-select select:focus {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.15);
+.sort-select select:hover {
+  border-color: var(--text-muted);
+}
+
+.sort-select select:focus-visible {
+  border-color: var(--accent-fill);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .language-toggle-btn {
-  background-color: var(--accent-color);
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 38px;
+  padding: 0 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 8px rgba(124, 77, 255, 0.25);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  transition: border-color 0.18s var(--ease-out), color 0.18s var(--ease-out);
 }
 
 .language-toggle-btn:hover {
-  background-color: var(--accent-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(124, 77, 255, 0.35);
+  border-color: var(--accent-fill);
+  color: var(--accent-text);
 }
 
+/* Griglia / lista: due pulsanti affiancati, quello attivo evidenziato */
 .view-toggle {
-  display: flex;
-  gap: 0.5rem;
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: var(--bg-primary);
 }
 
 .view-toggle button {
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: 50%;
-  width: 38px;
-  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 34px;
+  height: 30px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.3s ease;
-  color: var(--text-primary);
+  transition: background-color 0.18s var(--ease-out), color 0.18s var(--ease-out);
 }
 
 .view-toggle button:hover {
-  background-color: var(--accent-color);
-  border-color: var(--accent-color);
-  color: white;
-  transform: scale(1.08);
+  color: var(--text-primary);
 }
 
 .view-toggle button.active {
-  background-color: var(--accent-color);
-  border-color: var(--accent-color);
-  color: white;
+  background: var(--accent-fill);
+  color: #fff;
+}
+
+.back-link:focus-visible,
+.language-toggle-btn:focus-visible,
+.view-toggle button:focus-visible,
+.toggle-description-btn:focus-visible {
+  outline: 2px solid var(--accent-fill);
+  outline-offset: 2px;
 }
 
 .anime-container {
-  padding: 1rem 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 0;
 }
 
 .grid {
@@ -159,8 +256,9 @@
 }
 
 .genre-description-wrapper {
-  width: 100%;
-  margin-top: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
 }
 
 .genre-lead {
@@ -219,8 +317,18 @@
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
-  .anime-container {
-    padding: 1rem;
+  .genre-results-page {
+    padding: 1.25rem 1rem 2.5rem;
+  }
+  .genre-hero {
+    padding: 1.1rem 1.1rem 1rem;
+    border-radius: 14px;
+  }
+  .genre-title {
+    font-size: 1.6rem;
+  }
+  .genre-hero-main {
+    align-items: flex-start;
   }
 }
 @media (max-width: 480px) {
@@ -229,7 +337,15 @@
     gap: 0.75rem;
   }
 
-  .anime-container {
-    padding: 0.75rem;
+  .genre-results-page {
+    padding: 1rem 0.75rem 2rem;
+  }
+  /* Su schermi stretti l'etichetta "Ordina per" ruba spazio al menu */
+  .sort-select label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
   }
 }

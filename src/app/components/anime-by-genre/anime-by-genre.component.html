@@ -1,23 +1,43 @@
 <div class="genre-results-page">
-  <div class="section-header">
-    <h2 class="section-title">Risultati per {{ genreName?.toLowerCase() }}</h2>
-    <div class="section-controls">
-      <div class="sort-select">
-        <label for="sortCriteria">Ordina per:</label>
-        <select id="sortCriteria" [value]="currentSortCriteria" (change)="sortAnime($event)">
-          <option value="score">Voti</option>
-          <option value="members">Membri</option>
-          <option value="date">Novità</option>
-        </select>
+  <header class="genre-hero">
+    <a routerLink="/genres" class="back-link">
+      <i class="fas fa-arrow-left" aria-hidden="true"></i> Tutti i generi
+    </a>
+
+    <div class="genre-hero-main">
+      <div class="genre-heading">
+        <h1 class="genre-title">{{ genreName }}</h1>
+        @if (genreMeta) {
+          <p class="genre-meta">
+            {{ genreMeta.categoryLabel }}
+            @if (genreMeta.count) {
+              <span aria-hidden="true">·</span> {{ genreMeta.count }} anime su MyAnimeList
+            }
+          </p>
+        }
       </div>
-      <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
-        <i class="fas fa-language"></i>
-        {{titleLanguage === 'english' ? 'Titolo Giapponese' : 'Titolo Inglese'}}
-      </button>
-      <div class="view-toggle">
-        <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
-          <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th-large'"></i>
+
+      <div class="genre-controls">
+        <div class="sort-select">
+          <label for="sortCriteria">Ordina per</label>
+          <select id="sortCriteria" [value]="currentSortCriteria" (change)="sortAnime($event)">
+            <option value="score">Voti</option>
+            <option value="members">Membri</option>
+            <option value="date">Novità</option>
+          </select>
+        </div>
+        <button type="button" (click)="toggleTitleLanguage()" class="language-toggle-btn">
+          <i class="fas fa-language" aria-hidden="true"></i>
+          {{titleLanguage === 'english' ? 'Titolo giapponese' : 'Titolo inglese'}}
         </button>
+        <div class="view-toggle" role="group" aria-label="Visualizzazione">
+          <button type="button" [class.active]="isGridView" [attr.aria-pressed]="isGridView" (click)="setGridView(true)" aria-label="Griglia">
+            <i class="fas fa-th-large" aria-hidden="true"></i>
+          </button>
+          <button type="button" [class.active]="!isGridView" [attr.aria-pressed]="!isGridView" (click)="setGridView(false)" aria-label="Lista">
+            <i class="fas fa-list" aria-hidden="true"></i>
+          </button>
+        </div>
       </div>
     </div>
     @if (genreShortDescription || genreDescription) {
@@ -41,7 +61,7 @@
         }
       </div>
     }
-  </div>
+  </header>
 
   <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
     @for (anime of animeList; track anime.mal_id) {
