@@ -5,7 +5,6 @@ import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ToastService } from '../services/toast.service';
-import * as CryptoJS from 'crypto-js';
 
 @Component({
   selector: 'app-login-register',

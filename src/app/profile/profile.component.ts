@@ -7,7 +7,6 @@ import { UserAnimeService } from '../services/userAnimeService.service';
 import { AuthService } from '../services/auth.service';
 import { ToastService } from '../services/toast.service';
 import { Subscription, firstValueFrom } from 'rxjs';
-import * as CryptoJS from 'crypto-js';
 
 @Component({
   selector: 'app-user-profile',
@@ -37,6 +36,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   settingsData = {
     username: '',
+    currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   };
@@ -154,6 +154,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.pendingProfileImage = null;
 
     this.settingsData.username = this.username;
+    this.settingsData.currentPassword = '';
     this.settingsData.newPassword = '';
     this.settingsData.confirmPassword = '';
 
@@ -259,16 +260,22 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.toastService.show('La password deve avere almeno 6 caratteri.', 'error');
         return;
       }
+      if (!this.settingsData.currentPassword) {
+        this.toastService.show('Inserisci la password attuale per cambiarla.', 'error');
+        return;
+      }
     }
 
-    const payload: { username?: string; password?: string; profileImage?: string } = {};
+    const payload: { username?: string; password?: string; currentPassword?: string; profileImage?: string } = {};
 
     if (this.settingsData.username && this.settingsData.username !== this.username) {
       payload.username = this.settingsData.username;
     }
 
+    // La password viaggia in chiaro su HTTPS: è il backend a fare l'hash con bcrypt
     if (this.settingsData.newPassword) {
-      payload.password = CryptoJS.SHA256(this.settingsData.newPassword).toString();
+      payload.password = this.settingsData.newPassword;
+      payload.currentPassword = this.settingsData.currentPassword;
     }
 
     if (this.pendingProfileImage) {
@@ -295,6 +302,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
     } catch (error: any) {
       if (error.status === 409) {
         this.toastService.show('Username già in uso.', 'error');
+      } else if (error.status === 403) {
+        this.toastService.show('Password attuale errata.', 'error');
+      } else if (error.status === 401) {
+        this.toastService.show('Sessione scaduta, effettua di nuovo il login.', 'error');
+      } else if (error.status === 400) {
+        this.toastService.show(error.error?.error || 'Dati non validi.', 'error');
       } else {
         this.toastService.show('Errore durante il salvataggio. Riprova.', 'error');
       }

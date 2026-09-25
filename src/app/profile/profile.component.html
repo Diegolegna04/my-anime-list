@@ -77,6 +77,20 @@
               />
             </div>
 
+            @if (settingsData.newPassword) {
+              <div class="settings-field">
+                <label for="settings-current-password">Password attuale</label>
+                <input
+                  id="settings-current-password"
+                  type="password"
+                  name="settingsCurrentPassword"
+                  [(ngModel)]="settingsData.currentPassword"
+                  placeholder="Serve per confermare il cambio"
+                  autocomplete="current-password"
+                />
+              </div>
+            }
+
             @if (pendingProfileImage) {
               <p class="pending-image-note">
                 <i class="fas fa-info-circle"></i>
