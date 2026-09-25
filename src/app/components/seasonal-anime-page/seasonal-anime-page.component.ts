@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { AnimeService } from '../../services/anime.service';
+import { currentSeason, uniqueByMalId } from '../../services/anime-utils';
 
 @Component({
   selector: 'app-seasonal-anime',
@@ -79,7 +80,13 @@ export class SeasonalAnimePageComponent implements OnInit {
     if (this.isLoading || !this.hasNextPage) return;
 
     this.isLoading = true;
-    const url = `/api/anime-proxy/seasons/${this.year}/${this.season}?page=${this.currentPage}`;
+    // Per la stagione in corso si usa seasons/now: Jikan lo tiene in cache e
+    // risponde anche quando le richieste per anno/stagione danno 504
+    const now = currentSeason();
+    const isCurrent = this.season === now.season && this.year === now.year;
+    const url = isCurrent
+      ? `/api/anime-proxy/seasons/now?page=${this.currentPage}`
+      : `/api/anime-proxy/seasons/${this.year}/${this.season}?page=${this.currentPage}`;
     
     this.http.get<any>(url).subscribe({
       next: (response) => {
@@ -88,7 +95,7 @@ export class SeasonalAnimePageComponent implements OnInit {
             .filter((anime: any) => anime.images?.jpg?.image_url)
             .sort((a: any, b: any) => (b.score || 0) - (a.score || 0));
           
-          this.seasonalAnimeList = [...this.seasonalAnimeList, ...newAnime];
+          this.seasonalAnimeList = uniqueByMalId([...this.seasonalAnimeList, ...newAnime]);
           this.hasNextPage = response.pagination?.has_next_page || false;
         } else {
           this.hasNextPage = false;

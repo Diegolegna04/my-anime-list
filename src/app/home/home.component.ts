@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { AnimeService } from '../services/anime.service';
+import { uniqueByMalId } from '../services/anime-utils';
 import { RandomAnimeComponent } from "../components/random-anime/random-anime.component";
 import { HeroSectionComponent } from './hero-section/hero-section.component';
 import { TopAnimeComponent } from './top-anime/top-anime.component';
@@ -70,7 +71,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   loadSeasonalAnime(): void {
     this.isLoading = true;
     this.http.get<any>(this.seasonalAnimeUrl).subscribe((response) => {
-      this.seasonalAnimeList = response.data
+      this.seasonalAnimeList = uniqueByMalId<any>(response.data)
         .filter((anime: any) => anime.score && anime.score > 0)
         .sort((a: any, b: any) => b.score - a.score);
       this.isLoading = false;
