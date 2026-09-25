@@ -20,12 +20,25 @@
         </button>
       </div>
     </div>
-    @if (genreDescription) {
+    @if (genreShortDescription || genreDescription) {
       <div class="genre-description-wrapper">
-        <p class="genre-description" [class.expanded]="isDescriptionExpanded">{{ genreDescription }}</p>
-        <button class="toggle-description-btn" (click)="isDescriptionExpanded = !isDescriptionExpanded">
-          {{ isDescriptionExpanded ? 'Mostra meno' : 'Leggi tutto' }}
-        </button>
+        @if (genreShortDescription) {
+          <p class="genre-lead">{{ genreShortDescription }}</p>
+        }
+        @if (genreDescription) {
+          @if (isDescriptionExpanded) {
+            <p class="genre-description" id="genre-full-description">{{ genreDescription }}</p>
+          }
+          <button
+            type="button"
+            class="toggle-description-btn"
+            [attr.aria-expanded]="isDescriptionExpanded"
+            aria-controls="genre-full-description"
+            (click)="isDescriptionExpanded = !isDescriptionExpanded"
+          >
+            {{ isDescriptionExpanded ? 'Nascondi la definizione' : 'Leggi la definizione completa' }}
+          </button>
+        }
       </div>
     }
   </div>

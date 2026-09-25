@@ -12,7 +12,7 @@ describe('GenreService', () => {
   // Estratto della risposta reale di Jikan /genres/anime (senza filtro)
   const jikanGenres = {
     data: [
-      { mal_id: 1, name: 'Action' },
+      { mal_id: 1, name: 'Action', count: 4901 },
       { mal_id: 41, name: 'Suspense' },
       { mal_id: 9, name: 'Ecchi' },
       { mal_id: 12, name: 'Hentai' },
@@ -57,6 +57,15 @@ describe('GenreService', () => {
     // Tutto il resto (anche generi aggiunti in futuro) finisce nei temi
     expect(byName.get('Isekai')).toBe('themes');
     expect(byName.get('Villainess')).toBe('themes');
+  });
+
+  it('riporta il numero di anime per genere (0 se Jikan non lo manda)', async () => {
+    const genres = firstValueFrom(service.getAllGenres());
+    httpMock.expectOne('/api/anime-proxy/genres/anime').flush(jikanGenres);
+
+    const list = await genres;
+    expect(list.find(g => g.name === 'Action')?.count).toBe(4901);
+    expect(list.find(g => g.name === 'Isekai')?.count).toBe(0);
   });
 
   it('riusa la risposta per chi si iscrive dopo (una richiesta sola)', async () => {

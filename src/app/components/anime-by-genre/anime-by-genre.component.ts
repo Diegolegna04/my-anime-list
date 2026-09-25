@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { AnimeService } from '../../services/anime.service';
 import { GenreService } from '../../services/genre.service';
 import { AnimeCardComponent } from '../../services/shared/anime-card.component';
-import { getGenreDescription } from '../../services/constants/anime-genre-descriptions';
+import { getGenreDescription, getGenreShortDescription } from '../../services/constants/anime-genre-descriptions';
 
 @Component({
   selector: 'app-anime-by-genre',
@@ -24,6 +24,7 @@ export class AnimeByGenreComponent implements OnInit {
   isLoading: boolean = false;
   currentSortCriteria: string = 'score';
   genreDescription: string | null = null;
+  genreShortDescription: string | null = null;
   isDescriptionExpanded: boolean = false;
 
   constructor(
@@ -45,6 +46,7 @@ export class AnimeByGenreComponent implements OnInit {
 
     if (this.genreId) {
       this.genreDescription = getGenreDescription(this.genreId);
+      this.genreShortDescription = getGenreShortDescription(this.genreId);
     }
 
     this.route.queryParams.subscribe(params => {

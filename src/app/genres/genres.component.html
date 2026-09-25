@@ -1,95 +1,151 @@
-<div class="genres-page-container">
-  <section class="intro-section">
-    <div class="intro-content">
-      <h1 class="intro-title">Esplora i Mondi degli Anime per Genere</h1>
-      <p class="intro-subtitle">
-        Immergiti nella vasta libreria di anime.
-        Ogni genere è una porta verso nuove avventure, risate, drammi o emozioni mozzafiato.
-        Seleziona un genere per scoprire le opere che più ti appassionano.
-      </p>
+<div class="genres-page">
+  <header class="page-header">
+    <h1 class="page-title">Esplora per genere</h1>
+    <p class="page-lead">
+      Generi, temi e demografie di MyAnimeList. Cerca o filtra per trovare cosa guardare stasera.
+    </p>
+  </header>
+
+  <div class="toolbar" role="search">
+    <div class="search-field">
+      <i class="fas fa-search search-icon" aria-hidden="true"></i>
+      <input
+        #searchInput
+        type="search"
+        class="search-input"
+        placeholder="Cerca genere o tema, es. isekai"
+        aria-label="Cerca un genere o un tema"
+        autocomplete="off"
+        [value]="query()"
+        (input)="onSearch(searchInput.value)"
+        (keydown.escape)="clearSearch(searchInput)"
+      />
+      @if (query()) {
+        <button type="button" class="search-clear" (click)="clearSearch(searchInput)" aria-label="Cancella la ricerca">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+      }
     </div>
-  </section>
 
-  @if (isLoading) {
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p class="loading-text">Caricamento generi...</p>
+    <div class="toolbar-row">
+      <div class="filters" role="group" aria-label="Filtra per categoria">
+        <button
+          type="button"
+          class="filter-chip"
+          [class.active]="activeCategory() === 'all'"
+          [attr.aria-pressed]="activeCategory() === 'all'"
+          (click)="activeCategory.set('all')"
+        >
+          Tutti @if (status() === 'ready') { <span class="chip-count">{{ matchingCount() }}</span> }
+        </button>
+        @for (category of categories; track category.id) {
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="activeCategory() === category.id"
+            [class.empty]="status() === 'ready' && countByCategory()[category.id] === 0"
+            [attr.aria-pressed]="activeCategory() === category.id"
+            (click)="activeCategory.set(category.id)"
+          >
+            {{ category.label }} @if (status() === 'ready') { <span class="chip-count">{{ countByCategory()[category.id] }}</span> }
+          </button>
+        }
+      </div>
+
+      <div class="sort-toggle" role="group" aria-label="Ordina">
+        <button
+          type="button"
+          [class.active]="sortOrder() === 'name'"
+          [attr.aria-pressed]="sortOrder() === 'name'"
+          (click)="sortOrder.set('name')"
+        >A–Z</button>
+        <button
+          type="button"
+          [class.active]="sortOrder() === 'count'"
+          [attr.aria-pressed]="sortOrder() === 'count'"
+          (click)="sortOrder.set('count')"
+        >Più anime</button>
+      </div>
     </div>
-  }
+  </div>
 
-  @if (!isLoading) {
-    <div class="genres-content">
-      <section class="genre-category-section">
-        <h2 class="category-heading">
-          <i class="fas fa-bookmark category-icon"></i> Generi Principali
-        </h2>
-        <div class="genres-grid">
-          @for (genre of mainGenres; track genre.id) {
-            <div
-              class="genres-card"
-              (click)="viewAnimeByGenre(genre.id, genre.name)"
-            >
-              <div class="card-icon">
-                <i class="fas fa-play"></i> </div>
-              <h3 class="card-title">{{ genre.name }}</h3>
-            </div>
+  @switch (status()) {
+    @case ('loading') {
+      <div class="genre-list skeleton" aria-busy="true" aria-label="Caricamento generi">
+        @for (row of skeletonRows; track $index) {
+          <div class="skeleton-row">
+            <span class="skeleton-line name"></span>
+            <span class="skeleton-line desc"></span>
+          </div>
+        }
+      </div>
+    }
+
+    @case ('error') {
+      <div class="state-message" role="alert">
+        <i class="fas fa-exclamation-triangle state-icon" aria-hidden="true"></i>
+        <h2>Non riusciamo a caricare i generi</h2>
+        <p>Il servizio che fornisce i dati degli anime non risponde. Di solito si risolve in pochi minuti.</p>
+        <button type="button" class="state-action" (click)="loadGenres()">Riprova</button>
+      </div>
+    }
+
+    @case ('ready') {
+      @if (query()) {
+        <p class="results-summary" aria-live="polite">
+          {{ matchingCount() }} risultati su {{ totalCount() }} per “{{ query() }}”
+        </p>
+      }
+
+      @for (section of sections(); track section.id) {
+        <section class="genre-section" [attr.aria-labelledby]="'section-' + section.id">
+          <div class="section-head">
+            <h2 class="category-title" [id]="'section-' + section.id">
+              {{ section.label }}
+              <span class="section-count">{{ section.items.length }}</span>
+              @if (section.id === 'explicit_genres') {
+                <span class="adult-badge">18+</span>
+              }
+            </h2>
+            <p class="section-intro">{{ section.intro }}</p>
+          </div>
+
+          <ul class="genre-list">
+            @for (genre of section.items; track genre.id) {
+              <li>
+                <a
+                  class="genre-row"
+                  [routerLink]="['/genres/anime-by-genre', genre.id]"
+                  [queryParams]="{ name: genre.name }"
+                >
+                  <span class="genre-name">{{ genre.name }}</span>
+                  @if (genre.count) {
+                    <span class="genre-count" [attr.aria-label]="formatCount(genre.count) + ' anime'">
+                      {{ formatCount(genre.count) }}
+                    </span>
+                  }
+                  @if (genre.description) {
+                    <span class="genre-desc">{{ genre.description }}</span>
+                  }
+                </a>
+              </li>
+            }
+          </ul>
+        </section>
+      } @empty {
+        <div class="state-message">
+          <i class="fas fa-search state-icon" aria-hidden="true"></i>
+          @if (matchingCount() > 0) {
+            <h2>Nessun risultato in questa categoria</h2>
+            <p>“{{ query() }}” compare in {{ matchingCount() }} voci di altre categorie.</p>
+            <button type="button" class="state-action" (click)="activeCategory.set('all')">Mostra tutte le categorie</button>
+          } @else {
+            <h2>Nessun genere per “{{ query() }}”</h2>
+            <p>Prova con una parola più generica, in italiano o in inglese: “amore”, “magia”, “sport”.</p>
+            <button type="button" class="state-action" (click)="clearSearch(searchInput)">Cancella la ricerca</button>
           }
         </div>
-      </section>
-
-      <section class="genre-category-section">
-        <h2 class="category-heading">
-          <i class="fas fa-mask category-icon explicit-icon"></i> Generi Espliciti
-        </h2>
-        <div class="genres-grid">
-          @for (genre of explicitGenres; track genre.id) {
-            <div
-              class="genres-card explicit-card"
-              (click)="viewAnimeByGenre(genre.id, genre.name)"
-            >
-              <div class="card-icon">
-                <i class="fas fa-eye-slash"></i> </div>
-              <h3 class="card-title">{{ genre.name }}</h3>
-            </div>
-          }
-        </div>
-      </section>
-
-      <section class="genre-category-section">
-        <h2 class="category-heading">
-          <i class="fas fa-lightbulb category-icon"></i> Temi Anime
-        </h2>
-        <div class="genres-grid">
-          @for (genre of themes; track genre.id) {
-            <div
-              class="genres-card"
-              (click)="viewAnimeByGenre(genre.id, genre.name)"
-            >
-              <div class="card-icon">
-                <i class="fas fa-star"></i> </div>
-              <h3 class="card-title">{{ genre.name }}</h3>
-            </div>
-          }
-        </div>
-      </section>
-
-      <section class="genre-category-section">
-        <h2 class="category-heading">
-          <i class="fas fa-users category-icon"></i> Demografia
-        </h2>
-        <div class="genres-grid">
-          @for (genre of demographics; track genre.id) {
-            <div
-              class="genres-card"
-              (click)="viewAnimeByGenre(genre.id, genre.name)"
-            >
-              <div class="card-icon">
-                <i class="fas fa-child"></i> </div>
-              <h3 class="card-title">{{ genre.name }}</h3>
-            </div>
-          }
-        </div>
-      </section>
-    </div>
+      }
+    }
   }
 </div>
