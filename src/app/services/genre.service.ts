@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
 export type GenreCategory = 'genres' | 'explicit_genres' | 'themes' | 'demographics';
@@ -9,6 +9,23 @@ export interface Genre {
   id: number;
   name: string;
   category: GenreCategory;
+  /** Numero di anime con questo genere secondo MyAnimeList */
+  count: number;
+}
+
+// Categorie di MyAnimeList per id. Jikan risponde 504 alle richieste con ?filter=
+// (non riesce a contattare MAL), mentre la lista completa funziona ma non dice
+// la categoria: la ricaviamo da qui. Tutto ciò che non è elencato è un tema,
+// così anche eventuali temi nuovi finiscono al posto giusto.
+const GENRE_IDS = new Set([1, 2, 5, 46, 28, 4, 8, 10, 26, 47, 14, 7, 22, 24, 36, 30, 37, 41]);
+const EXPLICIT_GENRE_IDS = new Set([9, 49, 12]);
+const DEMOGRAPHIC_IDS = new Set([43, 15, 42, 25, 27]);
+
+function categoryOf(malId: number): GenreCategory {
+  if (GENRE_IDS.has(malId)) return 'genres';
+  if (EXPLICIT_GENRE_IDS.has(malId)) return 'explicit_genres';
+  if (DEMOGRAPHIC_IDS.has(malId)) return 'demographics';
+  return 'themes';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -17,20 +34,14 @@ export class GenreService {
   private genres$: Observable<Genre[]>;
 
   constructor(private http: HttpClient) {
-    const categories: GenreCategory[] = ['genres', 'explicit_genres', 'themes', 'demographics'];
-
-    const requests = categories.map(category =>
-      this.http.get<any>(`${this.genresUrl}?filter=${category}`).pipe(
-        map(response => (response.data || []).map((g: any) => ({
-          id: g.mal_id,
-          name: g.name,
-          category
-        } as Genre)))
-      )
-    );
-
-    this.genres$ = forkJoin(requests).pipe(
-      map(results => results.flat()),
+    // Una sola richiesta (prima erano 4 in parallelo, che facevano scattare anche il 429)
+    this.genres$ = this.http.get<any>(this.genresUrl).pipe(
+      map(response => (response.data || []).map((g: any) => ({
+        id: g.mal_id,
+        name: g.name,
+        category: categoryOf(g.mal_id),
+        count: g.count ?? 0
+      } as Genre))),
       shareReplay(1)
     );
   }

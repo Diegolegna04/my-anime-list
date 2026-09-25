@@ -1,48 +1,120 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { GenreService, Genre } from '../services/genre.service';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { GenreService, Genre, GenreCategory } from '../services/genre.service';
+import { getGenreShortDescription } from '../services/constants/anime-genre-descriptions';
+import { getGenreIcon } from '../services/constants/genre-icons';
+
+type CategoryFilter = GenreCategory | 'all';
+type SortOrder = 'name' | 'count';
+
+interface CategoryMeta {
+  id: GenreCategory;
+  label: string;
+  intro: string;
+}
+
+interface GenreItem extends Genre {
+  description: string;
+  icon: string;
+  searchText: string;
+}
+
+// Ordine delle sezioni: prima ciò che si esplora di più, gli espliciti in fondo
+const CATEGORIES: CategoryMeta[] = [
+  { id: 'genres', label: 'Generi', intro: 'Il tipo di storia: cosa racconta e che emozioni cerca.' },
+  { id: 'themes', label: 'Temi', intro: 'Ambientazioni, argomenti e motivi ricorrenti.' },
+  { id: 'demographics', label: 'Demografie', intro: 'Il pubblico a cui l\'opera è rivolta.' },
+  { id: 'explicit_genres', label: 'Espliciti', intro: 'Contenuti a sfondo sessuale, per un pubblico adulto.' }
+];
+
+// Minuscolo e senza accenti, così "comedia" o "citta" trovano comunque il testo
+function normalize(text: string): string {
+  return text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
 
 @Component({
   selector: 'app-genres',
   standalone: true,
   templateUrl: './genres.component.html',
   styleUrls: ['./genres.component.css'],
-  imports: [
-    CommonModule,
-    RouterLink
-  ]
+  imports: [RouterLink]
 })
 export class GenresComponent implements OnInit {
-  isLoading: boolean = true;
-  mainGenres: Genre[] = [];
-  explicitGenres: Genre[] = [];
-  themes: Genre[] = [];
-  demographics: Genre[] = [];
+  private genreService = inject(GenreService);
 
-  constructor(private router: Router, private genreService: GenreService) {}
+  readonly categories = CATEGORIES;
+  readonly skeletonRows = Array.from({ length: 12 });
+  private readonly numberFormat = new Intl.NumberFormat('it-IT');
+
+  readonly status = signal<'loading' | 'ready' | 'error'>('loading');
+  readonly query = signal('');
+  readonly activeCategory = signal<CategoryFilter>('all');
+  readonly sortOrder = signal<SortOrder>('name');
+  private readonly genres = signal<GenreItem[]>([]);
+
+  /** Generi che corrispondono alla ricerca, prima del filtro per categoria */
+  private readonly matching = computed(() => {
+    const q = normalize(this.query().trim());
+    const all = this.genres();
+    return q ? all.filter(g => g.searchText.includes(q)) : all;
+  });
+
+  readonly totalCount = computed(() => this.genres().length);
+  readonly matchingCount = computed(() => this.matching().length);
+
+  /** Quanti risultati ha ogni categoria con la ricerca attuale (per i filtri) */
+  readonly countByCategory = computed(() => {
+    const counts: Record<GenreCategory, number> = { genres: 0, themes: 0, demographics: 0, explicit_genres: 0 };
+    for (const g of this.matching()) counts[g.category]++;
+    return counts;
+  });
+
+  readonly sections = computed(() => {
+    const active = this.activeCategory();
+    const byCount = this.sortOrder() === 'count';
+    return CATEGORIES
+      .filter(c => active === 'all' || c.id === active)
+      .map(c => ({
+        ...c,
+        items: this.matching()
+          .filter(g => g.category === c.id)
+          .sort((a, b) => byCount ? b.count - a.count : a.name.localeCompare(b.name, 'en'))
+      }))
+      .filter(s => s.items.length > 0);
+  });
 
   ngOnInit(): void {
     this.loadGenres();
   }
 
   loadGenres(): void {
+    this.status.set('loading');
     this.genreService.getAllGenres().subscribe({
-      next: (genres) => {
-        this.mainGenres = genres.filter(g => g.category === 'genres');
-        this.explicitGenres = genres.filter(g => g.category === 'explicit_genres');
-        this.themes = genres.filter(g => g.category === 'themes');
-        this.demographics = genres.filter(g => g.category === 'demographics');
-        this.isLoading = false;
+      next: genres => {
+        this.genres.set(genres.map(g => {
+          const description = getGenreShortDescription(g.id) ?? '';
+          return { ...g, description, icon: getGenreIcon(g.id), searchText: normalize(`${g.name} ${description}`) };
+        }));
+        this.status.set('ready');
       },
-      error: (error) => {
-        console.error('Error loading genres:', error);
-        this.isLoading = false;
+      error: error => {
+        console.error('Errore nel caricamento dei generi:', error);
+        this.status.set('error');
       }
     });
   }
 
-  viewAnimeByGenre(genreId: number, genreName: string): void {
-    this.router.navigate(['/genres/anime-by-genre', genreId], { queryParams: { name: genreName } });
+  onSearch(value: string): void {
+    this.query.set(value);
+  }
+
+  clearSearch(input: HTMLInputElement): void {
+    this.query.set('');
+    input.value = '';
+    input.focus();
+  }
+
+  formatCount(count: number): string {
+    return this.numberFormat.format(count);
   }
 }
