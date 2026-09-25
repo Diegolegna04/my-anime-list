@@ -15,22 +15,29 @@ export class ForgotPasswordComponent {
   email: string = '';
   isLoading: boolean = false;
   submitted: boolean = false;
+  errorMessage: string = '';
 
   constructor(private authService: AuthService) {}
 
   onSubmit(): void {
     if (!this.email) return;
     this.isLoading = true;
+    this.errorMessage = '';
 
     this.authService.forgotPassword(this.email).subscribe({
       next: () => {
         this.isLoading = false;
         this.submitted = true;
       },
-      error: () => {
-        // Anche in caso di errore mostriamo lo stesso messaggio generico:
-        // non vogliamo rivelare se l'email esiste o meno nel sistema.
+      error: (error: any) => {
         this.isLoading = false;
+        // Troppe richieste: lo diciamo, non rivela se l'email esiste
+        if (error.status === 429) {
+          this.errorMessage = error?.error?.error || 'Troppi tentativi. Riprova più tardi.';
+          return;
+        }
+        // Negli altri casi lo stesso messaggio generico del successo:
+        // non vogliamo rivelare se l'email esiste o meno nel sistema.
         this.submitted = true;
       }
     });

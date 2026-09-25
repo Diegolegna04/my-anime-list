@@ -100,6 +100,8 @@ export class LoginRegisterComponent implements OnInit {
         } else if (error.status === 403 && error?.error?.code === 'EMAIL_NOT_VERIFIED') {
           this.toastService.show('Devi verificare la tua email prima di accedere.', 'error');
           this.showResendVerification = true;
+        } else if (error.status === 400 || error.status === 429) {
+          this.toastService.show(this.serverMessage(error, 'Controlla i dati inseriti.'), 'error');
         } else if (error.status === 500) {
           this.toastService.show('Errore del server. Riprova più tardi.', 'error');
         } else {
@@ -107,6 +109,11 @@ export class LoginRegisterComponent implements OnInit {
         }
       }
     });
+  }
+
+  /** Il backend risponde con {"error": "..."}: il suo messaggio è già pensato per l'utente */
+  private serverMessage(error: any, fallback: string): string {
+    return error?.error?.error || fallback;
   }
 
   resendVerificationEmail(): void {
@@ -118,14 +125,20 @@ export class LoginRegisterComponent implements OnInit {
         this.isResending = false;
         this.toastService.show('Se l\'indirizzo non è ancora verificato, riceverai una nuova email a breve.', 'success');
       },
-      error: () => {
+      error: (error: any) => {
         this.isResending = false;
-        this.toastService.show('Impossibile inviare l\'email in questo momento. Riprova più tardi.', 'error');
+        const fallback = 'Impossibile inviare l\'email in questo momento. Riprova più tardi.';
+        this.toastService.show(error.status === 429 ? this.serverMessage(error, fallback) : fallback, 'error');
       }
     });
   }
 
   onRegister(): void {
+    // Stessa regola del backend: così l'errore arriva subito, senza una richiesta
+    if (this.registerData.password.length < 6) {
+      this.toastService.show('La password deve avere almeno 6 caratteri.', 'error');
+      return;
+    }
     this.isLoading = true;
 
     const requestBody = {
@@ -153,10 +166,13 @@ export class LoginRegisterComponent implements OnInit {
             }, 1500);
           }
         },
-        error: (error: { status: number }) => {
+        error: (error: any) => {
           this.isLoading = false;
           if (error.status === 409) {
-            this.toastService.show('Email già registrata. Prova con un\'altra email.', 'error');
+            // "Email già registrata" oppure "Nome utente già in uso"
+            this.toastService.show(this.serverMessage(error, 'Email già registrata. Prova con un\'altra email.'), 'error');
+          } else if (error.status === 400 || error.status === 429) {
+            this.toastService.show(this.serverMessage(error, 'Controlla i dati inseriti.'), 'error');
           } else if (error.status === 500) {
             this.toastService.show('Errore del server. Riprova più tardi.', 'error');
           } else {

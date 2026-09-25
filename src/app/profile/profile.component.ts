@@ -301,7 +301,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.closeOverlay();
     } catch (error: any) {
       if (error.status === 409) {
-        this.toastService.show('Username già in uso.', 'error');
+        // Il backend dice se il conflitto è sull'email o sul nome utente
+        this.toastService.show(error.error?.error || 'Username già in uso.', 'error');
       } else if (error.status === 403) {
         this.toastService.show('Password attuale errata.', 'error');
       } else if (error.status === 401) {

@@ -26,8 +26,8 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
-  { path: 'profile/watched-anime', component: WatchedAnimeComponent },
-  { path: 'profile/watched-anime/favourites', component: FavoriteAnimeComponent },
+  { path: 'profile/watched-anime', component: WatchedAnimeComponent, canActivate: [authGuard] },
+  { path: 'profile/watched-anime/favourites', component: FavoriteAnimeComponent, canActivate: [authGuard] },
   { path: 'seasonal/:season', component: SeasonalAnimePageComponent },
   { path: '**', component: NotFoundComponent }
 ];

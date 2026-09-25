@@ -116,21 +116,23 @@ export class AuthService {
   }
 
   onLogout(): void {
+    // Lo stato locale si pulisce comunque: se il backend non risponde l'utente
+    // non deve restare "loggato" nell'interfaccia (la sessione scade da sola)
+    const clearLocalSession = () => {
+      localStorage.removeItem('accessoEffettuato');
+      localStorage.removeItem('userData');
+      localStorage.removeItem('username');
+      localStorage.removeItem('profileImage');
+
+      this.accessoEffettuatoSubject.next(false);
+      this.userDataSubject.next(null);
+
+      this.route.navigate(['/']);
+    };
+
     this.http
       .delete(`${this.apiUrl}/logout`, { withCredentials: true })
-      .subscribe({
-        next: () => {
-          localStorage.removeItem('accessoEffettuato');
-          localStorage.removeItem('userData');
-          localStorage.removeItem('username');
-          localStorage.removeItem('profileImage');
-
-          this.accessoEffettuatoSubject.next(false);
-          this.userDataSubject.next(null);
-
-          this.route.navigate(['/']);
-        }
-      });
+      .subscribe({ next: clearLocalSession, error: clearLocalSession });
   }
 
   getCurrentUserData(): any {
