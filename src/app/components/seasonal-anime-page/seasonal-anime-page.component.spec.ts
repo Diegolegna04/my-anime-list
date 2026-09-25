@@ -1,18 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-import { SeasonalAnimeComponent } from './seasonal-anime-page.component';
+import { SeasonalAnimePageComponent } from './seasonal-anime-page.component';
 
-describe('SeasonalAnimeComponent', () => {
-  let component: SeasonalAnimeComponent;
-  let fixture: ComponentFixture<SeasonalAnimeComponent>;
+describe('SeasonalAnimePageComponent', () => {
+  let component: SeasonalAnimePageComponent;
+  let fixture: ComponentFixture<SeasonalAnimePageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SeasonalAnimeComponent]
+      imports: [SeasonalAnimePageComponent],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SeasonalAnimeComponent);
+    fixture = TestBed.createComponent(SeasonalAnimePageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
