@@ -148,6 +148,11 @@
         <h2 class="section-title stats-title">Le tue Statistiche</h2>
         <div class="stats-grid">
           <a class="stat-item" routerLink="/profile/watched-anime">
+            <i class="fas fa-layer-group" aria-hidden="true"></i>
+            <span class="stat-value">{{ totalAnimeCount }}</span>
+            <span class="stat-label">Tutti gli anime</span>
+          </a>
+          <a class="stat-item" routerLink="/profile/watched-anime" [queryParams]="{ filter: 'completato' }">
             <i class="fas fa-tv" aria-hidden="true"></i>
             <span class="stat-value">{{ watchedAnimeCount }}</span>
             <span class="stat-label">Anime Visti</span>

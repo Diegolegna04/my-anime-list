@@ -22,8 +22,8 @@
 /* Buttons Container */
 .state-buttons-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.85rem;
 }
 
 /* Tessera di stato: il colore arriva da --tone (token di stato) */
@@ -35,7 +35,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 90px;
+  min-height: 84px;
   padding: 1rem 1.2rem;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -103,55 +103,13 @@
   opacity: 1;
 }
 
-/* Extended States */
-.extended-states {
-  margin-top: 1.25rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.toggle-extended {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.4rem 0.75rem;
-  border-radius: var(--radius-pill);
-  color: var(--accent-text);
-  font-weight: 600;
-  list-style: none;
-  cursor: pointer;
-  user-select: none;
-  transition: background-color var(--dur-fast) var(--ease-out);
-}
-
-.toggle-extended::-webkit-details-marker {
-  display: none;
-}
-
-.toggle-extended:hover {
-  background-color: var(--accent-soft);
-}
-
-.toggle-icon {
-  font-size: 0.75rem;
-  transition: transform var(--dur-fast) var(--ease-out);
-}
-
-.extended-states[open] .toggle-icon {
-  transform: rotate(180deg);
-}
-
-.state-buttons-container.extended {
-  margin-top: 1rem;
-}
-
 @media (max-width: 768px) {
   .state-manager {
     margin-top: 1.5rem;
   }
 
   .state-buttons-container {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
 

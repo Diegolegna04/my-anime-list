@@ -82,6 +82,9 @@ export class AnimeStateManagerComponent {
     }
   ];
 
+  /** Tutti gli stati, mostrati insieme (prima 3 erano nascosti sotto "Altri stati") */
+  readonly allStates: StateOption[] = [...this.stateOptions, ...this.extendedStates];
+
   /**
    * Gestisce il click su un bottone di stato
    */

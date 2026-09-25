@@ -156,7 +156,7 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
   gap: 1.5rem;
 }
 
@@ -277,6 +277,8 @@
   .profile-pic { width: 150px; height: 150px; }
   .username { font-size: 1.8rem; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  /* Il totale sopra, a tutta larghezza: 1 + 2 + 2 invece di una voce sola in fondo */
+  .stats-grid .stat-item:first-child { grid-column: 1 / -1; }
   .stat-item i { font-size: 1.8rem; }
   .stat-value { font-size: 1.5rem; }
   .stat-label { font-size: 0.9rem; }
