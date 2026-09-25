@@ -42,7 +42,7 @@ export class AuthService {
     return this.http.get(`${this.apiUrl}/profile`, { withCredentials: true });
   }
 
-  updateProfile(payload: { username?: string; password?: string; profileImage?: string }): Observable<any> {
+  updateProfile(payload: { username?: string; password?: string; currentPassword?: string; profileImage?: string }): Observable<any> {
     return this.http.put(`${this.userApiUrl}/update`, payload, { withCredentials: true });
   }
 
