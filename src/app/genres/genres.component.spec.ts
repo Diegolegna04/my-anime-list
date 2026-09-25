@@ -5,6 +5,7 @@ import { of, throwError } from 'rxjs';
 import { GenresComponent } from './genres.component';
 import { Genre, GenreService } from '../services/genre.service';
 import { GENRE_SHORT_DESCRIPTIONS } from '../services/constants/anime-genre-descriptions';
+import { GENRE_ICONS } from '../services/constants/genre-icons';
 
 describe('GenresComponent', () => {
   const genres: Genre[] = [
@@ -40,7 +41,8 @@ describe('GenresComponent', () => {
   it('mostra le sezioni nell\'ordine generi, temi, demografie, espliciti', () => {
     expect(component.status()).toBe('ready');
     expect(sectionIds()).toEqual(['genres', 'themes', 'demographics', 'explicit_genres']);
-    expect(fixture.nativeElement.querySelectorAll('a.genre-row').length).toBe(6);
+    expect(fixture.nativeElement.querySelectorAll('a.genre-card').length).toBe(6);
+    expect(fixture.nativeElement.querySelector('a.genre-card .genre-icon i').className).toContain('fa-fist-raised');
   });
 
   it('cerca anche nelle descrizioni in italiano, ignorando gli accenti', () => {
@@ -81,7 +83,7 @@ describe('GenresComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Riprova');
   });
 
-  it('ogni genere di MyAnimeList ha una descrizione breve', () => {
+  it('ogni genere di MyAnimeList ha una descrizione breve e un\'icona', () => {
     // Tutti gli id della lista /genres/anime di Jikan (78)
     const malIds = [1, 2, 5, 46, 28, 4, 8, 10, 26, 47, 14, 7, 22, 24, 36, 30, 37, 41, 9, 49, 12, 50, 51, 52,
       53, 54, 81, 55, 39, 56, 57, 58, 35, 59, 13, 60, 61, 62, 63, 64, 65, 66, 17, 18, 67, 38, 19, 6, 68, 69,
@@ -89,5 +91,6 @@ describe('GenresComponent', () => {
       25, 27];
     expect(malIds.length).toBe(78);
     expect(malIds.filter(id => !GENRE_SHORT_DESCRIPTIONS[id])).toEqual([]);
+    expect(malIds.filter(id => !GENRE_ICONS[id])).toEqual([]);
   });
 });

@@ -1,12 +1,15 @@
 <div class="genre-results-page">
-  <header class="genre-hero">
+  <header class="genre-hero" [attr.data-category]="genreMeta?.category">
     <a routerLink="/genres" class="back-link">
       <i class="fas fa-arrow-left" aria-hidden="true"></i> Tutti i generi
     </a>
 
     <div class="genre-hero-main">
       <div class="genre-heading">
-        <h1 class="genre-title">{{ genreName }}</h1>
+        <h1 class="genre-title">
+          <span class="genre-title-icon" aria-hidden="true"><i [class]="genreIcon"></i></span>
+          {{ genreName }}
+        </h1>
         @if (genreMeta) {
           <p class="genre-meta">
             {{ genreMeta.categoryLabel }}

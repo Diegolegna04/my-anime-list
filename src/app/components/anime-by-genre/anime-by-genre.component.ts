@@ -5,6 +5,7 @@ import { AnimeService } from '../../services/anime.service';
 import { GenreCategory, GenreService } from '../../services/genre.service';
 import { AnimeCardComponent } from '../../services/shared/anime-card.component';
 import { getGenreDescription, getGenreShortDescription } from '../../services/constants/anime-genre-descriptions';
+import { getGenreIcon } from '../../services/constants/genre-icons';
 
 @Component({
   selector: 'app-anime-by-genre',
@@ -25,8 +26,9 @@ export class AnimeByGenreComponent implements OnInit {
   currentSortCriteria: string = 'score';
   genreDescription: string | null = null;
   genreShortDescription: string | null = null;
+  genreIcon = getGenreIcon(0);
   isDescriptionExpanded: boolean = false;
-  genreMeta: { categoryLabel: string; count: string } | null = null;
+  genreMeta: { category: GenreCategory; categoryLabel: string; count: string } | null = null;
 
   private static readonly CATEGORY_LABELS: Record<GenreCategory, string> = {
     genres: 'Genere',
@@ -55,6 +57,7 @@ export class AnimeByGenreComponent implements OnInit {
     if (this.genreId) {
       this.genreDescription = getGenreDescription(this.genreId);
       this.genreShortDescription = getGenreShortDescription(this.genreId);
+      this.genreIcon = getGenreIcon(this.genreId);
       this.loadGenreMeta(this.genreId);
     }
 
@@ -109,6 +112,7 @@ export class AnimeByGenreComponent implements OnInit {
         const genre = genres.find(g => g.id === genreId);
         if (genre) {
           this.genreMeta = {
+            category: genre.category,
             categoryLabel: AnimeByGenreComponent.CATEGORY_LABELS[genre.category],
             count: genre.count ? new Intl.NumberFormat('it-IT').format(genre.count) : ''
           };

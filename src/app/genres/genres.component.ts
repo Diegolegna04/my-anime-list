@@ -2,6 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { GenreService, Genre, GenreCategory } from '../services/genre.service';
 import { getGenreShortDescription } from '../services/constants/anime-genre-descriptions';
+import { getGenreIcon } from '../services/constants/genre-icons';
 
 type CategoryFilter = GenreCategory | 'all';
 type SortOrder = 'name' | 'count';
@@ -14,6 +15,7 @@ interface CategoryMeta {
 
 interface GenreItem extends Genre {
   description: string;
+  icon: string;
   searchText: string;
 }
 
@@ -91,7 +93,7 @@ export class GenresComponent implements OnInit {
       next: genres => {
         this.genres.set(genres.map(g => {
           const description = getGenreShortDescription(g.id) ?? '';
-          return { ...g, description, searchText: normalize(`${g.name} ${description}`) };
+          return { ...g, description, icon: getGenreIcon(g.id), searchText: normalize(`${g.name} ${description}`) };
         }));
         this.status.set('ready');
       },

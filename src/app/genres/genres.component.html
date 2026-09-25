@@ -110,23 +110,27 @@
             <p class="section-intro">{{ section.intro }}</p>
           </div>
 
-          <ul class="genre-list">
+          <ul class="genre-list" [attr.data-category]="section.id">
             @for (genre of section.items; track genre.id) {
               <li>
                 <a
-                  class="genre-row"
+                  class="genre-card"
                   [routerLink]="['/genres/anime-by-genre', genre.id]"
                   [queryParams]="{ name: genre.name }"
                 >
-                  <span class="genre-name">{{ genre.name }}</span>
-                  @if (genre.count) {
-                    <span class="genre-count" [attr.aria-label]="formatCount(genre.count) + ' anime'">
-                      {{ formatCount(genre.count) }}
+                  <span class="genre-icon" aria-hidden="true"><i [class]="genre.icon"></i></span>
+                  <span class="genre-body">
+                    <span class="genre-top">
+                      <span class="genre-name">{{ genre.name }}</span>
+                      @if (genre.count) {
+                        <span class="genre-count">{{ formatCount(genre.count) }} anime</span>
+                      }
                     </span>
-                  }
-                  @if (genre.description) {
-                    <span class="genre-desc">{{ genre.description }}</span>
-                  }
+                    @if (genre.description) {
+                      <span class="genre-desc">{{ genre.description }}</span>
+                    }
+                  </span>
+                  <i class="fas fa-chevron-right genre-arrow" aria-hidden="true"></i>
                 </a>
               </li>
             }

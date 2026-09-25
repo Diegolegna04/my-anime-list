@@ -54,6 +54,9 @@
 }
 
 .genre-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
@@ -61,6 +64,27 @@
   letter-spacing: -0.02em;
   color: var(--text-primary);
   text-wrap: balance;
+}
+
+/* Stesso colore di categoria usato nel catalogo dei generi */
+.genre-hero { --cat: var(--accent-text); }
+.genre-hero[data-category='themes'] { --cat: #0f766e; }
+.genre-hero[data-category='demographics'] { --cat: #b45309; }
+.genre-hero[data-category='explicit_genres'] { --cat: #be123c; }
+:host-context(.dark-theme) .genre-hero[data-category='themes'] { --cat: #2dd4bf; }
+:host-context(.dark-theme) .genre-hero[data-category='demographics'] { --cat: #fbbf24; }
+:host-context(.dark-theme) .genre-hero[data-category='explicit_genres'] { --cat: #fb7185; }
+
+.genre-title-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--cat) 14%, transparent);
+  color: var(--cat);
+  font-size: 1.15rem;
 }
 
 .genre-meta {
