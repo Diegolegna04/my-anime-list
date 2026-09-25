@@ -1,18 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-import { GenresComponent } from './genres-home.component';
+import { GenresHomeComponent } from './genres-home.component';
 
-describe('GenresComponent', () => {
-  let component: GenresComponent;
-  let fixture: ComponentFixture<GenresComponent>;
+describe('GenresHomeComponent', () => {
+  let component: GenresHomeComponent;
+  let fixture: ComponentFixture<GenresHomeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GenresComponent]
+      imports: [GenresHomeComponent],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(GenresComponent);
+    fixture = TestBed.createComponent(GenresHomeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
