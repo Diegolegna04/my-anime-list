@@ -115,16 +115,16 @@ export class AnimeInfoCardComponent {
   }
 
   /**
-   * Ottiene l'icona per il voto
+   * Ottiene l'icona Font Awesome per il voto
    */
   get scoreIcon(): string {
     const score = this.animeDetails?.score || 0;
-    
-    if (score >= 8) return '🌟';
-    if (score >= 7) return '⭐';
-    if (score >= 6) return '✨';
-    
-    return '📊';
+
+    if (score >= 8) return 'fa-trophy';
+    if (score >= 7) return 'fa-star';
+    if (score >= 6) return 'fa-star-half-alt';
+
+    return 'fa-chart-bar';
   }
 
   /**

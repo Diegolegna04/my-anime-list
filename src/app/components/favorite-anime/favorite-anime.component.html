@@ -1,16 +1,14 @@
-<div class="favorite-anime-page">
+<div class="page">
   <!-- Sezione Introduttiva -->
-  <div class="intro">
-    <div class="intro-content">
-      <h1>Anime Preferiti</h1>
-      <p>Qui puoi trovare tutti i tuoi anime preferiti.</p>
-    </div>
-  </div>
+  <header class="page-hero">
+    <h1 class="page-hero-title">Anime Preferiti</h1>
+    <p class="page-hero-lead">Qui puoi trovare tutti i tuoi anime preferiti.</p>
+  </header>
 
-  <div class="main-content">
+  <section class="panel">
     @if (isLoading) {
-      <div class="loading-state">
-        <i class="fas fa-spinner fa-spin"></i>
+      <div class="loading-state" role="status">
+        <span class="spinner" aria-hidden="true"></span>
         <p>Caricamento dei tuoi anime preferiti...</p>
       </div>
     }
@@ -18,32 +16,43 @@
     @if (!isLoading && favoriteAnime.length > 0) {
       <!-- Header con Controlli -->
       <div class="section-header">
-        <div class="section-title">
-          <h2>I Tuoi Preferiti</h2>
-        </div>
+        <h2 class="section-title">
+          I Tuoi Preferiti <span class="section-count">{{ favoriteAnime.length }}</span>
+        </h2>
         <div class="section-controls">
-          <button (click)="toggleTitleLanguage()" class="language-toggle-btn">
-            <i class="fas fa-language"></i>
+          <button type="button" (click)="toggleTitleLanguage()" class="btn btn-sm btn-primary">
+            <i class="fas fa-language" aria-hidden="true"></i>
             {{titleLanguage === 'english' ? 'Titolo Giapponese' : 'Titolo Inglese'}}
           </button>
         </div>
       </div>
 
       <!-- Lista Anime -->
-      <div class="anime-container">
+      <div class="anime-grid">
         @for (anime of favoriteAnime; track anime.id) {
           @if (anime.details?.data) {
-            <div class="anime-card" (click)="goToDetails(anime.details.data.mal_id)">
-              <div
+            <div
+              class="anime-card"
+              role="link"
+              tabindex="0"
+              (click)="goToDetails(anime.details.data.mal_id)"
+              (keydown.enter)="goToDetails(anime.details.data.mal_id)">
+              <button
+                type="button"
                 class="favorite-badge"
+                aria-label="Rimuovi dai preferiti"
+                title="Rimuovi dai preferiti"
                 (click)="removeFromFavorites(anime.details.data.mal_id); $event.stopPropagation()"
+                (keydown.enter)="$event.stopPropagation()"
               >
-                <i class="fas fa-heart"></i>
+                <i class="fas fa-heart" aria-hidden="true"></i>
+              </button>
+              <div class="img-wrapper">
+                <img
+                  [src]="anime.details.data.images?.jpg?.large_image_url || anime.details.data.images?.jpg?.image_url"
+                  [alt]="getTitle(anime.details.data)"
+                />
               </div>
-              <img
-                [src]="anime.details.data.images?.jpg?.large_image_url || anime.details.data.images?.jpg?.image_url"
-                [alt]="getTitle(anime.details.data)"
-              />
               <div class="anime-card-content">
                 <h3 class="anime-title">{{ getTitle(anime.details.data) }}</h3>
               </div>
@@ -52,11 +61,11 @@
         }
       </div>
     } @else if (!isLoading && favoriteAnime.length === 0) {
-      <div class="empty-state">
-        <i class="fas fa-box-open"></i>
-        <p>Nessun anime trovato per questa categoria.</p>
-        <p>Inizia ad aggiungere anime alla tua lista!</p>
+      <div class="state">
+        <span class="state-icon"><i class="fas fa-heart" aria-hidden="true"></i></span>
+        <h3 class="state-title">Nessun anime trovato per questa categoria.</h3>
+        <p class="state-text">Inizia ad aggiungere anime alla tua lista!</p>
       </div>
     }
-  </div>
+  </section>
 </div>

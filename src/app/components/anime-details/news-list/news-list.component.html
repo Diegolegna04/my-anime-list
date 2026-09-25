@@ -1,14 +1,16 @@
 @if (news.length > 0) {
-  <div class="news-section">
+  <section class="news-section">
     <div class="news-header">
-      <h2>News</h2>
+      <h2 class="section-title">News</h2>
       <div class="news-actions">
         @if (!isExpanded) {
-          <button class="expand-btn" (click)="toggleExpand()">
+          <button type="button" class="btn btn-primary btn-sm expand-btn" (click)="toggleExpand()" aria-expanded="false">
+            <i class="fas fa-newspaper" aria-hidden="true"></i>
             Mostra News ({{ news.length }})
           </button>
         } @else {
-          <button class="collapse-header-btn" (click)="collapse()">
+          <button type="button" class="btn btn-secondary btn-sm collapse-header-btn" (click)="collapse()" aria-expanded="true">
+            <i class="fas fa-chevron-up" aria-hidden="true"></i>
             Nascondi News
           </button>
         }
@@ -18,30 +20,36 @@
     @if (isExpanded) {
       <div class="news-list">
         @for (item of displayedNews; track item.mal_id) {
-          <div class="news-card">
+          <article class="news-card">
             <h3>
-              <a 
-                [href]="item.url" 
-                target="_blank" 
+              <a
+                [href]="item.url"
+                target="_blank"
                 rel="noopener noreferrer">
                 {{ item.title }}
               </a>
             </h3>
-            
+
             <p class="news-excerpt">{{ item.excerpt }}</p>
-          </div>
+          </article>
         }
       </div>
 
       @if (hasMoreNews) {
-        <button class="load-more-btn" (click)="loadMore()">
-          Carica Altre News
-        </button>
+        <div class="load-more">
+          <button type="button" class="btn btn-secondary load-more-btn" (click)="loadMore()">
+            <i class="fas fa-plus" aria-hidden="true"></i>
+            Carica Altre News
+          </button>
+        </div>
       }
     }
-  </div>
+  </section>
 } @else {
   <div class="news-section empty">
-    <p>Nessuna news disponibile per questo anime.</p>
+    <div class="state">
+      <span class="state-icon" aria-hidden="true"><i class="fas fa-newspaper"></i></span>
+      <p class="state-text">Nessuna news disponibile per questo anime.</p>
+    </div>
   </div>
 }

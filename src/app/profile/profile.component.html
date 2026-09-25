@@ -1,53 +1,58 @@
 <!-- Loader che viene mostrato durante il caricamento -->
 @if (isLoading) {
-  <div class="loading-container">
-    <div class="loading-spinner">
-      <i class="fas fa-spinner fa-spin"></i>
+  <div class="page">
+    <div class="panel loading-state profile-loading" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <p>Caricamento profilo...</p>
     </div>
-    <p class="loading-text">Caricamento profilo...</p>
   </div>
 } @else {
   <!-- Overlay per cambio immagine profilo / impostazioni -->
   @if (showOverlay) {
     <div class="profile-overlay" (click)="closeOverlay()">
-      <div class="overlay-content" (click)="$event.stopPropagation()">
+      <div
+        class="overlay-content"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-label]="showSettings ? 'Impostazioni account' : 'Immagine profilo'"
+        (click)="$event.stopPropagation()">
 
         @if (!showSettings) {
           <img [src]="profileImage" class="overlay-profile-pic" alt="Profile Image">
           <p class="overlay-username">{{ username }}</p>
 
-          <button class="action-button primary" (click)="changeProfileImage()">
-            <i class="fas fa-camera"></i>
-            Cambia immagine
-          </button>
-
-          @if (pendingProfileImage) {
-            <br/>
-            <button class="action-button primary save-image-btn" (click)="saveProfileImage()" [disabled]="isSaving">
-              @if (isSaving) {
-                <i class="fas fa-spinner fa-spin"></i> Salvataggio...
-              } @else {
-                <i class="fas fa-check"></i> Salva immagine
-              }
+          <div class="overlay-actions">
+            <button type="button" class="btn btn-primary" (click)="changeProfileImage()">
+              <i class="fas fa-camera" aria-hidden="true"></i>
+              Cambia immagine
             </button>
-          }
 
-          <br/>
-          <button class="action-button secondary" (click)="showSettings = true">
-            <i class="fas fa-cog"></i>
-            Impostazioni account
-          </button>
-          <br/>
-          <input type="file" id="profileImageInput" accept="image/*" (change)="uploadProfileImage($event)" hidden />
-          <button class="action-button secondary" (click)="closeOverlay()">Chiudi</button>
+            @if (pendingProfileImage) {
+              <button type="button" class="btn btn-primary save-image-btn" (click)="saveProfileImage()" [disabled]="isSaving">
+                @if (isSaving) {
+                  <span class="spinner spinner-sm" aria-hidden="true"></span> Salvataggio...
+                } @else {
+                  <i class="fas fa-check" aria-hidden="true"></i> Salva immagine
+                }
+              </button>
+            }
+
+            <button type="button" class="btn btn-secondary" (click)="showSettings = true">
+              <i class="fas fa-cog" aria-hidden="true"></i>
+              Impostazioni account
+            </button>
+            <input type="file" id="profileImageInput" accept="image/*" (change)="uploadProfileImage($event)" hidden />
+            <button type="button" class="btn btn-secondary" (click)="closeOverlay()">Chiudi</button>
+          </div>
         } @else {
           <h3 class="settings-title">Impostazioni account</h3>
 
           <form class="settings-form" (ngSubmit)="saveSettings()">
-            <div class="settings-field">
-              <label for="settings-username">Nome utente</label>
+            <div class="field">
+              <label class="field-label" for="settings-username">Nome utente</label>
               <input
                 id="settings-username"
+                class="input"
                 type="text"
                 name="settingsUsername"
                 [(ngModel)]="settingsData.username"
@@ -55,10 +60,11 @@
               />
             </div>
 
-            <div class="settings-field">
-              <label for="settings-password">Nuova password</label>
+            <div class="field">
+              <label class="field-label" for="settings-password">Nuova password</label>
               <input
                 id="settings-password"
+                class="input"
                 type="password"
                 name="settingsNewPassword"
                 [(ngModel)]="settingsData.newPassword"
@@ -66,10 +72,11 @@
               />
             </div>
 
-            <div class="settings-field">
-              <label for="settings-confirm-password">Conferma password</label>
+            <div class="field">
+              <label class="field-label" for="settings-confirm-password">Conferma password</label>
               <input
                 id="settings-confirm-password"
+                class="input"
                 type="password"
                 name="settingsConfirmPassword"
                 [(ngModel)]="settingsData.confirmPassword"
@@ -78,10 +85,11 @@
             </div>
 
             @if (settingsData.newPassword) {
-              <div class="settings-field">
-                <label for="settings-current-password">Password attuale</label>
+              <div class="field">
+                <label class="field-label" for="settings-current-password">Password attuale</label>
                 <input
                   id="settings-current-password"
+                  class="input"
                   type="password"
                   name="settingsCurrentPassword"
                   [(ngModel)]="settingsData.currentPassword"
@@ -92,21 +100,21 @@
             }
 
             @if (pendingProfileImage) {
-              <p class="pending-image-note">
-                <i class="fas fa-info-circle"></i>
+              <p class="alert alert-info pending-image-note">
+                <i class="fas fa-info-circle" aria-hidden="true"></i>
                 Verrà salvata anche la nuova immagine profilo selezionata.
               </p>
             }
 
             <div class="settings-actions">
-              <button type="submit" class="action-button primary" [disabled]="isSaving">
+              <button type="submit" class="btn btn-primary" [disabled]="isSaving">
                 @if (isSaving) {
-                  <i class="fas fa-spinner fa-spin"></i> Salvataggio...
+                  <span class="spinner spinner-sm" aria-hidden="true"></span> Salvataggio...
                 } @else {
-                  <i class="fas fa-check"></i> Salva modifiche
+                  <i class="fas fa-check" aria-hidden="true"></i> Salva modifiche
                 }
               </button>
-              <button type="button" class="action-button secondary" (click)="showSettings = false">
+              <button type="button" class="btn btn-secondary" (click)="showSettings = false">
                 Indietro
               </button>
             </div>
@@ -117,78 +125,91 @@
   }
 
   <!-- Contenuto principale del profilo -->
-  <div class="profile-page">
-    <div class="profile-header-container">
+  <div class="page profile-page">
+    <section class="panel profile-header-container">
       <div class="profile-header-details">
-        <img [src]="profileImage" class="profile-pic" alt="Profile Image" (click)="openOverlay()">
-        <h2 class="username">{{ username }}</h2>
-        <button class="action-button secondary settings-shortcut" (click)="openSettings()">
-          <i class="fas fa-cog"></i>
+        <img
+          [src]="profileImage"
+          class="profile-pic"
+          alt="Profile Image"
+          role="button"
+          tabindex="0"
+          title="Cambia immagine profilo"
+          (click)="openOverlay()"
+          (keydown.enter)="openOverlay()">
+        <h1 class="username">{{ username }}</h1>
+        <button type="button" class="btn btn-secondary btn-sm settings-shortcut" (click)="openSettings()">
+          <i class="fas fa-cog" aria-hidden="true"></i>
           Impostazioni
         </button>
       </div>
 
       <div class="stats-card">
-        <h3 class="stats-title">Le tue Statistiche</h3>
+        <h2 class="section-title stats-title">Le tue Statistiche</h2>
         <div class="stats-grid">
-          <div class="stat-item" routerLink="/profile/watched-anime">
-            <i class="fas fa-tv"></i>
+          <a class="stat-item" routerLink="/profile/watched-anime">
+            <i class="fas fa-tv" aria-hidden="true"></i>
             <span class="stat-value">{{ watchedAnimeCount }}</span>
             <span class="stat-label">Anime Visti</span>
-          </div>
-          <div class="stat-item" routerLink="/profile/watched-anime" [queryParams]="{ filter: 'in visione' }">
-            <i class="fas fa-play"></i>
+          </a>
+          <a class="stat-item" routerLink="/profile/watched-anime" [queryParams]="{ filter: 'in visione' }">
+            <i class="fas fa-play" aria-hidden="true"></i>
             <span class="stat-value">{{ watchingAnimeCount }}</span>
             <span class="stat-label">In Visione</span>
-          </div>
-          <div class="stat-item" routerLink="/profile/watched-anime/favourites">
-            <i class="fas fa-heart"></i>
+          </a>
+          <a class="stat-item" routerLink="/profile/watched-anime/favourites">
+            <i class="fas fa-heart" aria-hidden="true"></i>
             <span class="stat-value">{{ animePreferiti }}</span>
             <span class="stat-label">Anime Preferiti</span>
-          </div>
-          <div class="stat-item" (click)="scrollToEvidenzaSection()">
-            <i class="fas fa-thumbtack"></i>
+          </a>
+          <button type="button" class="stat-item" (click)="scrollToEvidenzaSection()">
+            <i class="fas fa-thumbtack" aria-hidden="true"></i>
             <span class="stat-value">{{ inEvidenza.length }}</span>
             <span class="stat-label">In Evidenza</span>
-          </div>
+          </button>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="main-content">
-      <div class="favorites-section">
-        <h3 class="section-title" id="inEvidenzaSection">Anime Preferiti in Evidenza</h3>
-        <div class="top-bar">
-          <div class="language-toggle">
-            <button class="action-button primary language-toggle-btn" (click)="toggleTitleLanguage()">
-              <i class="fas fa-language"></i>
-              <span>Cambia lingua titolo</span>
-            </button>
-          </div>
+    <section class="panel favorites-section">
+      <div class="section-header">
+        <h2 class="section-title" id="inEvidenzaSection">Anime Preferiti in Evidenza</h2>
+        <div class="section-controls">
+          <button type="button" class="btn btn-sm btn-primary language-toggle-btn" (click)="toggleTitleLanguage()">
+            <i class="fas fa-language" aria-hidden="true"></i>
+            <span>Cambia lingua titolo</span>
+          </button>
         </div>
+      </div>
 
-        @if (inEvidenza.length > 0) {
-          <div>
+      @if (inEvidenza.length > 0) {
+        <div
+          class="anime-grid anime-container"
+          cdkDropList
+          cdkDropListOrientation="horizontal"
+          (cdkDropListDropped)="drop($event)">
+          @for (anime of inEvidenza; track anime.mal_id) {
             <div
-              class="anime-container"
-              cdkDropList
-              cdkDropListOrientation="horizontal"
-              (cdkDropListDropped)="drop($event)">
-              @for (anime of inEvidenza; track anime.mal_id) {
-                <div class="anime-card" cdkDrag (click)="goToDetails(anime.mal_id)">
-                  <img [src]="anime.images.jpg.large_image_url" alt="{{ getTitle(anime) }}" class="anime-image"/>
-                  <h3 class="anime-title">{{ getTitle(anime) }}</h3>
-                </div>
-              }
+              class="anime-card"
+              cdkDrag
+              role="link"
+              tabindex="0"
+              (click)="goToDetails(anime.mal_id)"
+              (keydown.enter)="goToDetails(anime.mal_id)">
+              <img [src]="anime.images.jpg.large_image_url" alt="{{ getTitle(anime) }}" class="anime-image"/>
+              <h3 class="anime-title">{{ getTitle(anime) }}</h3>
             </div>
-          </div>
-        } @else {
-          <h2 class="empty-state">
-            <i class="fas fa-star-half-alt"></i>
-            Nessun anime in evidenza.
-          </h2>
-        }
-      </div>
-    </div>
+          }
+        </div>
+      } @else {
+        <div class="state">
+          <span class="state-icon"><i class="fas fa-star-half-alt" aria-hidden="true"></i></span>
+          <p class="state-title">Nessun anime in evidenza.</p>
+          <a class="btn btn-secondary" routerLink="/profile/watched-anime/favourites">
+            <i class="fas fa-heart" aria-hidden="true"></i> Vai ai preferiti
+          </a>
+        </div>
+      }
+    </section>
   </div>
 }

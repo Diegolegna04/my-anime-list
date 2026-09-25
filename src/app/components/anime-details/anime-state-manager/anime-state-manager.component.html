@@ -1,13 +1,10 @@
-<div class="state-manager">
+<section class="state-manager">
   <div class="state-manager-header">
-    <h3 class="section-title">
-      <span class="title-icon">📊</span>
-      Stato Anime
-    </h3>
-    
+    <h3 class="section-title">Stato Anime</h3>
+
     @if (showLoadingIndicator) {
-      <div class="loading-indicator">
-        <span class="spinner"></span>
+      <div class="badge badge-accent loading-indicator" role="status">
+        <span class="spinner spinner-sm" aria-hidden="true"></span>
         <span class="loading-text">Aggiornamento...</span>
       </div>
     }
@@ -23,18 +20,16 @@
         [attr.aria-pressed]="isActive(option.value)"
         [title]="getTooltip(option.value)"
         (click)="onStateClick(option.value)">
-        
-        <span class="button-icon" [attr.aria-hidden]="true">
-          {{ option.icon }}
-        </span>
-        
+
+        <i class="fas button-icon" [ngClass]="option.icon" aria-hidden="true"></i>
+
         <span class="button-label">
           {{ option.label }}
         </span>
-        
+
         @if (isActive(option.value)) {
-          <span class="active-indicator" aria-label="Selezionato">
-            ✓
+          <span class="active-indicator" aria-hidden="true">
+            <i class="fas fa-check"></i>
           </span>
         }
       </button>
@@ -42,24 +37,30 @@
   </div>
 
   <details class="extended-states">
-    <summary class="toggle-extended">Altri stati</summary>
+    <summary class="toggle-extended">
+      Altri stati
+      <i class="fas fa-chevron-down toggle-icon" aria-hidden="true"></i>
+    </summary>
     <div class="state-buttons-container extended">
       @for (option of extendedStates; track trackByState($index, option)) {
         <button
           type="button"
           [class]="getButtonClass(option.value)"
           [disabled]="isDisabled(option.value)"
+          [attr.aria-pressed]="isActive(option.value)"
           [title]="getTooltip(option.value)"
           (click)="onStateClick(option.value)">
-          
-          <span class="button-icon">{{ option.icon }}</span>
+
+          <i class="fas button-icon" [ngClass]="option.icon" aria-hidden="true"></i>
           <span class="button-label">{{ option.label }}</span>
-          
+
           @if (isActive(option.value)) {
-            <span class="active-indicator">✓</span>
+            <span class="active-indicator" aria-hidden="true">
+              <i class="fas fa-check"></i>
+            </span>
           }
         </button>
       }
     </div>
   </details>
-</div>
+</section>

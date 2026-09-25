@@ -5,7 +5,7 @@
   padding: 3.5rem 2rem;
   margin: 2rem 0;
   text-align: center;
-  box-shadow: 0 12px 28px rgba(124, 77, 255, 0.3);
+  box-shadow: var(--shadow-banner);
   position: relative;
   overflow: hidden;
 }
@@ -79,18 +79,18 @@
 }
 
 .newsletter-btn {
-  background-color: #ff7043;
+  background-color: var(--highlight-color);
   color: white;
   border: none;
   padding: 0 1.7rem;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
 }
 
 .newsletter-btn:hover {
-  background-color: #f4511e;
+  background-color: var(--highlight-hover);
 }
 
 @media (max-width: 768px) {

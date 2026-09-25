@@ -1,5 +1,15 @@
-<div class="not-found-container">
-  <h1>Pagina Non Trovata</h1>
-  <p>La pagina che stai cercando non esiste o è stata rimossa.</p>
-  <button (click)="goHome()" class="btn-home">Torna alla Home</button>
+<div class="page not-found">
+  <div class="state">
+    <p class="not-found-code">404</p>
+    <h1 class="state-title">Pagina non trovata</h1>
+    <p class="state-text">La pagina che stai cercando non esiste o è stata rimossa.</p>
+    <div class="not-found-actions">
+      <a routerLink="/" class="btn btn-primary">
+        <i class="fas fa-home" aria-hidden="true"></i> Torna alla home
+      </a>
+      <a routerLink="/genres" class="btn btn-secondary">
+        <i class="fas fa-compass" aria-hidden="true"></i> Esplora i generi
+      </a>
+    </div>
+  </div>
 </div>

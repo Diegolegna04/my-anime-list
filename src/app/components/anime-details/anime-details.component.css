@@ -1,14 +1,9 @@
+/* Pannello principale: aspetto da .panel globale (card-bg, radius-lg,
+   card-shadow); qui solo il layout contenuto + sidebar */
 .anime-detail {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
-  margin: 2rem auto;
-  max-width: 1200px;
-  padding: 2rem;
-  border-radius: 16px;
-  background-color: var(--card-bg);
-  box-shadow: var(--card-shadow);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .main-content {
@@ -16,185 +11,113 @@
   min-width: 300px;
 }
 
-/* Titolo principale */
+/* Titolo principale (come i titoli dei banner) */
 .anime-title {
-  font-size: 2.2rem;
-  margin-bottom: 1rem;
-  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  font-size: 2rem;
   font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  text-wrap: balance;
 }
 
 /* Layout immagine + info */
 .anime-info {
   display: flex;
-  flex-direction: row;
-  gap: 1.5rem;
   flex-wrap: wrap;
+  gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .cover-image {
+  flex-shrink: 0;
   width: 250px;
   height: 350px;
   object-fit: cover;
-  border-radius: 8px;
-  box-shadow: var(--card-shadow);
-  transition: transform 0.3s ease;
-  flex-shrink: 0;
-}
-
-.cover-image:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 15px var(--shadow-medium);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-medium);
 }
 
 .info-text {
   flex: 1;
+  min-width: 0;
 }
 
 .translate-btn {
-  background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
-  color: white;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 30px;
-  cursor: pointer;
   margin-bottom: 1rem;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(124, 77, 255, 0.2);
-}
-
-.translate-btn:hover:not(:disabled) {
-  background-color: var(--accent-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(124, 77, 255, 0.3);
-}
-
-.translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .synopsis {
   margin-bottom: 1.5rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
   font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
 }
 
-/* Voto Section */
-.voto-section {
-  margin-top: 1.8rem;
-  padding: 1.5rem;
-  border-radius: 12px;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-light);
-}
-
-.voto-section:hover {
-  box-shadow: var(--shadow-medium);
-}
-
-.voto-section label {
-  display: block;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.8rem;
-}
-
-/* Evidenza Section */
+/* Blocchi secondari (voto, evidenza) */
+.voto-section,
 .evidenza-section {
-  margin-top: 1.8rem;
+  margin-top: 1.5rem;
   padding: 1.5rem;
-  border-radius: 12px;
-  background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-light);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-secondary);
 }
 
-.evidenza-section:hover {
-  box-shadow: var(--shadow-medium);
+.block-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.block-title i {
+  color: var(--accent-text);
 }
 
 .evidenza-section label {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
   color: var(--text-primary);
+  cursor: pointer;
 }
 
 .evidenza-section input[type="checkbox"] {
   width: 20px;
   height: 20px;
-  cursor: pointer;
   accent-color: var(--accent-color);
-  transition: transform 0.2s ease;
+  cursor: pointer;
 }
 
-.evidenza-section input[type="checkbox"]:hover {
-  transform: scale(1.1);
-}
-
-.loading-container,
-.error-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* Caricamento: .loading-state globale, qui solo l'altezza minima */
+.loading-container {
   justify-content: center;
   min-height: 400px;
-  padding: 2rem;
 }
 
-.loading-container {
-  gap: 1rem;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid var(--border-color);
-  border-top: 4px solid var(--accent-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-container p,
-.error-container p {
-  color: var(--text-secondary);
-  font-size: 1.1rem;
+.loading-container p {
   margin: 0;
+  font-size: 1.1rem;
 }
 
-.error-container p {
-  color: #f44336;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
   .anime-detail {
-    padding: 1.5rem;
     gap: 1.5rem;
   }
-  
+
   .main-content {
     min-width: 100%;
   }
 
   .anime-title {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
   }
 
   .anime-info {
@@ -219,11 +142,9 @@
   .voto-section,
   .evidenza-section {
     padding: 1rem;
-    margin-top: 1.5rem;
-    border-radius: 14px;
   }
 
-  .voto-section label {
+  .block-title {
     font-size: 1rem;
   }
 
@@ -231,19 +152,13 @@
     font-size: 0.95rem;
   }
 
-  .loading-container,
-  .error-container {
+  .loading-container {
     min-height: 300px;
-    padding: 1.5rem;
   }
+}
 
-  .spinner {
-    width: 40px;
-    height: 40px;
-  }
-
-  .loading-container p,
-  .error-container p {
-    font-size: 1rem;
+@media (max-width: 480px) {
+  .anime-title {
+    font-size: 1.5rem;
   }
 }

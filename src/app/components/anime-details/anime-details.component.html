@@ -1,93 +1,104 @@
-@if (isLoadingAnimeData) {
-  <div class="loading-container">
-    <div class="spinner"></div>
-    <p>Caricamento anime...</p>
-  </div>
-} @else if (animeDetails) {
-  <div class="anime-detail">
-    <div class="main-content">
-      <h1 class="anime-title">{{ getDisplayedTitle() }}</h1>
+<div class="page">
+  @if (isLoadingAnimeData) {
+    <div class="loading-state loading-container" role="status">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Caricamento anime...</p>
+    </div>
+  } @else if (animeDetails) {
+    <div class="anime-detail panel">
+      <div class="main-content">
+        <h1 class="anime-title">{{ getDisplayedTitle() }}</h1>
 
-      <div class="anime-info">
-        <img [src]="animeDetails.images.jpg.large_image_url" [alt]="animeDetails.title" class="cover-image" />
-        
-        <div class="info-text">
-          <button class="translate-btn" 
-                  (click)="onTranslateRequested()"
-                  [disabled]="isTranslating">
-            🇮🇹 {{ isTranslating ? 'Traduzione in corso...' : 'Traduci in Italiano' }}
-          </button>
-          <p class="synopsis">{{ animeDetails.synopsis }}</p>
+        <div class="anime-info">
+          <img [src]="animeDetails.images.jpg.large_image_url" [alt]="animeDetails.title" class="cover-image" />
+
+          <div class="info-text">
+            <button type="button"
+                    class="btn btn-primary btn-sm translate-btn"
+                    (click)="onTranslateRequested()"
+                    [disabled]="isTranslating">
+              @if (isTranslating) {
+                <span class="spinner spinner-sm" aria-hidden="true"></span>
+              } @else {
+                <i class="fas fa-language" aria-hidden="true"></i>
+              }
+              {{ isTranslating ? 'Traduzione in corso...' : 'Traduci in Italiano' }}
+            </button>
+            <p class="synopsis">{{ animeDetails.synopsis }}</p>
+          </div>
         </div>
+
+        <!-- Info Card Component (per extra info, generi, streaming) -->
+        <app-anime-info-card
+          [animeDetails]="animeDetails"
+          [streamingServices]="animeStreaming">
+        </app-anime-info-card>
+
+        <!-- State Manager Section -->
+        <app-anime-state-manager
+          [currentState]="animeState"
+          [isLoading]="isLoadingUserData"
+          (stateChanged)="onStateChanged($event)">
+        </app-anime-state-manager>
+
+        <!-- Episodes Tracker (solo se "in visione") -->
+        @if (showEpisodesTracker) {
+          <app-episodes-tracker
+            [currentEpisodes]="episodiVisti"
+            [totalEpisodes]="animeDetails.episodes"
+            (episodesUpdated)="onEpisodesUpdated($event)">
+          </app-episodes-tracker>
+        }
+
+        <!-- Rating Section (se visto o in visione) -->
+        @if (showRating) {
+          <div class="voto-section">
+            <h3 class="block-title">
+              <i class="fas fa-star" aria-hidden="true"></i>
+              Il tuo voto:
+            </h3>
+            <app-star-rating
+              [rating]="voto"
+              [maxRating]="10"
+              [readonly]="false"
+              (ratingChanged)="onRatingChanged($event)">
+            </app-star-rating>
+          </div>
+        }
+
+        <!-- Favorite Toggle (se voto >= 8) -->
+        @if (showFavoriteToggle) {
+          <app-favorite-toggle
+            [isFavorite]="preferito"
+            [canFavorite]="canFavorite"
+            (favoriteToggled)="onFavoriteToggled()">
+          </app-favorite-toggle>
+        }
+
+        <!-- In Evidenza (se visto o episodi >= 5) -->
+        @if (showInEvidenza) {
+          <div class="evidenza-section">
+            <label>
+              <input
+                type="checkbox"
+                [checked]="inEvidenza"
+                (change)="onInEvidenzaChanged($event)" />
+              Mostra in evidenza sul profilo
+            </label>
+          </div>
+        }
+
+        <!-- News Section -->
+        <app-news-list
+          [news]="news">
+        </app-news-list>
       </div>
 
-      <!-- Info Card Component (per extra info, generi, streaming) -->
-      <app-anime-info-card
-        [animeDetails]="animeDetails"
-        [streamingServices]="animeStreaming">
-      </app-anime-info-card>
-
-      <!-- State Manager Section -->
-      <app-anime-state-manager
-        [currentState]="animeState"
-        [isLoading]="isLoadingUserData"
-        (stateChanged)="onStateChanged($event)">
-      </app-anime-state-manager>
-
-      <!-- Episodes Tracker (solo se "in visione") -->
-      @if (showEpisodesTracker) {
-        <app-episodes-tracker
-          [currentEpisodes]="episodiVisti"
-          [totalEpisodes]="animeDetails.episodes"
-          (episodesUpdated)="onEpisodesUpdated($event)">
-        </app-episodes-tracker>
-      }
-
-      <!-- Rating Section (se visto o in visione) -->
-      @if (showRating) {
-        <div class="voto-section">
-          <label>Il tuo voto:</label>
-          <app-star-rating
-            [rating]="voto"
-            [maxRating]="10"
-            [readonly]="false"
-            (ratingChanged)="onRatingChanged($event)">
-          </app-star-rating>
-        </div>
-      }
-
-      <!-- Favorite Toggle (se voto >= 8) -->
-      @if (showFavoriteToggle) {
-        <app-favorite-toggle
-          [isFavorite]="preferito"
-          [canFavorite]="canFavorite"
-          (favoriteToggled)="onFavoriteToggled()">
-        </app-favorite-toggle>
-      }
-
-      <!-- In Evidenza (se visto o episodi >= 5) -->
-      @if (showInEvidenza) {
-        <div class="evidenza-section">
-          <label>
-            <input 
-              type="checkbox" 
-              [checked]="inEvidenza"
-              (change)="onInEvidenzaChanged($event)" />
-            Mostra in evidenza sul profilo
-          </label>
-        </div>
-      }
-
-      <!-- News Section -->
-      <app-news-list
-        [news]="news">
-      </app-news-list>
+      <!-- Recommended Sidebar -->
+      <app-recommended-anime-sidebar
+        [recommendedAnime]="recommendedAnime"
+        (animeClicked)="onRecommendedAnimeClick($event)">
+      </app-recommended-anime-sidebar>
     </div>
-
-    <!-- Recommended Sidebar -->
-    <app-recommended-anime-sidebar
-      [recommendedAnime]="recommendedAnime"
-      (animeClicked)="onRecommendedAnimeClick($event)">
-    </app-recommended-anime-sidebar>
-  </div>
-}
+  }
+</div>

@@ -6,7 +6,9 @@ export type AnimeState = 'non visto' | 'in visione' | 'completato' | 'da vedere'
 export interface StateOption {
   value: AnimeState;
   label: string;
+  /** Classe Font Awesome, es. 'fa-eye-slash' */
   icon: string;
+  /** Tono di stato: genera la classe CSS state-<color> */
   color: string;
   description: string;
 }
@@ -33,22 +35,22 @@ export class AnimeStateManagerComponent {
     {
       value: 'non visto',
       label: 'Non Visto',
-      icon: '👁️',
-      color: 'grey',
+      icon: 'fa-eye-slash',
+      color: 'neutral',
       description: 'Rimuovi dalla tua lista'
     },
     {
       value: 'in visione',
       label: 'In Visione',
-      icon: '▶️',
-      color: 'blue',
+      icon: 'fa-play-circle',
+      color: 'watching',
       description: 'Stai guardando questo anime'
     },
     {
       value: 'completato',
       label: 'Completato',
-      icon: '✅',
-      color: 'orange',
+      icon: 'fa-check-circle',
+      color: 'completed',
       description: 'Hai completato questo anime'
     }
   ];
@@ -60,22 +62,22 @@ export class AnimeStateManagerComponent {
     {
       value: 'da vedere',
       label: 'Da Vedere',
-      icon: '📋',
-      color: 'purple',
+      icon: 'fa-bookmark',
+      color: 'plan',
       description: 'Pianificato per il futuro'
     },
     {
       value: 'droppato',
       label: 'Droppato',
-      icon: '❌',
-      color: 'red',
+      icon: 'fa-times-circle',
+      color: 'dropped',
       description: 'Hai abbandonato questo anime'
     },
     {
       value: 'in pausa',
       label: 'In Pausa',
-      icon: '⏸️',
-      color: 'yellow',
+      icon: 'fa-pause-circle',
+      color: 'on-hold',
       description: 'Temporaneamente sospeso'
     }
   ];

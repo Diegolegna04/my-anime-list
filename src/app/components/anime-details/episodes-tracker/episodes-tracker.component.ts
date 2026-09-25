@@ -60,13 +60,13 @@ export class EpisodesTrackerComponent implements OnInit {
     }
     
     if (this.progressPercentage >= 100) {
-      return 'Serie completata! 🎉';
+      return 'Serie completata!';
     }
     
     const remaining = this.totalEpisodes - this.currentEpisodes;
     
     if (remaining === 1) {
-      return 'Ultimo episodio! 🔥';
+      return 'Ultimo episodio!';
     }
     
     if (remaining <= 3) {
@@ -77,15 +77,15 @@ export class EpisodesTrackerComponent implements OnInit {
   }
 
   /**
-   * Ottiene l'icona appropriata per lo stato
+   * Ottiene l'icona Font Awesome appropriata per lo stato
    */
   get statusIcon(): string {
-    if (this.progressPercentage >= 100) return '🎉';
-    if (this.progressPercentage >= 75) return '🔥';
-    if (this.progressPercentage >= 50) return '💪';
-    if (this.progressPercentage >= 25) return '📺';
-    
-    return '▶️';
+    if (this.progressPercentage >= 100) return 'fa-trophy';
+    if (this.progressPercentage >= 75) return 'fa-fire';
+    if (this.progressPercentage >= 50) return 'fa-bolt';
+    if (this.progressPercentage >= 25) return 'fa-tv';
+
+    return 'fa-play';
   }
 
   /**

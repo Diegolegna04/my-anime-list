@@ -1,82 +1,86 @@
-<div class="page-container">
-  <div class="hero-section">
-    <div class="hero-content">
-      <h1 class="hero-title">La tua Libreria Anime</h1>
-      <p class="hero-subtitle">Tieni traccia di cosa hai visto, cosa stai guardando e cosa vuoi ancora recuperare.</p>
-    </div>
-  </div>
-
-  <div class="controls-section">
-    <div class="global-buttons">
-      <button routerLink="/profile/watched-anime/favourites" class="action-button primary">
-        <i class="fas fa-heart"></i>
+<div class="page">
+  <header class="page-hero">
+    <h1 class="page-hero-title">La tua Libreria Anime</h1>
+    <p class="page-hero-lead">Tieni traccia di cosa hai visto, cosa stai guardando e cosa vuoi ancora recuperare.</p>
+    <div class="page-hero-actions">
+      <button type="button" routerLink="/profile/watched-anime/favourites" class="btn btn-light">
+        <i class="fas fa-heart" aria-hidden="true"></i>
         <span>Visualizza Anime Preferiti</span>
       </button>
-      <button class="action-button secondary" (click)="toggleTitleLanguage()">
-        <i class="fas fa-language"></i>
+      <button type="button" class="btn btn-glass" (click)="toggleTitleLanguage()">
+        <i class="fas fa-language" aria-hidden="true"></i>
         <span>Cambia lingua titolo</span>
       </button>
     </div>
+  </header>
 
-    <div class="filter-buttons-group">
-      <button
-        class="filter-button"
-        [class.active]="filter === 'all'"
-        (click)="setFilter('all')">
-        Tutti
-      </button>
-      <button
-        class="filter-button"
-        [class.active]="filter === 'completato'"
-        (click)="setFilter('completato')">
-        Completati
-      </button>
-      <button
-        class="filter-button"
-        [class.active]="filter === 'in visione'"
-        (click)="setFilter('in visione')">
-        In Visione
-      </button>
-      <button class="filter-button" [class.active]="filter === 'da vedere'" (click)="setFilter('da vedere')">
-        Da Vedere
-      </button>
-      <button class="filter-button" [class.active]="filter === 'in pausa'" (click)="setFilter('in pausa')">
-        In Pausa
-      </button>
-      <button class="filter-button" [class.active]="filter === 'droppato'" (click)="setFilter('droppato')">
-        Droppati
-      </button>
+  <section class="panel">
+    <div class="section-header">
+      <h2 class="section-title">
+        I tuoi anime
+        @if (!isLoading) {
+          <span class="section-count">{{ filteredAnime.length }}</span>
+        }
+      </h2>
+      <div class="section-controls">
+        <div class="segmented" role="group" aria-label="Filtra per stato">
+          <button type="button" [class.active]="filter === 'all'" [attr.aria-pressed]="filter === 'all'" (click)="setFilter('all')">
+            Tutti
+          </button>
+          <button type="button" [class.active]="filter === 'completato'" [attr.aria-pressed]="filter === 'completato'" (click)="setFilter('completato')">
+            Completati
+          </button>
+          <button type="button" [class.active]="filter === 'in visione'" [attr.aria-pressed]="filter === 'in visione'" (click)="setFilter('in visione')">
+            In Visione
+          </button>
+          <button type="button" [class.active]="filter === 'da vedere'" [attr.aria-pressed]="filter === 'da vedere'" (click)="setFilter('da vedere')">
+            Da Vedere
+          </button>
+          <button type="button" [class.active]="filter === 'in pausa'" [attr.aria-pressed]="filter === 'in pausa'" (click)="setFilter('in pausa')">
+            In Pausa
+          </button>
+          <button type="button" [class.active]="filter === 'droppato'" [attr.aria-pressed]="filter === 'droppato'" (click)="setFilter('droppato')">
+            Droppati
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="main-content">
     @if (isLoading) {
-      <div class="loading-state">
-        <i class="fas fa-spinner fa-spin"></i>
+      <div class="loading-state" role="status">
+        <span class="spinner" aria-hidden="true"></span>
         <p>Caricamento dei tuoi anime...</p>
       </div>
     }
 
     @if (!isLoading && filteredAnime.length > 0) {
-      <div class="anime-grid"> @for (anime of filteredAnime; track anime.id) {
-        <div class="anime-card" (click)="goToDetails(anime.details?.data?.mal_id)">
-            @if (anime.details?.data?.images?.jpg?.large_image_url) {
-              <img
-                [src]="anime.details.data.images.jpg.large_image_url"
-                alt="{{ getTitle(anime.details?.data) }}"
-                class="anime-image"
-              />
-            } @else {
-              <div class="anime-image-placeholder">
-                <i class="fas fa-image"></i>
-                <p>Immagine non disponibile</p>
-              </div>
-            }
+      <div class="anime-grid">
+        @for (anime of filteredAnime; track anime.id) {
+          <div
+            class="anime-card"
+            role="link"
+            tabindex="0"
+            (click)="goToDetails(anime.details?.data?.mal_id)"
+            (keydown.enter)="goToDetails(anime.details?.data?.mal_id)">
+            <div class="img-wrapper">
+              @if (anime.details?.data?.images?.jpg?.large_image_url) {
+                <img
+                  [src]="anime.details.data.images.jpg.large_image_url"
+                  alt="{{ getTitle(anime.details?.data) }}"
+                  class="anime-image"
+                />
+              } @else {
+                <div class="anime-image-placeholder">
+                  <i class="fas fa-image" aria-hidden="true"></i>
+                  <p>Immagine non disponibile</p>
+                </div>
+              }
+            </div>
             <div class="card-info">
               <h3 class="card-title" title="{{ getTitle(anime.details?.data) }}">
                 {{ getTitle(anime.details?.data) || 'Titolo non disponibile' }}
               </h3>
-              <p class="card-status"
+              <p class="badge card-status"
                   [class.status-completato]="anime.state === 'completato'"
                   [class.status-in-visione]="anime.state === 'in visione'"
                   [class.status-da-vedere]="anime.state === 'da vedere'"
@@ -94,11 +98,16 @@
         }
       </div>
     } @else if (!isLoading && filteredAnime.length === 0) {
-      <div class="empty-state">
-        <i class="fas fa-box-open"></i>
-        <p>Nessun anime trovato per questa categoria.</p>
-        <p>Inizia ad aggiungere anime alla tua lista!</p>
+      <div class="state">
+        <span class="state-icon"><i class="fas fa-box-open" aria-hidden="true"></i></span>
+        <h3 class="state-title">Nessun anime trovato per questa categoria.</h3>
+        <p class="state-text">Inizia ad aggiungere anime alla tua lista!</p>
+        @if (filter !== 'all') {
+          <button type="button" class="btn btn-secondary" (click)="setFilter('all')">
+            Mostra tutti
+          </button>
+        }
       </div>
     }
-  </div>
+  </section>
 </div>

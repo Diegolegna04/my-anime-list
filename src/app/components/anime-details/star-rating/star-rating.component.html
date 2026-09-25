@@ -1,7 +1,7 @@
 <div class="star-rating-container" [class.interactive]="isInteractive">
-  
+
   <!-- Stars -->
-  <div 
+  <div
     class="star-rating"
     [class.readonly]="readonly"
     [class.disabled]="disabled"
@@ -9,7 +9,7 @@
     [attr.aria-label]="'Valutazione da 0 a ' + maxRating"
     [attr.aria-readonly]="readonly"
     [attr.aria-disabled]="disabled">
-    
+
     @for (star of stars; track trackByStar($index, star)) {
       <button
         type="button"
@@ -24,18 +24,16 @@
         (mouseenter)="onStarHover(star)"
         (mouseleave)="onStarLeave()"
         (keydown)="onKeyDown($event, star)">
-        
-        <!-- Star Icon (SVG o Unicode) -->
+
+        <!-- Star Icon (Font Awesome) -->
         <span class="star-icon" aria-hidden="true">
-          @if (getStarState(star) === 'full') {
-            ★
-          } @else if (getStarState(star) === 'half') {
+          @if (getStarState(star) === 'half') {
             <span class="star-half">
-              <span class="star-half-fill">★</span>
-              <span class="star-half-empty">☆</span>
+              <i class="fas fa-star star-half-empty"></i>
+              <span class="star-half-fill"><i class="fas fa-star"></i></span>
             </span>
           } @else {
-            ☆
+            <i class="fas fa-star"></i>
           }
         </span>
       </button>
@@ -51,8 +49,8 @@
         </span>
         <span class="rating-max">/{{ maxRating }}</span>
       </div>
-      
-      <div class="rating-label" [ngClass]="labelClass">
+
+      <div class="badge rating-label" [ngClass]="labelClass">
         {{ ratingLabel }}
       </div>
     </div>
@@ -61,8 +59,8 @@
   <!-- Progress Bar (optional, alternative view) -->
   <!--
   <div class="rating-progress">
-    <div 
-      class="rating-progress-bar" 
+    <div
+      class="rating-progress-bar"
       [style.width.%]="ratingPercentage"
       [ngClass]="labelClass">
     </div>

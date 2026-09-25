@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-not-found',
+  imports: [RouterLink],
   templateUrl: './not-found.component.html',
   styleUrls: ['./not-found.component.css'],
   standalone: true

@@ -1,39 +1,40 @@
 <div class="episodes-tracker" [class.disabled]="disabled">
-  
+
   <!-- Header con titolo e status -->
   <div class="tracker-header">
-    <label class="tracker-label">
-      <span class="label-icon">📺</span>
+    <label class="tracker-label" for="episodes-input">
+      <i class="fas fa-tv label-icon" aria-hidden="true"></i>
       Episodi Visti
     </label>
-    
-    <div class="status-badge" [ngClass]="progressBarClass">
-      <span class="status-icon">{{ statusIcon }}</span>
+
+    <div class="badge status-badge" [ngClass]="progressBarClass">
+      <i class="fas status-icon" [ngClass]="statusIcon" aria-hidden="true"></i>
       <span class="status-text">{{ statusMessage }}</span>
     </div>
   </div>
 
   <!-- Input controls -->
   <div class="input-controls">
-    
+
     <!-- Quick Actions: Decrement -->
     @if (showQuickActions) {
       <button
         type="button"
-        class="quick-action-btn decrement"
+        class="btn-icon quick-action-btn decrement"
         [disabled]="isDecrementDisabled"
         (click)="decrementEpisode()"
         aria-label="Rimuovi un episodio"
         title="Rimuovi un episodio (-1)">
-        <span class="btn-icon">−</span>
+        <i class="fas fa-minus" aria-hidden="true"></i>
       </button>
     }
 
     <!-- Main Input -->
     <div class="input-wrapper">
       <input
+        id="episodes-input"
         type="number"
-        class="episodes-input"
+        class="input episodes-input"
         [value]="localEpisodes"
         [min]="0"
         [max]="totalEpisodes"
@@ -45,9 +46,9 @@
         [attr.aria-valuemin]="0"
         [attr.aria-valuemax]="totalEpisodes"
         [attr.aria-valuenow]="currentEpisodes" />
-      
-      <span class="input-separator">/</span>
-      
+
+      <span class="input-separator" aria-hidden="true">/</span>
+
       <span class="total-episodes">{{ totalEpisodes || '?' }}</span>
     </div>
 
@@ -55,12 +56,12 @@
     @if (showQuickActions) {
       <button
         type="button"
-        class="quick-action-btn increment"
+        class="btn-icon quick-action-btn increment"
         [disabled]="isIncrementDisabled"
         (click)="incrementEpisode()"
         aria-label="Aggiungi un episodio"
         title="Aggiungi un episodio (+1)">
-        <span class="btn-icon">+</span>
+        <i class="fas fa-plus" aria-hidden="true"></i>
       </button>
     }
   </div>
@@ -68,22 +69,23 @@
   <!-- Progress Bar -->
   <div class="progress-container">
     <div class="progress-track">
-      <div 
+      <div
         class="progress-bar"
         [ngClass]="progressBarClass"
         [style.width.%]="progressPercentage"
         role="progressbar"
+        aria-label="Progresso episodi"
         [attr.aria-valuenow]="progressPercentage"
         [attr.aria-valuemin]="0"
         [attr.aria-valuemax]="100">
-        
+
         <!-- Shimmer effect per progress in corso -->
         @if (progressPercentage > 0 && progressPercentage < 100) {
           <div class="progress-shimmer"></div>
         }
       </div>
     </div>
-    
+
     <div class="progress-label">
       <span class="progress-percentage">{{ progressPercentage | number:'1.0-0' }}%</span>
     </div>
@@ -94,21 +96,21 @@
     <div class="action-buttons">
       <button
         type="button"
-        class="action-btn complete-btn"
+        class="btn btn-secondary btn-sm action-btn complete-btn"
         [disabled]="isCompleteDisabled"
         (click)="markAsComplete()"
         title="Segna tutti gli episodi come visti">
-        <span class="btn-icon">✓</span>
+        <i class="fas fa-check" aria-hidden="true"></i>
         <span class="btn-label">Completa</span>
       </button>
-      
+
       <button
         type="button"
-        class="action-btn reset-btn"
+        class="btn btn-secondary btn-sm action-btn reset-btn"
         [disabled]="isResetDisabled"
         (click)="resetProgress()"
         title="Azzera il progresso">
-        <span class="btn-icon">↺</span>
+        <i class="fas fa-undo" aria-hidden="true"></i>
         <span class="btn-label">Reset</span>
       </button>
     </div>
@@ -116,7 +118,7 @@
 
   <!-- Info tooltip (opzionale) -->
   <p class="tracker-hint">
-    <span class="hint-icon">💡</span>
+    <i class="fas fa-lightbulb hint-icon" aria-hidden="true"></i>
     Premi Invio o clicca fuori per salvare
   </p>
 </div>

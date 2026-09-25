@@ -1,20 +1,22 @@
-<aside class="recommended-section">
-    <h2>Anime Consigliati</h2>
-    <div class="recommended-list">
+<aside class="recommended-section" aria-labelledby="recommended-title">
+  <h2 class="section-title recommended-title" id="recommended-title">Anime Consigliati</h2>
+  <div class="recommended-list">
     @for (anime of displayedAnime; track anime.mal_id) {
-        <div
+      <a
         class="recommended-card"
         [routerLink]="'/anime/' + anime.mal_id">
-        <img [src]="anime.images.jpg.image_url" [alt]="anime.title" />
+        <img [src]="anime.images.jpg.image_url" [alt]="anime.title" loading="lazy" />
         <h4>{{ anime.title }}</h4>
-        </div>
+      </a>
     }
-    </div>
-    @if (displayedAnime.length < recommendedAnime.length) {
+  </div>
+  @if (displayedAnime.length < recommendedAnime.length) {
     <button
-        class="load-more-btn"
-        (click)="loadMore()">
-        Carica Altri
+      type="button"
+      class="btn btn-secondary btn-sm btn-block load-more-btn"
+      (click)="loadMore()">
+      <i class="fas fa-plus" aria-hidden="true"></i>
+      Carica Altri
     </button>
-    }
+  }
 </aside>

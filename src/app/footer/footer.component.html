@@ -1,14 +1,14 @@
 <footer class="footer">
   <div class="footer-content">
     <div class="footer-section about">
-      <h2>About</h2>
+      <h2 class="footer-title">Chi siamo</h2>
       <p>
         Benvenuto su Anime List!
         Esplora le nostre classifiche con i titoli migliori e scopri cosa guardare.
       </p>
     </div>
     <div class="footer-section links">
-      <h2>Quick Links</h2>
+      <h2 class="footer-title">Link rapidi</h2>
       <ul>
         <li><a routerLink="/">Home</a></li>
         <li><a routerLink="/genres">Generi</a></li>
@@ -16,18 +16,18 @@
           @if (authService.accessoEffettuato$ | async) {
             <a routerLink="/profile">Profilo</a>
           } @else {
-            <a routerLink="/register-login">Login/Register</a>
+            <a routerLink="/register-login">Accedi / Registrati</a>
           }
         </li>
       </ul>
     </div>
     <div class="footer-section contact">
-      <h2>Contattaci</h2>
+      <h2 class="footer-title">Contatti</h2>
       <p>Email: <a href="mailto:myanimedb.test@gmail.com">support&#64;animelist.com</a></p>
       <p>Telefono: +123 456 7890</p>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>&copy; 2025 Anime List. All rights reserved.</p>
+    <p>&copy; 2025 Anime List. Tutti i diritti riservati.</p>
   </div>
 </footer>

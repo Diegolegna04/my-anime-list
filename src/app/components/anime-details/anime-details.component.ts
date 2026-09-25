@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil, finalize } from 'rxjs';
@@ -20,7 +20,6 @@ import { ToastService } from '../../services/toast.service';
   styleUrls: ['./anime-details.component.css'],
   imports: [
     CommonModule,
-    RouterLink,
     AnimeInfoCardComponent,
     AnimeStateManagerComponent,
     EpisodesTrackerComponent,

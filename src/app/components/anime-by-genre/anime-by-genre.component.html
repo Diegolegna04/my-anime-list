@@ -1,39 +1,61 @@
-<div class="genre-results-page">
-  <header class="genre-hero" [attr.data-category]="genreMeta?.category">
-    <a routerLink="/genres" class="back-link">
+<div class="page">
+  <header class="page-hero">
+    <a routerLink="/genres" class="page-hero-back">
       <i class="fas fa-arrow-left" aria-hidden="true"></i> Tutti i generi
     </a>
 
-    <div class="genre-hero-main">
-      <div class="genre-heading">
-        <h1 class="genre-title">
-          <span class="genre-title-icon" aria-hidden="true"><i [class]="genreIcon"></i></span>
-          {{ genreName }}
-        </h1>
-        @if (genreMeta) {
-          <p class="genre-meta">
-            {{ genreMeta.categoryLabel }}
-            @if (genreMeta.count) {
-              <span aria-hidden="true">·</span> {{ genreMeta.count }} anime su MyAnimeList
-            }
-          </p>
+    <span class="genre-hero-icon" aria-hidden="true"><i [class]="genreIcon"></i></span>
+    <h1 class="page-hero-title">{{ genreName }}</h1>
+
+    @if (genreMeta) {
+      <div class="page-hero-meta">
+        <span class="chip chip-glass">{{ genreMeta.categoryLabel }}</span>
+        @if (genreMeta.count) {
+          <span class="chip chip-glass">{{ genreMeta.count }} anime su MyAnimeList</span>
         }
       </div>
+    }
 
-      <div class="genre-controls">
+    @if (genreShortDescription) {
+      <p class="page-hero-lead">{{ genreShortDescription }}</p>
+    }
+
+    @if (genreDescription) {
+      @if (isDescriptionExpanded) {
+        <p class="page-hero-lead genre-description" id="genre-full-description">{{ genreDescription }}</p>
+      }
+      <div class="page-hero-actions">
+        <button
+          type="button"
+          class="btn btn-glass btn-sm"
+          [attr.aria-expanded]="isDescriptionExpanded"
+          aria-controls="genre-full-description"
+          (click)="isDescriptionExpanded = !isDescriptionExpanded"
+        >
+          <i class="fas" [class.fa-chevron-down]="!isDescriptionExpanded" [class.fa-chevron-up]="isDescriptionExpanded" aria-hidden="true"></i>
+          {{ isDescriptionExpanded ? 'Nascondi la definizione' : 'Leggi la definizione completa' }}
+        </button>
+      </div>
+    }
+  </header>
+
+  <section class="panel">
+    <div class="section-header">
+      <h2 class="section-title">Anime</h2>
+      <div class="section-controls">
         <div class="sort-select">
           <label for="sortCriteria">Ordina per</label>
-          <select id="sortCriteria" [value]="currentSortCriteria" (change)="sortAnime($event)">
+          <select id="sortCriteria" class="select" [value]="currentSortCriteria" (change)="sortAnime($event)">
             <option value="score">Voti</option>
             <option value="members">Membri</option>
             <option value="date">Novità</option>
           </select>
         </div>
-        <button type="button" (click)="toggleTitleLanguage()" class="language-toggle-btn">
+        <button type="button" (click)="toggleTitleLanguage()" class="btn btn-primary btn-sm">
           <i class="fas fa-language" aria-hidden="true"></i>
           {{titleLanguage === 'english' ? 'Titolo giapponese' : 'Titolo inglese'}}
         </button>
-        <div class="view-toggle" role="group" aria-label="Visualizzazione">
+        <div class="segmented" role="group" aria-label="Visualizzazione">
           <button type="button" [class.active]="isGridView" [attr.aria-pressed]="isGridView" (click)="setGridView(true)" aria-label="Griglia">
             <i class="fas fa-th-large" aria-hidden="true"></i>
           </button>
@@ -43,42 +65,37 @@
         </div>
       </div>
     </div>
-    @if (genreShortDescription || genreDescription) {
-      <div class="genre-description-wrapper">
-        @if (genreShortDescription) {
-          <p class="genre-lead">{{ genreShortDescription }}</p>
-        }
-        @if (genreDescription) {
-          @if (isDescriptionExpanded) {
-            <p class="genre-description" id="genre-full-description">{{ genreDescription }}</p>
-          }
-          <button
-            type="button"
-            class="toggle-description-btn"
-            [attr.aria-expanded]="isDescriptionExpanded"
-            aria-controls="genre-full-description"
-            (click)="isDescriptionExpanded = !isDescriptionExpanded"
-          >
-            {{ isDescriptionExpanded ? 'Nascondi la definizione' : 'Leggi la definizione completa' }}
-          </button>
+
+    @if (animeList.length) {
+      <div [class.anime-grid]="isGridView" [class.anime-list]="!isGridView">
+        @for (anime of animeList; track anime.mal_id) {
+          <app-anime-card
+            [anime]="anime"
+            [titleLanguage]="titleLanguage"
+            [viewMode]="isGridView ? 'grid' : 'list'">
+          </app-anime-card>
         }
       </div>
     }
-  </header>
 
-  <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
-    @for (anime of animeList; track anime.mal_id) {
-      <app-anime-card
-        [anime]="anime"
-        [titleLanguage]="titleLanguage"
-        [viewMode]="isGridView ? 'grid' : 'list'">
-      </app-anime-card>
+    @if (isLoading) {
+      <div class="loading-state">
+        <span class="spinner" aria-hidden="true"></span>
+        <p>Caricamento anime…</p>
+      </div>
+    } @else if (!animeList.length) {
+      <div class="state">
+        <span class="state-icon"><i class="fas fa-film" aria-hidden="true"></i></span>
+        <h3 class="state-title">Nessun anime trovato</h3>
+        <p class="state-text">Per questo genere non abbiamo risultati in questo momento. Riprova più tardi o scegli un altro genere.</p>
+        <a routerLink="/genres" class="btn btn-primary">Tutti i generi</a>
+      </div>
+    } @else {
+      <div class="load-more">
+        <button type="button" (click)="loadMoreAnime()" class="btn btn-primary">
+          <i class="fas fa-plus-circle" aria-hidden="true"></i> Carica altri anime
+        </button>
+      </div>
     }
-  </div>
-
-  @if (!isLoading) {
-    <button (click)="loadMoreAnime()" class="load-more-btn">
-      <i class="fas fa-plus-circle"></i> Carica Altri Anime
-    </button>
-  }
+  </section>
 </div>

@@ -1,14 +1,19 @@
 <div class="preferito-section">
-    <label for="preferito-toggle" class="section-label">
+  <span class="section-label">
+    <i class="fas fa-heart label-icon" aria-hidden="true"></i>
     Aggiungi ai Preferiti:
-    </label>
-    <button
+  </span>
+  <button
+    type="button"
     id="preferito-toggle"
-    class="favorite-toggle-btn"
+    class="btn btn-sm favorite-toggle-btn"
+    [class.btn-primary]="isFavorite"
+    [class.btn-secondary]="!isFavorite"
     [class.active]="isFavorite"
+    [attr.aria-pressed]="isFavorite"
     [disabled]="!canFavorite"
     (click)="onToggle()">
-    <span class="star-icon">&#9733;</span>
+    <i class="fas fa-heart star-icon" aria-hidden="true"></i>
     {{ isFavorite ? 'Rimuovi dai Preferiti' : 'Aggiungi ai Preferiti' }}
-    </button>
+  </button>
 </div>

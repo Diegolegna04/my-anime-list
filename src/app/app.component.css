@@ -1,17 +1,6 @@
-body {
-  font-family: 'Poppins', 'Arial', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-router-outlet + div {
-  padding-top: 20px;
-}
-@media (max-width: 480px) {
-  router-outlet + div {
-    padding-top: 12px;
-  }
+/* Il footer resta in fondo anche sulle pagine corte (404, caricamenti) */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }

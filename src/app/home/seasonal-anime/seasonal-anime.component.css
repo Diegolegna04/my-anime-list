@@ -8,14 +8,14 @@
 }
 
 .season-tag {
-  background: linear-gradient(135deg, #ff7043, #ff5722);
+  background: var(--highlight-gradient);
   color: white;
   padding: 0.45rem 1rem;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: bold;
   letter-spacing: 0.3px;
-  box-shadow: 0 3px 8px rgba(255, 87, 34, 0.35);
+  box-shadow: 0 3px 8px var(--highlight-glow);
 }
 
 .seasonal-slider {
@@ -50,7 +50,7 @@
   z-index: 10;
   color: var(--text-primary);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.25s ease;
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
   pointer-events: auto;
   transform: translateX(-10px);
 }
@@ -64,7 +64,7 @@
   border-color: var(--accent-color);
   color: white;
   transform: scale(1.12) translateX(-10px);
-  box-shadow: 0 6px 16px rgba(124, 77, 255, 0.4);
+  box-shadow: 0 6px 16px var(--accent-glow);
 }
 
 .next-arrow:hover:not(.disabled) {
@@ -130,7 +130,7 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  background: linear-gradient(135deg, #ff7043, #ff5722);
+  background: var(--highlight-gradient);
   color: white;
   font-size: 0.7rem;
   font-weight: bold;
@@ -138,7 +138,7 @@
   padding: 0.3rem 0.7rem;
   border-radius: 20px;
   z-index: 1;
-  box-shadow: 0 3px 8px rgba(255, 87, 34, 0.4);
+  box-shadow: 0 3px 8px var(--highlight-glow);
 }
 
 .seasonal-anime-card .img-wrapper {
@@ -222,7 +222,7 @@
 }
 
 .anime-stats i {
-  color: #ffc107;
+  color: var(--star-color);
 }
 
 .anime-stats span:last-child {
@@ -246,8 +246,8 @@
   gap: 0.6rem;
   margin: 2rem auto 0;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(124, 77, 255, 0.25);
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+  box-shadow: var(--shadow-accent);
 }
 
 .load-more-btn::after {
@@ -257,7 +257,7 @@
 
 .load-more-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 18px rgba(124, 77, 255, 0.4);
+  box-shadow: var(--shadow-accent-hover);
 }
 
 .load-more-btn:hover::after {

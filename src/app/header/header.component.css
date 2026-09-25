@@ -67,7 +67,7 @@
   border: 2px solid var(--border-color);
   color: var(--text-muted);
   border-radius: 12px;
-  transition: all 0.3s ease;
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out), visibility var(--dur-fast);
   position: relative;
   z-index: 10;
 }
@@ -77,7 +77,7 @@
   border-color: var(--accent-color);
   color: var(--accent-color);
   transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(124, 77, 255, 0.2);
+  box-shadow: 0 4px 12px var(--accent-glow);
 }
 
 .theme-toggle-btn:active {
@@ -109,19 +109,19 @@
   overflow: hidden;
   width: 300px;
   border: 2px solid var(--border-color);
-  transition: all 0.3s ease;
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out), visibility var(--dur-fast);
   padding-left: 0.5rem;
   z-index: 15;
 }
 
 .search-bar:hover {
   border-color: var(--accent-color);
-  box-shadow: 0 4px 15px rgba(124, 77, 255, 0.2);
+  box-shadow: 0 4px 15px var(--accent-glow);
 }
 
 .search-bar:focus-within {
   border-color: var(--accent-color);
-  box-shadow: 0 4px 15px rgba(124, 77, 255, 0.2);
+  box-shadow: 0 4px 15px var(--accent-glow);
 }
 
 .search-input {
@@ -180,7 +180,7 @@
   height: 40px;
   object-fit: cover;
   border-radius: 50%;
-  box-shadow: 0 2px 8px var(--shadow-light);
+  box-shadow: var(--shadow-light);
 }
 
 .profile-username {
@@ -212,7 +212,7 @@
   opacity: 0;
   transform: translateY(-10px);
   pointer-events: none;
-  transition: all 0.2s ease-out;
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out), visibility var(--dur-fast);
 }
 
 .profile-menu-container.show-dropdown .dropdown-menu {
@@ -253,8 +253,8 @@
   cursor: pointer;
   font-weight: 600;
   font-size: 1rem;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out), visibility var(--dur-fast);
+  box-shadow: var(--shadow-medium);
   text-decoration: none;
   color: white;
   position: relative;
@@ -263,7 +263,7 @@
 
 .action-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-heavy);
 }
 
 .action-button.primary {
@@ -318,7 +318,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out), visibility var(--dur-fast);
   }
 
   .mobile-icon-btn:hover {
@@ -351,7 +351,7 @@
     height: 3px;
     background-color: var(--text-primary);
     border-radius: 2px;
-    transition: all 0.3s ease;
+    transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out), visibility var(--dur-fast);
     transform-origin: center;
   }
 
@@ -393,12 +393,12 @@
     left: 0;
     width: 100%;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--scrim);
     backdrop-filter: blur(5px);
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out), visibility var(--dur-fast);
   }
 
   .mobile-menu-overlay.show {
@@ -462,7 +462,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out), visibility var(--dur-fast);
   }
 
   .close-menu-btn:hover {
@@ -518,17 +518,17 @@
   }
 
   .mobile-menu-item.logout-item {
-    color: #ef4444;
+    color: var(--error-color);
     border-top: 1px solid var(--border-color);
     margin-top: 1rem;
   }
 
   .mobile-menu-item.logout-item i {
-    color: #ef4444;
+    color: var(--error-color);
   }
 
   .mobile-menu-item.logout-item:hover {
-    background-color: rgba(239, 68, 68, 0.1);
+    background-color: var(--error-bg);
   }
 
   /* Logo adjustments for mobile */

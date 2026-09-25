@@ -1,21 +1,21 @@
 <div class="anime-info-card">
   <div class="info-grid">
-    
+
     <!-- Tipo -->
     @if (animeDetails.type) {
       <div class="info-item">
         <span class="info-label">
-          <i class="icon">📺</i>
+          <i class="fas fa-tv icon" aria-hidden="true"></i>
           Tipo:
         </span>
-        <span class="info-value type-badge">{{ formattedType }}</span>
+        <span class="info-value badge badge-accent type-badge">{{ formattedType }}</span>
       </div>
     }
 
     <!-- Episodi -->
     <div class="info-item">
       <span class="info-label">
-        <i class="icon">🎬</i>
+        <i class="fas fa-film icon" aria-hidden="true"></i>
         Episodi:
       </span>
       <span class="info-value">{{ formattedEpisodes }}</span>
@@ -24,10 +24,10 @@
     <!-- Voto -->
     <div class="info-item">
       <span class="info-label">
-        <i class="icon">{{ scoreIcon }}</i>
+        <i class="fas icon" [ngClass]="scoreIcon" aria-hidden="true"></i>
         Voto:
       </span>
-      <span class="info-value score-badge" [ngClass]="scoreClass">
+      <span class="info-value badge score-badge" [ngClass]="scoreClass">
         {{ formattedScore }}
       </span>
     </div>
@@ -35,10 +35,10 @@
     <!-- Status -->
     <div class="info-item">
       <span class="info-label">
-        <i class="icon">📡</i>
+        <i class="fas fa-signal icon" aria-hidden="true"></i>
         Stato:
       </span>
-      <span class="info-value status-badge" [ngClass]="statusClass">
+      <span class="info-value badge status-badge" [ngClass]="statusClass">
         {{ translatedStatus }}
       </span>
     </div>
@@ -47,7 +47,7 @@
     @if (animeDetails.studios && animeDetails.studios.length > 0) {
       <div class="info-item full-width">
         <span class="info-label">
-          <i class="icon">🏢</i>
+          <i class="fas fa-building icon" aria-hidden="true"></i>
           Studio:
         </span>
         <span class="info-value">{{ studioNames }}</span>
@@ -59,15 +59,15 @@
   @if (hasGenres) {
     <div class="genres-section">
       <span class="section-label">
-        <i class="icon">🎭</i>
+        <i class="fas fa-tags icon" aria-hidden="true"></i>
         Generi:
       </span>
       <div class="genres-list">
         @for (genre of animeDetails.genres; track trackByGenreId($index, genre); let last = $last) {
-          <a 
+          <a
             [routerLink]="['/genres/anime-by-genre', genre.mal_id]"
             [queryParams]="{name: genre.name}"
-            class="genre-tag">
+            class="chip genre-tag">
             {{ genre.name }}
           </a>
         }
@@ -78,25 +78,28 @@
   <!-- Streaming Services Section -->
   <div class="streaming-section">
     <span class="section-label">
-      <i class="icon">▶️</i>
+      <i class="fas fa-play-circle icon" aria-hidden="true"></i>
       Dove vederlo:
     </span>
-    
+
     @if (hasStreamingServices) {
       <div class="streaming-list">
         @for (service of streamingServices; track trackByServiceName($index, service)) {
-          <a 
-            [href]="service.url" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            class="streaming-link">
-            <span class="service-icon">🎥</span>
+          <a
+            [href]="service.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary btn-sm streaming-link">
+            <i class="fas fa-video" aria-hidden="true"></i>
             {{ service.name }}
           </a>
         }
       </div>
     } @else {
-      <span class="no-streaming">Nessun servizio di streaming trovato.</span>
+      <div class="state no-streaming">
+        <span class="state-icon" aria-hidden="true"><i class="fas fa-tv"></i></span>
+        <p class="state-text">Nessun servizio di streaming trovato.</p>
+      </div>
     }
   </div>
 </div>

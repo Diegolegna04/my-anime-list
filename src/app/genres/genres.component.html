@@ -1,18 +1,18 @@
-<div class="genres-page">
-  <header class="page-header">
-    <h1 class="page-title">Esplora per genere</h1>
-    <p class="page-lead">
+<div class="page">
+  <header class="page-hero">
+    <h1 class="page-hero-title">Esplora per genere</h1>
+    <p class="page-hero-lead">
       Generi, temi e demografie di MyAnimeList. Cerca o filtra per trovare cosa guardare stasera.
     </p>
   </header>
 
-  <div class="toolbar" role="search">
-    <div class="search-field">
-      <i class="fas fa-search search-icon" aria-hidden="true"></i>
+  <div class="panel toolbar" role="search">
+    <div class="input-icon search-field">
+      <i class="fas fa-search" aria-hidden="true"></i>
       <input
         #searchInput
         type="search"
-        class="search-input"
+        class="input search-input"
         placeholder="Cerca genere o tema, es. isekai"
         aria-label="Cerca un genere o un tema"
         autocomplete="off"
@@ -28,10 +28,9 @@
     </div>
 
     <div class="toolbar-row">
-      <div class="filters" role="group" aria-label="Filtra per categoria">
+      <div class="segmented filters" role="group" aria-label="Filtra per categoria">
         <button
           type="button"
-          class="filter-chip"
           [class.active]="activeCategory() === 'all'"
           [attr.aria-pressed]="activeCategory() === 'all'"
           (click)="activeCategory.set('all')"
@@ -41,7 +40,6 @@
         @for (category of categories; track category.id) {
           <button
             type="button"
-            class="filter-chip"
             [class.active]="activeCategory() === category.id"
             [class.empty]="status() === 'ready' && countByCategory()[category.id] === 0"
             [attr.aria-pressed]="activeCategory() === category.id"
@@ -52,7 +50,7 @@
         }
       </div>
 
-      <div class="sort-toggle" role="group" aria-label="Ordina">
+      <div class="segmented" role="group" aria-label="Ordina">
         <button
           type="button"
           [class.active]="sortOrder() === 'name'"
@@ -67,47 +65,56 @@
         >Più anime</button>
       </div>
     </div>
+
+    @if (status() === 'ready' && query()) {
+      <p class="results-summary" aria-live="polite">
+        {{ matchingCount() }} risultati su {{ totalCount() }} per “{{ query() }}”
+      </p>
+    }
   </div>
 
   @switch (status()) {
     @case ('loading') {
-      <div class="genre-list skeleton" aria-busy="true" aria-label="Caricamento generi">
-        @for (row of skeletonRows; track $index) {
-          <div class="skeleton-row">
-            <span class="skeleton-line name"></span>
-            <span class="skeleton-line desc"></span>
-          </div>
-        }
-      </div>
+      <section class="panel" aria-busy="true" aria-label="Caricamento generi">
+        <ul class="genre-list">
+          @for (row of skeletonRows; track $index) {
+            <li class="skeleton-card">
+              <span class="skeleton skeleton-icon"></span>
+              <span class="skeleton-lines">
+                <span class="skeleton skeleton-line"></span>
+                <span class="skeleton skeleton-line short"></span>
+              </span>
+            </li>
+          }
+        </ul>
+      </section>
     }
 
     @case ('error') {
-      <div class="state-message" role="alert">
-        <i class="fas fa-exclamation-triangle state-icon" aria-hidden="true"></i>
-        <h2>Non riusciamo a caricare i generi</h2>
-        <p>Il servizio che fornisce i dati degli anime non risponde. Di solito si risolve in pochi minuti.</p>
-        <button type="button" class="state-action" (click)="loadGenres()">Riprova</button>
-      </div>
+      <section class="panel">
+        <div class="state state-error" role="alert">
+          <span class="state-icon"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></span>
+          <h2 class="state-title">Non riusciamo a caricare i generi</h2>
+          <p class="state-text">Il servizio che fornisce i dati degli anime non risponde. Di solito si risolve in pochi minuti.</p>
+          <button type="button" class="btn btn-primary" (click)="loadGenres()">Riprova</button>
+        </div>
+      </section>
     }
 
     @case ('ready') {
-      @if (query()) {
-        <p class="results-summary" aria-live="polite">
-          {{ matchingCount() }} risultati su {{ totalCount() }} per “{{ query() }}”
-        </p>
-      }
-
       @for (section of sections(); track section.id) {
-        <section class="genre-section" [attr.aria-labelledby]="'section-' + section.id">
-          <div class="section-head">
-            <h2 class="category-title" [id]="'section-' + section.id">
-              {{ section.label }}
-              <span class="section-count">{{ section.items.length }}</span>
-              @if (section.id === 'explicit_genres') {
-                <span class="adult-badge">18+</span>
-              }
-            </h2>
-            <p class="section-intro">{{ section.intro }}</p>
+        <section class="panel genre-section" [attr.aria-labelledby]="'section-' + section.id">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title" [id]="'section-' + section.id">
+                {{ section.label }}
+                <span class="section-count">{{ section.items.length }}</span>
+                @if (section.id === 'explicit_genres') {
+                  <span class="badge badge-error adult-badge">18+</span>
+                }
+              </h2>
+              <p class="section-subtitle">{{ section.intro }}</p>
+            </div>
           </div>
 
           <ul class="genre-list" [attr.data-category]="section.id">
@@ -137,18 +144,20 @@
           </ul>
         </section>
       } @empty {
-        <div class="state-message">
-          <i class="fas fa-search state-icon" aria-hidden="true"></i>
-          @if (matchingCount() > 0) {
-            <h2>Nessun risultato in questa categoria</h2>
-            <p>“{{ query() }}” compare in {{ matchingCount() }} voci di altre categorie.</p>
-            <button type="button" class="state-action" (click)="activeCategory.set('all')">Mostra tutte le categorie</button>
-          } @else {
-            <h2>Nessun genere per “{{ query() }}”</h2>
-            <p>Prova con una parola più generica, in italiano o in inglese: “amore”, “magia”, “sport”.</p>
-            <button type="button" class="state-action" (click)="clearSearch(searchInput)">Cancella la ricerca</button>
-          }
-        </div>
+        <section class="panel">
+          <div class="state">
+            <span class="state-icon"><i class="fas fa-search" aria-hidden="true"></i></span>
+            @if (matchingCount() > 0) {
+              <h2 class="state-title">Nessun risultato in questa categoria</h2>
+              <p class="state-text">“{{ query() }}” compare in {{ matchingCount() }} voci di altre categorie.</p>
+              <button type="button" class="btn btn-primary" (click)="activeCategory.set('all')">Mostra tutte le categorie</button>
+            } @else {
+              <h2 class="state-title">Nessun genere per “{{ query() }}”</h2>
+              <p class="state-text">Prova con una parola più generica, in italiano o in inglese: “amore”, “magia”, “sport”.</p>
+              <button type="button" class="btn btn-primary" (click)="clearSearch(searchInput)">Cancella la ricerca</button>
+            }
+          </div>
+        </section>
       }
     }
   }

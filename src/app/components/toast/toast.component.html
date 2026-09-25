@@ -1,22 +1,26 @@
 <div class="toast-container"
+     role="status"
+     aria-live="polite"
      [class.show]="toastService.toast().show"
      [class.success]="toastService.toast().type === 'success'"
      [class.error]="toastService.toast().type === 'error'"
      [class.info]="toastService.toast().type === 'info'">
   <div class="toast-content">
-    <div class="toast-icon">
+    <div class="toast-icon" aria-hidden="true">
       @if (toastService.toast().type === 'success') {
-        <span>✓</span>
+        <i class="fas fa-check"></i>
       }
       @if (toastService.toast().type === 'error') {
-        <span>✕</span>
+        <i class="fas fa-exclamation"></i>
       }
       @if (toastService.toast().type === 'info') {
-        <span>ℹ</span>
+        <i class="fas fa-info"></i>
       }
     </div>
     <div class="toast-message">{{ toastService.toast().message }}</div>
-    <button class="toast-close" (click)="toastService.close()">×</button>
+    <button type="button" class="toast-close" (click)="toastService.close()" aria-label="Chiudi notifica">
+      <i class="fas fa-times" aria-hidden="true"></i>
+    </button>
   </div>
   <div class="toast-progress" [class.animate]="toastService.toast().show"></div>
 </div>
