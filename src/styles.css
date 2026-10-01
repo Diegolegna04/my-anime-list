@@ -199,24 +199,52 @@ input[type="button"] {
 }
 
 /* ---------- Superfici del browser ---------- */
+/* Scrollbar della pagina in stile macOS: sottile, senza binario, invisibile
+   da ferma. Compare (scrollbar-visible) quando si scorre o col mouse sul
+   bordo destro: le classi le mette AutoHideScrollbarService. La larghezza
+   non cambia mai, quindi la pagina non si sposta. */
 html {
   scrollbar-width: thin;
+  scrollbar-color: var(--accent-color) transparent;
+}
+
+html.autohide-scrollbar {
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+
+html.autohide-scrollbar.scrollbar-visible {
+  scrollbar-color: var(--accent-color) transparent;
+}
+
+/* scrollbar-color si eredita: le aree scorrevoli interne non devono
+   diventare invisibili insieme alla pagina */
+body {
   scrollbar-color: var(--accent-color) var(--bg-secondary);
 }
 
+/* Browser senza scrollbar-color (Safari): stesse regole con ::-webkit-scrollbar */
+html::-webkit-scrollbar {
+  width: 10px;
+}
+
 html::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-  border-radius: 10px;
+  background: transparent;
 }
 
 html::-webkit-scrollbar-thumb {
   background-color: var(--accent-color);
-  border-radius: 10px;
-  border: 2px solid var(--bg-secondary);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
 }
 
-html::-webkit-scrollbar-thumb:hover {
-  background-color: var(--accent-hover);
+html.autohide-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+html.autohide-scrollbar.scrollbar-visible::-webkit-scrollbar-thumb {
+  background-color: var(--accent-color);
 }
 
 html::-webkit-scrollbar-button {
@@ -931,6 +959,12 @@ a.chip:hover {
     radial-gradient(circle at 15% 20%, var(--accent-soft), transparent 45%),
     radial-gradient(circle at 85% 80%, var(--accent-soft), transparent 45%),
     var(--bg-primary);
+}
+
+/* Lo sfondo sfumato arriva fino al footer: senza questa regola il margine
+   sopra il footer lasciava una fascia scura a tinta unita */
+.app-shell:has(.auth-page) .footer {
+  margin-top: 0;
 }
 
 .auth-card {

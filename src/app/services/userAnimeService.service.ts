@@ -14,6 +14,16 @@ export interface UserAnime {
   episodesWatched: number;
 }
 
+export interface LibraryEntry {
+  animeId: number;
+  status: UserAnime['status'];
+  episodesWatched: number;
+  rating: number;
+  isFavorite: boolean;
+  inEvidenza: boolean;
+  anime: any | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -62,6 +72,14 @@ export class UserAnimeService {
 
   getAnimeByStatus(status: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/status/${status}`, { withCredentials: true });
+  }
+
+  /**
+   * Tutta la libreria in una richiesta, con titolo, copertina ed episodi già
+   * inclusi in "anime" (forma di Jikan; null se il backend non l'ha trovato)
+   */
+  getLibrary(): Observable<LibraryEntry[]> {
+    return this.http.get<LibraryEntry[]>(`${this.apiUrl}/library`, { withCredentials: true });
   }
 
   getFavorites(): Observable<any> {

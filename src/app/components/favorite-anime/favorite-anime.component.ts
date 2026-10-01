@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { AnimeService } from '../../services/anime.service';
 import { UserAnimeService } from '../../services/userAnimeService.service';
 import { ChangeDetectorRef } from '@angular/core';
@@ -18,11 +17,12 @@ export class FavoriteAnimeComponent implements OnInit {
   titleLanguage: 'english' | 'original' = 'original';
   isGridView: boolean = true;
 
-  private readonly REQUEST_CONCURRENCY_LIMIT = 3;
-  private readonly REQUEST_DELAY_MS = 500;
+  /** Anime di cui si stanno ancora caricando i dettagli */
+  pendingDetails: number = 0;
+  /** Tutti i preferiti, anche quelli ancora senza dettagli */
+  private allFavorites: any[] = [];
 
   constructor(
-    private http: HttpClient, 
     private animeService: AnimeService,
     private userAnimeService: UserAnimeService,
     private cdr: ChangeDetectorRef
@@ -38,33 +38,30 @@ export class FavoriteAnimeComponent implements OnInit {
     this.isLoading = true;
     this.favoriteAnime = [];
 
-    // Carica i preferiti dal backend
+    // Una sola richiesta con titoli e copertine già inclusi
+    this.userAnimeService.getLibrary().subscribe({
+      next: (library) => {
+        this.showLoadedAndFetchMissing(library
+          .filter(entry => entry.isFavorite)
+          .map(entry => ({
+            id: entry.animeId.toString(),
+            userAnimeData: entry,
+            details: entry.anime ? { data: entry.anime } : null
+          })));
+      },
+      // Backend senza /library (es. deploy non ancora arrivato): solo i preferiti
+      error: () => this.loadFromFavorites()
+    });
+  }
+
+  private loadFromFavorites(): void {
     this.userAnimeService.getFavorites().subscribe({
       next: (favorites) => {
-        if (!favorites || favorites.length === 0) {
-          this.isLoading = false;
-          this.favoriteAnime = [];
-          return;
-        }
-
-        // Mappa i dati al formato esistente
-        const favoriteEntries = favorites.map((favorite: any) => ({
+        this.showLoadedAndFetchMissing((favorites || []).map((favorite: any) => ({
           id: favorite.animeId.toString(),
           userAnimeData: favorite,
           details: null
-        }));
-
-        this.favoriteAnime = favoriteEntries;
-
-        // Carica i dettagli degli anime
-        this.processAnimeDetailsRequests().then(() => {
-          this.isLoading = false;
-          this.sortFavorites();
-          this.cdr.detectChanges();
-        }).catch(error => {
-          console.error("Errore durante il caricamento dei dettagli degli anime:", error);
-          this.isLoading = false;
-        });
+        })));
       },
       error: (error) => {
         console.error('Errore nel caricamento dei preferiti:', error);
@@ -74,37 +71,33 @@ export class FavoriteAnimeComponent implements OnInit {
     });
   }
 
-  private async processAnimeDetailsRequests(): Promise<void> {
-    const totalRequests = this.favoriteAnime.length;
+  /** Mostra subito i preferiti con i dettagli e carica gli altri man mano */
+  private showLoadedAndFetchMissing(entries: any[]): void {
+    this.allFavorites = entries;
+    this.isLoading = false;
+    this.sortFavorites();
 
-    const requestQueue: (() => Promise<void>)[] = this.favoriteAnime.map(anime => async () => {
-      anime.details = await this.getAnimeDetailsById(anime.id);
+    const missing = entries.filter(anime => !anime.details);
+    this.pendingDetails = missing.length;
+    missing.forEach(anime => {
+      this.animeService.getAnimeById(anime.id).subscribe({
+        next: (details) => {
+          anime.details = details;
+          this.pendingDetails--;
+          this.sortFavorites();
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error(`Errore nel recupero dettagli per ID ${anime.id}:`, error);
+          this.pendingDetails--;
+          this.cdr.detectChanges();
+        }
+      });
     });
-
-    const concurrency = this.REQUEST_CONCURRENCY_LIMIT;
-    const delay = this.REQUEST_DELAY_MS;
-
-    for (let i = 0; i < totalRequests; i += concurrency) {
-      const batch = requestQueue.slice(i, i + concurrency);
-      await Promise.all(batch.map(request => request()));
-
-      if (i + concurrency < totalRequests) {
-        await new Promise(resolve => setTimeout(resolve, delay));
-      }
-    }
-  }
-
-  async getAnimeDetailsById(id: string): Promise<any> {
-    try {
-      return await this.animeService.getAnimeById(id).toPromise();
-    } catch (error) {
-      console.error(`Errore nel recupero dettagli per ID ${id}:`, error);
-      return null;
-    }
   }
 
   private sortFavorites(): void {
-    this.favoriteAnime = this.favoriteAnime
+    this.favoriteAnime = this.allFavorites
       .filter(anime => anime.details) // Solo anime con dettagli caricati
       .sort((a, b) => {
         const titleA = this.getTitle(a.details?.data).toLowerCase();

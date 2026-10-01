@@ -53,6 +53,13 @@
       </div>
     }
 
+    @if (!isLoading && pendingDetails > 0) {
+      <p class="pending-note" role="status">
+        <span class="spinner spinner-sm" aria-hidden="true"></span>
+        Caricamento di altri {{ pendingDetails }} anime...
+      </p>
+    }
+
     @if (!isLoading && filteredAnime.length > 0) {
       <div class="anime-grid">
         @for (anime of filteredAnime; track anime.id) {
@@ -97,7 +104,7 @@
           </div>
         }
       </div>
-    } @else if (!isLoading && filteredAnime.length === 0) {
+    } @else if (!isLoading && filteredAnime.length === 0 && pendingDetails === 0) {
       <div class="state">
         <span class="state-icon"><i class="fas fa-box-open" aria-hidden="true"></i></span>
         <h3 class="state-title">Nessun anime trovato per questa categoria.</h3>

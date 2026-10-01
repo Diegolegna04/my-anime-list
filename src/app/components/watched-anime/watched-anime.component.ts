@@ -7,6 +7,15 @@ import { CommonModule } from '@angular/common';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+/** Stato salvato nel backend -> etichetta usata dai filtri della pagina */
+const STATE_LABELS: Record<string, string> = {
+  completed: 'completato',
+  watching: 'in visione',
+  plan_to_watch: 'da vedere',
+  on_hold: 'in pausa',
+  dropped: 'droppato'
+};
+
 @Component({
   selector: 'app-watched-anime',
   templateUrl: './watched-anime.component.html',
@@ -19,6 +28,8 @@ export class WatchedAnimeComponent implements OnInit {
   filteredAnime: any[] = [];
   isLoading: boolean = true;
   filter: string = 'all';
+  /** Anime di cui si stanno ancora caricando i dettagli */
+  pendingDetails: number = 0;
 
   titleLanguage: 'english' | 'original' = 'original';
 
@@ -45,91 +56,35 @@ export class WatchedAnimeComponent implements OnInit {
   loadWatchedAnime(): void {
     this.isLoading = true;
 
-    forkJoin({
-      completed: this.userAnimeService.getAnimeByStatus('completed').pipe(
-        catchError(error => {
-          console.error('Errore nel caricamento anime completati:', error);
-          return of([]);
-        })
-      ),
-      watching: this.userAnimeService.getAnimeByStatus('watching').pipe(
-        catchError(error => {
-          console.error('Errore nel caricamento anime in visione:', error);
-          return of([]);
-        })
-      ),
-      planToWatch: this.userAnimeService.getAnimeByStatus('plan_to_watch').pipe(
-        catchError(error => {
-          console.error('Errore nel caricamento anime da vedere:', error);
-          return of([]);
-        })
-      ),
-      onHold: this.userAnimeService.getAnimeByStatus('on_hold').pipe(
-        catchError(error => {
-          console.error('Errore nel caricamento anime in pausa:', error);
-          return of([]);
-        })
-      ),
-      dropped: this.userAnimeService.getAnimeByStatus('dropped').pipe(
-        catchError(error => {
-          console.error('Errore nel caricamento anime droppati:', error);
-          return of([]);
-        })
-      )
-    }).subscribe({
-      next: (result) => {
-        this.watchedAnime = [
-          ...result.completed.map((anime: any) => ({
-            id: anime.animeId.toString(),
-            state: 'completato',
-            episodiVisti: anime.episodesWatched || 0,
-            details: null,
-            userAnimeData: anime
-          })),
-          ...result.watching.map((anime: any) => ({
-            id: anime.animeId.toString(),
-            state: 'in visione',
-            episodiVisti: anime.episodesWatched || 0,
-            details: null,
-            userAnimeData: anime
-          })),
-          ...result.planToWatch.map((anime: any) => ({
-            id: anime.animeId.toString(),
-            state: 'da vedere',
-            episodiVisti: anime.episodesWatched || 0,
-            details: null,
-            userAnimeData: anime
-          })),
-          ...result.onHold.map((anime: any) => ({
-            id: anime.animeId.toString(),
-            state: 'in pausa',
-            episodiVisti: anime.episodesWatched || 0,
-            details: null,
-            userAnimeData: anime
-          })),
-          ...result.dropped.map((anime: any) => ({
-            id: anime.animeId.toString(),
-            state: 'droppato',
-            episodiVisti: anime.episodesWatched || 0,
-            details: null,
-            userAnimeData: anime
-          }))
-        ];
+    // Una sola richiesta con titoli e copertine già inclusi
+    this.userAnimeService.getLibrary().subscribe({
+      next: (library) => {
+        this.watchedAnime = library
+          .filter(entry => STATE_LABELS[entry.status])
+          .map(entry => this.toEntry(entry, STATE_LABELS[entry.status], entry.anime ? { data: entry.anime } : null));
+        this.showLoadedAndFetchMissing();
+      },
+      // Backend senza /library (es. deploy non ancora arrivato): si va per stato
+      error: () => this.loadByStatus()
+    });
+  }
 
-        if (this.watchedAnime.length === 0) {
-          this.isLoading = false;
-          this.filteredAnime = [];
-          return;
-        }
+  /** Vecchio caricamento: lista per stato e dettagli di ogni anime chiesti uno per uno */
+  private loadByStatus(): void {
+    const byStatus = (status: string) => this.userAnimeService.getAnimeByStatus(status).pipe(
+      catchError(error => {
+        console.error(`Errore nel caricamento degli anime "${status}":`, error);
+        return of([]);
+      })
+    );
 
-        this.processAnimeDetailsRequests().then(() => {
-          this.isLoading = false;
-          this.applyFilter();
-          this.cdr.detectChanges();
-        }).catch(error => {
-          console.error("Errore durante il caricamento dei dettagli degli anime:", error);
-          this.isLoading = false;
-        });
+    forkJoin(Object.keys(STATE_LABELS).map(byStatus)).subscribe({
+      next: (lists: any[][]) => {
+        const statuses = Object.keys(STATE_LABELS);
+        this.watchedAnime = lists.flatMap((list, index) =>
+          list.map((anime: any) => this.toEntry(anime, STATE_LABELS[statuses[index]], null))
+        );
+        this.showLoadedAndFetchMissing();
       },
       error: (error) => {
         console.error('Errore nel caricamento degli anime:', error);
@@ -139,23 +94,44 @@ export class WatchedAnimeComponent implements OnInit {
     });
   }
 
-  async getAnimeDetailsById(id: string): Promise<any> {
-    try {
-      return await this.animeService.getAnimeById(id).toPromise();
-    } catch (error) {
-      console.error(`Errore nel recupero dettagli per ID ${id}:`, error);
-      return null;
-    }
+  private toEntry(userAnime: any, state: string, details: any): any {
+    return {
+      id: userAnime.animeId.toString(),
+      state,
+      episodiVisti: userAnime.episodesWatched || 0,
+      details,
+      userAnimeData: userAnime
+    };
   }
 
-  private async processAnimeDetailsRequests(): Promise<void> {
-    await Promise.all(
-      this.watchedAnime.map(async (anime) => {
-        anime.details = await this.getAnimeDetailsById(anime.id);
-        this.applyFilter();
-        this.cdr.detectChanges();
-      })
-    );
+  /**
+   * Mostra subito gli anime che hanno già i dettagli e carica gli altri uno
+   * alla volta, partendo da quelli del filtro scelto: la pagina non resta più
+   * in caricamento finché non sono arrivati tutti.
+   */
+  private showLoadedAndFetchMissing(): void {
+    this.isLoading = false;
+    this.applyFilter();
+
+    const missing = this.watchedAnime
+      .filter(anime => !anime.details)
+      .sort((a, b) => Number(b.state === this.filter) - Number(a.state === this.filter));
+    this.pendingDetails = missing.length;
+
+    missing.forEach(anime => {
+      this.animeService.getAnimeById(anime.id).subscribe({
+        next: (details) => {
+          anime.details = details;
+          this.pendingDetails--;
+          this.applyFilter();
+        },
+        error: (error) => {
+          console.error(`Errore nel recupero dettagli per ID ${anime.id}:`, error);
+          this.pendingDetails--;
+          this.cdr.detectChanges();
+        }
+      });
+    });
   }
 
   setFilter(filter: string): void {

@@ -85,3 +85,13 @@
 @media (max-width: 480px) {
   .img-wrapper { height: 170px; }
 }
+
+/* Avviso mentre arrivano i dettagli degli anime rimasti senza copertina */
+.pending-note {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
