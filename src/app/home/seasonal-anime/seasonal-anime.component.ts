@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SeasonRef, seasonLabel, seasonSlug } from '../../services/anime-utils';
 
 @Component({
   selector: 'app-seasonal-anime',
@@ -10,6 +11,8 @@ import { RouterLink } from '@angular/router';
 })
 export class SeasonalAnimeComponent implements OnInit, OnChanges {
   @Input() seasonalAnimeList: any[] = [];
+  /** Stagione mostrata, decisa dalla home (null finché non è nota) */
+  @Input() season: SeasonRef | null = null;
   @ViewChild('track') trackRef!: ElementRef<HTMLDivElement>;
 
   filteredSeasonalAnime: any[] = [];
@@ -35,32 +38,12 @@ export class SeasonalAnimeComponent implements OnInit, OnChanges {
       : anime.title || anime.title_english;
   }
 
-  getCurrentAnimeSeason(): string {
-    const currentDate = new Date();
-    const month = currentDate.getMonth() + 1;
-    const year = currentDate.getFullYear();
-    let season = '';
-
-    if (month >= 4 && month <= 6) season = 'Spring';
-    else if (month >= 7 && month <= 9) season = 'Summer';
-    else if (month >= 10 && month <= 12) season = 'Fall';
-    else season = 'Winter';
-
-    return season + ' ' + year;
+  get seasonTag(): string {
+    return this.season ? seasonLabel(this.season) : '';
   }
 
-  getCurrentAnimeSeasonT(): string {
-    const currentDate = new Date();
-    const month = currentDate.getMonth() + 1;
-    const year = currentDate.getFullYear();
-    let season = '';
-
-    if (month >= 4 && month <= 6) season = 'spring';
-    else if (month >= 7 && month <= 9) season = 'summer';
-    else if (month >= 10 && month <= 12) season = 'fall';
-    else season = 'winter';
-
-    return season + '-' + year;
+  get seasonLink(): string {
+    return this.season ? seasonSlug(this.season) : 'now';
   }
 
   private scrollByAmount(direction: 1 | -1): void {

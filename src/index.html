@@ -5,6 +5,18 @@
   <title>My Anime DB</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Tema applicato prima del primo paint: se aspettassimo Angular la pagina
+       comparirebbe bianca e poi passerebbe al tema scuro (vedi ThemeService) -->
+  <script>
+    (function () {
+      var theme = 'light';
+      try {
+        if (localStorage.getItem('theme') === 'dark') theme = 'dark';
+      } catch (e) {}
+      document.documentElement.classList.add(theme + '-theme');
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
   <link rel="icon" type="image/x-icon" href="logo-circle.png">
   <link
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"

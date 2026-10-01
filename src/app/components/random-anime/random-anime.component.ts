@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { retry, throwError, timer } from 'rxjs';
 
 interface AnimeData {
   mal_id: number;
@@ -43,13 +44,20 @@ export class RandomAnimeComponent {
     this.loading = true;
     this.error = null;
     
-    this.http.get<AnimeResponse>(this.animeRandom).subscribe({
+    // Un secondo tentativo sugli errori temporanei del proxy/Jikan
+    this.http.get<AnimeResponse>(this.animeRandom).pipe(
+      retry({
+        count: 1,
+        delay: (err: HttpErrorResponse, attempt) =>
+          [502, 503, 504].includes(err.status) ? timer(600 * attempt) : throwError(() => err)
+      })
+    ).subscribe({
       next: (response) => {
         this.anime = response.data;
         this.loading = false;
       },
       error: (err) => {
-        this.error = 'Errore nel caricamento dell\'anime';
+        this.error = 'Il servizio anime al momento non risponde, riprova tra qualche secondo';
         this.loading = false;
         console.error('Errore API:', err);
       }

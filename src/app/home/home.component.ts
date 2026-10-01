@@ -3,7 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { AnimeService } from '../services/anime.service';
-import { uniqueByMalId } from '../services/anime-utils';
+import { SeasonRef, seasonSlug, sortSeasonalForHome } from '../services/anime-utils';
+import { SeasonService } from '../services/season.service';
+import { ToastService } from '../services/toast.service';
 import { RandomAnimeComponent } from "../components/random-anime/random-anime.component";
 import { HeroSectionComponent } from './hero-section/hero-section.component';
 import { TopAnimeComponent } from './top-anime/top-anime.component';
@@ -28,17 +30,20 @@ import { NewsletterComponent } from "./newsletter/newsletter.component";
 export class HomeComponent implements OnInit, OnDestroy {
   animeList: any[] = [];
   seasonalAnimeList: any[] = [];
+  /** Stagione mostrata in home: null finché non è stata decisa */
+  activeSeason: SeasonRef | null = null;
   isLoading: boolean = false;
   currentView: 'list' | 'search' = 'list';
   
   private topAnimeUrl = '/api/anime-proxy/top/anime';
-  private seasonalAnimeUrl = '/api/anime-proxy/seasons/now';
   currentPage: number = 1;
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private animeService: AnimeService
+    private animeService: AnimeService,
+    private seasonService: SeasonService,
+    private toastService: ToastService
   ) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -57,9 +62,19 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   loadTopAnime(): void {
     this.isLoading = true;
-    this.http.get<any>(`${this.topAnimeUrl}?page=${this.currentPage}`).subscribe((response) => {
-      this.animeList = [...this.animeList, ...response.data];
-      this.isLoading = false;
+    this.http.get<any>(`${this.topAnimeUrl}?page=${this.currentPage}`).subscribe({
+      next: (response) => {
+        this.animeList = [...this.animeList, ...(response.data || [])];
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        if (this.currentPage > 1) {
+          // Così il prossimo "carica altri" riprova la stessa pagina
+          this.currentPage--;
+          this.toastService.show('Impossibile caricare altri anime, riprova tra poco', 'error');
+        }
+      }
     });
   }
 
@@ -69,51 +84,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
   
   loadSeasonalAnime(): void {
-    this.isLoading = true;
-    this.http.get<any>(this.seasonalAnimeUrl).subscribe((response) => {
-      this.seasonalAnimeList = uniqueByMalId<any>(response.data)
-        .filter((anime: any) => anime.score && anime.score > 0)
-        .sort((a: any, b: any) => b.score - a.score);
-      this.isLoading = false;
+    this.seasonService.resolveActiveSeason().subscribe(({ season, list }) => {
+      this.activeSeason = season;
+      this.seasonalAnimeList = sortSeasonalForHome(list);
     });
   }
 
-  getCurrentAnimeSeason(): string {
-    const currentDate = new Date();
-    const month = currentDate.getMonth() + 1;
-    const year = currentDate.getFullYear();
-    let season = '';
-
-    if (month >= 4 && month <= 6) {
-      season = 'Spring';
-    } else if (month >= 7 && month <= 9) {
-      season = 'Summer';
-    } else if (month >= 10 && month <= 12) {
-      season = 'Fall';
-    } else {
-      season = 'Winter';
-    }
-
-    return season + ' ' + year;
-  }
-
-  getCurrentAnimeSeasonT(): string {
-    const currentDate = new Date();
-    const month = currentDate.getMonth() + 1;
-    const year = currentDate.getFullYear();
-    let season = '';
-
-    if (month >= 4 && month <= 6) {
-      season = 'spring';
-    } else if (month >= 7 && month <= 9) {
-      season = 'summer';
-    } else if (month >= 10 && month <= 12) {
-      season = 'fall';
-    } else {
-      season = 'winter';
-    }
-
-    return season + '-' + year;
+  /** Link del pulsante "Anime Stagionali": "now" finché la stagione non è decisa */
+  get activeSeasonSlug(): string {
+    return this.activeSeason ? seasonSlug(this.activeSeason) : 'now';
   }
 
   ngOnDestroy(): void {

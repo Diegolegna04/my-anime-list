@@ -1,7 +1,9 @@
 <div class="seasonal-section">
   <div class="section-header">
     <h2 class="section-title">Top Anime della Stagione</h2>
-    <span class="season-tag">{{ getCurrentAnimeSeason() }}</span>
+    @if (seasonTag) {
+      <span class="season-tag">{{ seasonTag }}</span>
+    }
   </div>
   <div class="seasonal-slider">
     <div class="slider-controls">
@@ -41,7 +43,7 @@
         </div>
       }
     </div>
-    <button class="load-more-btn" routerLink="/seasonal/{{ getCurrentAnimeSeasonT() }}">
+    <button class="load-more-btn" routerLink="/seasonal/{{ seasonLink }}">
       Vai agli anime di questa stagione
     </button>
   </div>

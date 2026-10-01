@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { AnimeService } from '../../services/anime.service';
-import { currentSeason, uniqueByMalId } from '../../services/anime-utils';
+import { uniqueByMalId } from '../../services/anime-utils';
+import { SeasonService } from '../../services/season.service';
 
 @Component({
   selector: 'app-seasonal-anime',
@@ -22,12 +22,14 @@ export class SeasonalAnimePageComponent implements OnInit {
   titleLanguage: 'english' | 'original' = 'original';
   currentPage: number = 1;
   hasNextPage: boolean = true;
+  /** Endpoint scelto a pagina 1 (seasons/now o anno/stagione) */
+  private viaNow: boolean | undefined;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
-    private animeService: AnimeService
+    private animeService: AnimeService,
+    private seasonService: SeasonService
   ) {}
 
   ngOnInit(): void {
@@ -36,43 +38,40 @@ export class SeasonalAnimePageComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.currentSeason = params['season'];
       const decodedSeason = this.currentSeason.replace(/-/g, ' ');
-      this.parseSeason(decodedSeason);
-      this.resetAndLoadSeasonalAnime();
+      if (this.parseSeason(decodedSeason)) {
+        this.resetAndLoadSeasonalAnime();
+      } else {
+        // "now"/"current" (o un parametro non valido): la stessa stagione della home,
+        // che tiene conto di quando gli anime nuovi iniziano davvero
+        this.seasonService.resolveActiveSeason().subscribe(({ season }) => {
+          this.season = season.season;
+          this.year = season.year;
+          this.resetAndLoadSeasonalAnime();
+        });
+      }
     });
 
     window.scroll(0, 0);
   }
 
-  parseSeason(seasonParam: string): void {
-    if (seasonParam === 'current' || seasonParam.toLowerCase() === 'now') {
-      const currentDate = new Date();
-      this.year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
-      
-      if (month >= 1 && month <= 3) {
-        this.season = 'winter';
-      } else if (month >= 4 && month <= 6) {
-        this.season = 'spring';
-      } else if (month >= 7 && month <= 9) {
-        this.season = 'summer';
-      } else {
-        this.season = 'fall';
-      }
-    } else {
-      const parts = seasonParam.split(' ');
-      if (parts.length === 2) {
-        this.season = parts[0].toLowerCase();
-        this.year = parseInt(parts[1], 10);
-      } else {
-        this.parseSeason('current');
-      }
+  /** Legge "fall 2026"; false se il parametro non indica una stagione precisa */
+  parseSeason(seasonParam: string): boolean {
+    const parts = seasonParam.split(' ');
+    const season = parts[0]?.toLowerCase();
+    const year = parseInt(parts[1], 10);
+    if (parts.length !== 2 || !['winter', 'spring', 'summer', 'fall'].includes(season) || isNaN(year)) {
+      return false;
     }
+    this.season = season;
+    this.year = year;
+    return true;
   }
 
   resetAndLoadSeasonalAnime(): void {
     this.currentPage = 1;
     this.seasonalAnimeList = [];
     this.hasNextPage = true;
+    this.viaNow = undefined;
     this.loadSeasonalAnime();
   }
 
@@ -80,23 +79,19 @@ export class SeasonalAnimePageComponent implements OnInit {
     if (this.isLoading || !this.hasNextPage) return;
 
     this.isLoading = true;
-    // Per la stagione in corso si usa seasons/now: Jikan lo tiene in cache e
-    // risponde anche quando le richieste per anno/stagione danno 504
-    const now = currentSeason();
-    const isCurrent = this.season === now.season && this.year === now.year;
-    const url = isCurrent
-      ? `/api/anime-proxy/seasons/now?page=${this.currentPage}`
-      : `/api/anime-proxy/seasons/${this.year}/${this.season}?page=${this.currentPage}`;
-    
-    this.http.get<any>(url).subscribe({
-      next: (response) => {
-        if (response.data && response.data.length > 0) {
-          const newAnime = response.data
+    // A pagina 1 SeasonService sceglie tra seasons/now e anno/stagione;
+    // le pagine successive vanno chieste allo stesso endpoint
+    const target = { season: this.season, year: this.year };
+    this.seasonService.getSeasonPage(target, this.currentPage, this.viaNow).subscribe({
+      next: (page) => {
+        this.viaNow = page.viaNow;
+        if (page.data.length > 0) {
+          const newAnime = page.data
             .filter((anime: any) => anime.images?.jpg?.image_url)
             .sort((a: any, b: any) => (b.score || 0) - (a.score || 0));
           
           this.seasonalAnimeList = uniqueByMalId([...this.seasonalAnimeList, ...newAnime]);
-          this.hasNextPage = response.pagination?.has_next_page || false;
+          this.hasNextPage = page.hasNextPage;
         } else {
           this.hasNextPage = false;
         }

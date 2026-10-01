@@ -11,12 +11,14 @@ export class ThemeService {
   public theme$ = this.themeSubject.asObservable();
 
   constructor() {
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme) {
-      this.setTheme(savedTheme);
-    } else {
-      this.setTheme('light');
-    }
+    // Lo script inline in index.html ha già messo la classe giusta su <html>
+    // prima del primo paint: si parte da lì, così non c'è nessun cambio visibile
+    const root = document.documentElement;
+    const initial: Theme = root.classList.contains('dark-theme') ? 'dark' : this.readSavedTheme();
+    this.setTheme(initial);
+
+    // Da qui in poi i cambi di tema sono animati (vedi .theme-ready in styles.css)
+    requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('theme-ready')));
   }
 
   getCurrentTheme(): Theme {
@@ -25,16 +27,17 @@ export class ThemeService {
 
   setTheme(theme: Theme): void {
     this.themeSubject.next(theme);
-    localStorage.setItem('theme', theme);
-    
-    // Applica il tema al documento
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark-theme');
-      document.documentElement.classList.remove('light-theme');
-    } else {
-      document.documentElement.classList.add('light-theme');
-      document.documentElement.classList.remove('dark-theme');
+    try {
+      localStorage.setItem('theme', theme);
+    } catch {
+      // localStorage non disponibile (es. navigazione privata): il tema vale solo per questa visita
     }
+
+    // Applica il tema al documento
+    const root = document.documentElement;
+    root.classList.toggle('dark-theme', theme === 'dark');
+    root.classList.toggle('light-theme', theme === 'light');
+    root.style.colorScheme = theme;
   }
 
   toggleTheme(): void {
@@ -42,4 +45,12 @@ export class ThemeService {
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     this.setTheme(newTheme);
   }
-} 
+
+  private readSavedTheme(): Theme {
+    try {
+      return localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
+  }
+}

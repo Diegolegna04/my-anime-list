@@ -1,7 +1,7 @@
 <div class="dashboard-container">
   <!-- Hero Section -->
   <app-hero-section
-    [currentSeason]="getCurrentAnimeSeasonT()"
+    [currentSeason]="activeSeasonSlug"
     (topAnimeClick)="currentView = 'list'">
   </app-hero-section>
   <!-- Top Anime Section -->
@@ -12,7 +12,8 @@
   </app-top-anime>
   <!-- Seasonal Section -->
   <app-seasonal-anime
-    [seasonalAnimeList]="seasonalAnimeList">
+    [seasonalAnimeList]="seasonalAnimeList"
+    [season]="activeSeason">
   </app-seasonal-anime>
   <app-random-anime></app-random-anime>
   <!-- Genres Section -->
