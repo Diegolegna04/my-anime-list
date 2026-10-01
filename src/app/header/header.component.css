@@ -109,8 +109,9 @@
   overflow: hidden;
   width: 300px;
   border: 2px solid var(--border-color);
-  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out), visibility var(--dur-fast);
-  padding-left: 0.5rem;
+  transition: box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+  /* Il pulsante è un cerchio dentro la pillola, staccato di 4px dal bordo */
+  padding: 4px 4px 4px 0.5rem;
   z-index: 15;
 }
 
@@ -127,17 +128,18 @@
 
 .search-btn:focus-visible {
   outline-color: #fff;
-  outline-offset: -4px;
+  outline-offset: -3px;
 }
 
 .search-input {
-  flex-grow: 1;
+  flex: 1;
+  min-width: 0;
   border: none;
   outline: none;
   font-size: 1rem;
   color: var(--text-primary);
   background-color: transparent;
-  padding: 0.8rem 1rem;
+  padding: 0.55rem 0.75rem;
 }
 
 .search-input::placeholder {
@@ -145,18 +147,27 @@
   opacity: 0.8;
 }
 
+/* Cerchio a misura fissa: l'icona è centrata per costruzione. Prima era
+   una pillola più larga dello spazio rimasto, tagliata dal bordo della barra,
+   e l'icona sembrava spostata a destra. */
 .search-btn {
-  padding: 0.9rem 1.8rem;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  box-shadow: none;
-  margin-left: -5px;
-  background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
   border: none;
-  color: white;
-  font-weight: 600;
-  border-radius: 30px;
+  border-radius: 50%;
+  background: var(--button-gradient);
+  color: #fff;
+  font-size: 0.95rem;
   cursor: pointer;
+  transition: box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.search-btn:hover {
+  box-shadow: var(--shadow-accent);
 }
 
 .profile-menu-container {
@@ -397,12 +408,7 @@
   }
 
   .mobile-search-bar .search-input {
-    padding: 0.8rem 1rem;
     font-size: 0.95rem;
-  }
-
-  .mobile-search-bar .search-btn {
-    padding: 0.8rem 1.2rem;
   }
 
   /* Mobile Menu Overlay */
@@ -521,7 +527,10 @@
     background-color: var(--bg-secondary);
   }
 
+  /* width: auto e non il 100% degli altri item: con i margini laterali
+     usciva dal menu di 24px su un telefono da 390px */
   .mobile-menu-item.login-item {
+    width: auto;
     background-color: var(--accent-color);
     color: white;
     margin: 1rem 1.5rem;
@@ -589,13 +598,17 @@
     padding: 1rem;
   }
 
+  .mobile-search-bar .search-bar {
+    padding: 3px 3px 3px 0.4rem;
+  }
+
   .mobile-search-bar .search-input {
-    padding: 0.7rem 1rem;
     font-size: 0.9rem;
   }
 
   .mobile-search-bar .search-btn {
-    padding: 0.7rem 1rem;
+    width: 36px;
+    height: 36px;
   }
 }
 
@@ -603,9 +616,6 @@
 @media (min-width: 769px) and (max-width: 1200px) {
   .search-bar {
     width: 250px;
-  }
-  .search-btn {
-    margin-left: -40px;
   }
   .header-right {
     gap: 1rem;

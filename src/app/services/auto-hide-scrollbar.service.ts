@@ -69,17 +69,13 @@ export class AutoHideScrollbarService {
         this.scheduleHide();
       });
 
-      this.thumb.addEventListener('pointerdown', (event) => this.startDrag(event));
-      this.thumb.addEventListener('pointermove', (event) => this.drag(event));
-      this.thumb.addEventListener('pointerup', (event) => this.endDrag(event));
-      this.thumb.addEventListener('pointercancel', (event) => this.endDrag(event));
-
-      // Clic sul binario fuori dal cursore: una schermata su o giù
-      this.rail.addEventListener('pointerdown', (event) => {
-        if (event.target !== this.rail) return;
-        const direction = event.clientY < this.thumb.getBoundingClientRect().top ? -1 : 1;
-        window.scrollBy({ top: direction * window.innerHeight * 0.9, behavior: 'smooth' });
-      });
+      // Tutta la fascia (14px) si trascina, non solo il cursore (6px): prima un
+      // clic appena accanto al cursore cadeva sul binario, la pagina scendeva
+      // di una schermata da sola e non si poteva trascinare.
+      this.rail.addEventListener('pointerdown', (event) => this.startDrag(event));
+      this.rail.addEventListener('pointermove', (event) => this.drag(event));
+      this.rail.addEventListener('pointerup', (event) => this.endDrag(event));
+      this.rail.addEventListener('pointercancel', (event) => this.endDrag(event));
     });
 
     this.update();
@@ -112,31 +108,45 @@ export class AutoHideScrollbarService {
     this.thumb.style.transform = `translateY(${offset}px)`;
   }
 
+  /** Pixel di pagina per ogni pixel di spostamento del cursore */
+  private scrollPerTrackPixel(): number {
+    const scrollRange = document.documentElement.scrollHeight - window.innerHeight;
+    const trackRange =
+      window.innerHeight - AutoHideScrollbarService.RAIL_INSET_PX * 2 - this.thumbHeight;
+    return trackRange > 0 ? scrollRange / trackRange : 0;
+  }
+
   private startDrag(event: PointerEvent): void {
     if (event.button !== 0) return;
     event.preventDefault();
+
+    // Clic sul binario fuori dal cursore: il cursore salta subito sotto il
+    // mouse (centrato) e da lì si continua a trascinare
+    const thumbRect = this.thumb.getBoundingClientRect();
+    if (event.clientY < thumbRect.top || event.clientY > thumbRect.bottom) {
+      const shift = event.clientY - (thumbRect.top + thumbRect.height / 2);
+      window.scrollTo({ top: window.scrollY + shift * this.scrollPerTrackPixel(), behavior: 'instant' });
+      this.update();
+    }
+
     this.dragging = true;
     this.dragStartY = event.clientY;
     this.dragStartScroll = window.scrollY;
-    this.thumb.setPointerCapture(event.pointerId);
+    this.rail.setPointerCapture(event.pointerId);
     document.documentElement.classList.add('scrollbar-dragging');
     this.show();
   }
 
   private drag(event: PointerEvent): void {
     if (!this.dragging) return;
-    const scrollRange = document.documentElement.scrollHeight - window.innerHeight;
-    const trackRange =
-      window.innerHeight - AutoHideScrollbarService.RAIL_INSET_PX * 2 - this.thumbHeight;
-    if (trackRange <= 0) return;
-    const delta = (event.clientY - this.dragStartY) * (scrollRange / trackRange);
+    const delta = (event.clientY - this.dragStartY) * this.scrollPerTrackPixel();
     window.scrollTo({ top: this.dragStartScroll + delta, behavior: 'instant' });
   }
 
   private endDrag(event: PointerEvent): void {
     if (!this.dragging) return;
     this.dragging = false;
-    this.thumb.releasePointerCapture(event.pointerId);
+    if (this.rail.hasPointerCapture(event.pointerId)) this.rail.releasePointerCapture(event.pointerId);
     document.documentElement.classList.remove('scrollbar-dragging');
     this.scheduleHide();
   }
