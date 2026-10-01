@@ -8,8 +8,14 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   background-color: var(--bg-secondary);
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent-color) var(--bg-secondary);
+}
+
+/* Solo Firefox: in Chrome scrollbar-color disattiverebbe le regole qui sotto (e mostrerebbe le frecce) */
+@supports not selector(::-webkit-scrollbar) {
+  .recommended-section {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) var(--bg-secondary);
+  }
 }
 
 .recommended-section::-webkit-scrollbar {

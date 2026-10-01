@@ -133,6 +133,13 @@
 }
 
 @media (max-width: 480px) {
+  /* Su telefono la griglia ha 2 colonne: con un totale dispari (25 per pagina)
+     l'ultima card resterebbe da sola, quindi si nasconde. Con "Carica altri"
+     il totale torna pari e ricompare al suo posto in classifica. */
+  .grid > app-anime-card:last-child:nth-child(odd) {
+    display: none;
+  }
+
   .language-toggle-btn span {
     display: none;
   }

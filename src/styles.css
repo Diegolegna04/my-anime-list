@@ -199,55 +199,99 @@ input[type="button"] {
 }
 
 /* ---------- Superfici del browser ---------- */
-/* Scrollbar della pagina in stile macOS: sottile, senza binario, invisibile
-   da ferma. Compare (scrollbar-visible) quando si scorre o col mouse sul
-   bordo destro: le classi le mette AutoHideScrollbarService. La larghezza
-   non cambia mai, quindi la pagina non si sposta. */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent-color) transparent;
+/* Scrollbar della pagina in stile macOS, sovrapposta al contenuto: la
+   nativa si nasconde (occuperebbe una colonna a destra che header e footer
+   non coprono) e AutoHideScrollbarService disegna .page-scrollbar.
+   Solo con mouse/trackpad; sui touch resta la nativa, già sovrapposta. */
+html.custom-scrollbar {
+  scrollbar-width: none;
 }
 
-html.autohide-scrollbar {
-  scrollbar-color: transparent transparent;
-  transition: scrollbar-color 0.3s ease;
+html.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
 }
 
-html.autohide-scrollbar.scrollbar-visible {
-  scrollbar-color: var(--accent-color) transparent;
+/* Binario: fascia sul bordo destro, intercetta il mouse anche da invisibile */
+.page-scrollbar {
+  position: fixed;
+  top: 4px;
+  right: 0;
+  bottom: 4px;
+  z-index: 1000;
+  width: 14px;
 }
 
-/* scrollbar-color si eredita: le aree scorrevoli interne non devono
-   diventare invisibili insieme alla pagina */
-body {
-  scrollbar-color: var(--accent-color) var(--bg-secondary);
+.page-scrollbar.is-inactive {
+  display: none;
 }
 
-/* Browser senza scrollbar-color (Safari): stesse regole con ::-webkit-scrollbar */
-html::-webkit-scrollbar {
-  width: 10px;
+.page-scrollbar-thumb {
+  position: absolute;
+  top: 0;
+  right: 3px;
+  width: 9px;
+  border-radius: var(--radius-pill);
+  background-color: var(--accent-color);
+  opacity: 0;
+  cursor: default;
+  /* Larga 9px, ristretta a 6 con scale: transform è già usato dal servizio
+     per la posizione, e animare width ricalcolerebbe il layout */
+  scale: 0.67 1;
+  transform-origin: right center;
+  transition: opacity var(--dur) var(--ease-out), scale var(--dur-fast) var(--ease-out);
 }
 
-html::-webkit-scrollbar-track {
+.page-scrollbar.is-visible .page-scrollbar-thumb {
+  opacity: 0.75;
+}
+
+/* Col mouse sopra o mentre si trascina si allarga, come su macOS */
+.page-scrollbar:hover .page-scrollbar-thumb,
+.scrollbar-dragging .page-scrollbar-thumb {
+  scale: 1;
+  opacity: 1;
+}
+
+.scrollbar-dragging,
+.scrollbar-dragging * {
+  user-select: none;
+}
+
+@media print {
+  .page-scrollbar {
+    display: none;
+  }
+}
+
+/* Aree scorrevoli interne. Chrome ed Edge (dalla 121) ignorano
+   ::-webkit-scrollbar appena c'è scrollbar-color, anche ereditato, e
+   tornano alla scrollbar standard con le frecce: le proprietà standard
+   valgono quindi solo dove ::-webkit-scrollbar non esiste (Firefox). */
+@supports not selector(::-webkit-scrollbar) {
+  body {
+    scrollbar-color: var(--accent-color) var(--bg-secondary);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
   background: transparent;
 }
 
-html::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background-color: var(--accent-color);
   background-clip: padding-box;
   border: 2px solid transparent;
   border-radius: var(--radius-pill);
 }
 
-html.autohide-scrollbar::-webkit-scrollbar-thumb {
-  background-color: transparent;
-}
-
-html.autohide-scrollbar.scrollbar-visible::-webkit-scrollbar-thumb {
-  background-color: var(--accent-color);
-}
-
-html::-webkit-scrollbar-button {
+::-webkit-scrollbar-button {
   display: none;
   width: 0;
   height: 0;

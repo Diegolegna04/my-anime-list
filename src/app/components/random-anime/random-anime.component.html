@@ -34,15 +34,22 @@
 
     @if (anime && !loading) {
       <div class="random-card">
-          <div class="anime-image">
+          <!-- Il poster porta alla stessa scheda del titolo: fuori dal tab order per non duplicare il link -->
+          <a
+              class="anime-image"
+              [routerLink]="['/anime', anime.mal_id]"
+              tabindex="-1"
+              aria-hidden="true">
               <img
                   [src]="anime.images.jpg.large_image_url || anime.images.jpg.image_url"
-                  [alt]="getAnimeTitle()"
+                  alt=""
                   loading="lazy">
-          </div>
+          </a>
 
           <div class="anime-info">
-              <h3 class="anime-title">{{ getAnimeTitle() }}</h3>
+              <h3 class="anime-title">
+                  <a [routerLink]="['/anime', anime.mal_id]">{{ getAnimeTitle() }}</a>
+              </h3>
 
               <div class="anime-details">
                   @if (anime.year) {
@@ -66,6 +73,13 @@
                     <p>{{ anime.synopsis }}</p>
                 </div>
               }
+
+              <div class="anime-actions">
+                  <a class="btn btn-secondary" [routerLink]="['/anime', anime.mal_id]">
+                      Apri la scheda
+                      <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                  </a>
+              </div>
           </div>
       </div>
     }

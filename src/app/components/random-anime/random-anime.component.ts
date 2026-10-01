@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { retry, throwError, timer } from 'rxjs';
 
 interface AnimeData {
@@ -27,7 +28,7 @@ interface AnimeResponse {
 
 @Component({
   selector: 'app-random-anime',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './random-anime.component.html',
   styleUrl: './random-anime.component.css'
 })
