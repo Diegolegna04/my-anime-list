@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { LIST_STATUS_META, UserListService } from '../user-list.service';
 
 @Component({
   selector: 'app-anime-card',
@@ -15,6 +16,14 @@ export class AnimeCardComponent {
   @Input() titleLanguage: 'english' | 'original' = 'original';
   @Input() viewMode: 'grid' | 'list' = 'grid';
   @Input() showSynopsis: boolean = false;
+
+  constructor(private userList: UserListService) {}
+
+  /** Segnalino se l'anime è nella lista dell'utente (null se non c'è o non è loggato) */
+  get listBadge() {
+    const status = this.userList.statusOf(this.anime?.mal_id);
+    return status ? LIST_STATUS_META[status] : null;
+  }
 
   get title(): string {
     if (!this.anime) return '';

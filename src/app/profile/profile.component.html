@@ -167,11 +167,11 @@
             <span class="stat-value">{{ animePreferiti }}</span>
             <span class="stat-label">Anime Preferiti</span>
           </a>
-          <button type="button" class="stat-item" (click)="scrollToEvidenzaSection()">
-            <i class="fas fa-thumbtack" aria-hidden="true"></i>
-            <span class="stat-value">{{ inEvidenza.length }}</span>
-            <span class="stat-label">In Evidenza</span>
-          </button>
+          <a class="stat-item" routerLink="/profile/watched-anime" [queryParams]="{ filter: 'da vedere' }">
+            <i class="fas fa-bookmark" aria-hidden="true"></i>
+            <span class="stat-value">{{ planToWatchCount }}</span>
+            <span class="stat-label">Da vedere</span>
+          </a>
         </div>
       </div>
     </section>

@@ -32,20 +32,30 @@
     </div>
 
     <!-- Search Bar Mobile -->
-    <form class="mobile-search-bar" role="search" (ngSubmit)="searchAnime()">
+    <form class="mobile-search-bar search-form" role="search" (ngSubmit)="searchAnime()">
       <div class="search-bar">
         <input
           type="search"
           name="q-mobile"
-          [(ngModel)]="query"
+          [ngModel]="query"
+          (ngModelChange)="onQueryChange($event)"
+          (keydown)="onSearchKeydown($event)"
+          (focus)="onSearchFocus()"
           placeholder="Cerca un anime..."
           aria-label="Cerca un anime"
+          autocomplete="off"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-controls="search-suggest-mobile"
+          [attr.aria-expanded]="suggestOpen"
+          [attr.aria-activedescendant]="activeIndex >= 0 ? 'search-suggest-mobile-' + activeIndex : null"
           class="search-input"
         />
         <button type="submit" class="search-btn" aria-label="Cerca">
           <i class="fas fa-search" aria-hidden="true"></i>
         </button>
       </div>
+      <ng-container *ngTemplateOutlet="suggestTpl; context: { $implicit: 'search-suggest-mobile' }"></ng-container>
     </form>
 
     <!-- Mobile Menu Overlay -->
@@ -114,20 +124,30 @@
         <span>Generi</span>
       </a>
 
-      <form class="search-section" role="search" (ngSubmit)="searchAnime()">
+      <form class="search-section search-form" role="search" (ngSubmit)="searchAnime()">
         <div class="search-bar">
           <input
             type="search"
             name="q"
-            [(ngModel)]="query"
+            [ngModel]="query"
+            (ngModelChange)="onQueryChange($event)"
+            (keydown)="onSearchKeydown($event)"
+            (focus)="onSearchFocus()"
             placeholder="Cerca un anime..."
             aria-label="Cerca un anime"
+            autocomplete="off"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-controls="search-suggest-desktop"
+            [attr.aria-expanded]="suggestOpen"
+            [attr.aria-activedescendant]="activeIndex >= 0 ? 'search-suggest-desktop-' + activeIndex : null"
             class="search-input"
           />
           <button type="submit" class="search-btn" aria-label="Cerca">
             <i class="fas fa-search" aria-hidden="true"></i>
           </button>
         </div>
+        <ng-container *ngTemplateOutlet="suggestTpl; context: { $implicit: 'search-suggest-desktop' }"></ng-container>
       </form>
 
       @if (!accessoEffettuato) {
@@ -157,3 +177,62 @@
     </div>
   </div>
 </header>
+
+<!-- Anteprima dei risultati, la stessa sotto la ricerca desktop e mobile -->
+<ng-template #suggestTpl let-listId>
+  @if (suggestOpen) {
+    <div class="search-suggest">
+      <div class="suggest-list" role="listbox" [id]="listId" aria-label="Anteprima dei risultati">
+        @for (anime of suggestions; track anime.mal_id; let i = $index) {
+          <a
+            class="suggest-item"
+            role="option"
+            tabindex="-1"
+            [id]="listId + '-' + i"
+            [class.active]="i === activeIndex"
+            [attr.aria-selected]="i === activeIndex"
+            [routerLink]="['/anime', anime.mal_id]"
+            (mousedown)="$event.preventDefault()"
+            (mouseenter)="activeIndex = i"
+            (click)="openSuggestion(anime); $event.preventDefault()">
+            <span class="suggest-poster">
+              @if (anime.images?.jpg?.small_image_url || anime.images?.jpg?.image_url) {
+                <img [src]="anime.images.jpg.small_image_url || anime.images.jpg.image_url" alt="" loading="lazy" decoding="async" />
+              } @else {
+                <i class="fas fa-image" aria-hidden="true"></i>
+              }
+            </span>
+            <span class="suggest-text">
+              <span class="suggest-title">{{ suggestionTitle(anime) }}</span>
+              <span class="suggest-meta">
+                @if (suggestionMeta(anime)) {
+                  <span>{{ suggestionMeta(anime) }}</span>
+                }
+                @if (anime.score) {
+                  <span class="suggest-score"><i class="fas fa-star" aria-hidden="true"></i> {{ anime.score | number:'1.1-2' }}</span>
+                }
+              </span>
+            </span>
+            @if (suggestionBadge(anime); as badge) {
+              <span class="suggest-badge" [style.--tone]="badge.tone">{{ badge.label }}</span>
+            }
+          </a>
+        }
+      </div>
+
+      @if (suggestLoading && !suggestions.length) {
+        <p class="suggest-status" role="status">
+          <span class="spinner spinner-sm" aria-hidden="true"></span>
+          Cerco...
+        </p>
+      } @else if (!suggestLoading && !suggestions.length) {
+        <p class="suggest-status" role="status">Nessun anime trovato per “{{ query.trim() }}”.</p>
+      }
+
+      <button type="submit" class="suggest-all" (mousedown)="$event.preventDefault()">
+        Tutti i risultati per “{{ query.trim() }}”
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+      </button>
+    </div>
+  }
+</ng-template>

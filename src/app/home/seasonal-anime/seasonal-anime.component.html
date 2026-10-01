@@ -33,6 +33,12 @@
         <a class="seasonal-anime-card" [routerLink]="['/anime', anime.mal_id]" draggable="false">
           <span class="seasonal-badge">HOT</span>
           <div class="img-wrapper">
+            @if (listBadge(anime.mal_id); as badge) {
+              <span class="list-badge list-badge-start" [style.--tone]="badge.tone" [title]="'Nella tua lista: ' + badge.label">
+                <i class="fas" [class]="badge.icon" aria-hidden="true"></i>
+                <span class="visually-hidden">Nella tua lista: {{ badge.label }}</span>
+              </span>
+            }
             <img [src]="anime.images.jpg.image_url" [alt]="getTitle(anime)" draggable="false" loading="lazy" decoding="async">
           </div>
           <div class="seasonal-anime-info">

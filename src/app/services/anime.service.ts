@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, of, timer } from 'rxjs';
-import { shareReplay, catchError, mergeMap } from 'rxjs/operators';
+import { shareReplay, catchError, mergeMap, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 const CACHE_PREFIX = 'animeCache:';
@@ -50,6 +50,18 @@ export class AnimeService {
 
   searchAnime(query: string, page: number = 1): Observable<any> {
     return this.withRetry(this.http.get(`${this.apiUrl}/anime?q=${query}&page=${page}`));
+  }
+
+  /**
+   * Anteprima mentre si scrive nella ricerca: pochi risultati, i più seguiti
+   * prima. Niente retry: se la richiesta è lenta arriva comunque la prossima
+   * battitura, e l'invio porta alla ricerca completa.
+   */
+  searchPreview(query: string, limit: number = 6): Observable<any[]> {
+    const q = encodeURIComponent(query);
+    return this.http
+      .get<any>(`${this.apiUrl}/anime?q=${q}&limit=${limit}&order_by=members&sort=desc&sfw=true`)
+      .pipe(map((response) => (response?.data ?? []).slice(0, limit)));
   }
 
   goToDetails(id: number): void {

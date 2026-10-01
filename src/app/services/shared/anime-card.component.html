@@ -3,6 +3,12 @@
       <span class="anime-card-rank">#{{ rank }}</span>
     }
     <div class="img-wrapper">
+      @if (listBadge; as badge) {
+        <span class="list-badge" [style.--tone]="badge.tone" [title]="'Nella tua lista: ' + badge.label">
+          <i class="fas" [class]="badge.icon" aria-hidden="true"></i>
+          <span class="visually-hidden">Nella tua lista: {{ badge.label }}</span>
+        </span>
+      }
       @if (anime.images?.jpg?.image_url) {
         <img [src]="anime.images.jpg.image_url" [alt]="title" loading="lazy" decoding="async" />
       } @else {

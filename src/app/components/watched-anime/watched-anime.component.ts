@@ -144,7 +144,9 @@ export class WatchedAnimeComponent implements OnInit {
     let loadedAnime = this.watchedAnime.filter((anime) => anime.details);
 
     if (this.filter === 'all') {
-      this.filteredAnime = loadedAnime;
+      // "Tutti" sono gli anime iniziati: i "Da vedere" hanno il loro filtro
+      // (stesso conteggio del riquadro "Tutti gli anime" del profilo)
+      this.filteredAnime = loadedAnime.filter((anime) => anime.state !== 'da vedere');
     } else {
       this.filteredAnime = loadedAnime.filter(
         (anime) => anime.state === this.filter

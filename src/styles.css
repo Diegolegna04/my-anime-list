@@ -1023,6 +1023,38 @@ a.chip:hover {
 .badge-info { --tone: var(--info-color); }
 .badge-accent { --tone: var(--accent-text); }
 
+/* Segnalino "nella tua lista" sul poster: tondo chiaro con l'icona nel colore
+   dello stato (--tone), leggibile su qualsiasi copertina e in entrambi i temi */
+.list-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--tone);
+  border-radius: 50%;
+  background: var(--card-bg);
+  color: var(--tone);
+  font-size: 0.75rem;
+  box-shadow: var(--shadow-medium);
+}
+
+/* Testo solo per i lettori di schermo */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* =====================================================================
    Pagine di autenticazione (login, password, verifica email)
    ===================================================================== */

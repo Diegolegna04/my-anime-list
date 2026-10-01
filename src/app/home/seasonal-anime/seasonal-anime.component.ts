@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementR
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SeasonRef, seasonLabel, seasonSlug } from '../../services/anime-utils';
+import { LIST_STATUS_META, UserListService } from '../../services/user-list.service';
 
 @Component({
   selector: 'app-seasonal-anime',
@@ -21,6 +22,14 @@ export class SeasonalAnimeComponent implements OnInit, OnChanges {
 
   canScrollPrev: boolean = false;
   canScrollNext: boolean = true;
+
+  constructor(private userList: UserListService) {}
+
+  /** Segnalino se l'anime è nella lista dell'utente */
+  listBadge(animeId: number) {
+    const status = this.userList.statusOf(animeId);
+    return status ? LIST_STATUS_META[status] : null;
+  }
 
   ngOnInit(): void {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';

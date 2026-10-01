@@ -107,6 +107,12 @@
   transform: translateY(-3px);
 }
 
+/* Qui HOT occupa l'angolo destro: il segnalino della lista va a sinistra */
+.list-badge-start {
+  right: auto;
+  left: 10px;
+}
+
 .seasonal-badge {
   position: absolute;
   top: 10px;

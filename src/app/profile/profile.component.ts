@@ -26,6 +26,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   totalAnimeCount: number = 0;
   watchedAnimeCount: number = 0;
   watchingAnimeCount: number = 0;
+  planToWatchCount: number = 0;
   inEvidenza: any[] = [];
   animePreferiti: number = 0;
   titleLanguage: 'english' | 'original' = 'original';
@@ -84,9 +85,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.loadInEvidenza()
       ]);
 
-      // Totale della lista: somma di tutti gli stati
+      // "Tutti gli anime" = quelli iniziati (visti, in visione, in pausa, droppati):
+      // i "Da vedere" hanno il loro riquadro e non si contano qui
       this.totalAnimeCount = (statsData.watchedCount || 0) + (statsData.watchingCount || 0)
-        + (statsData.planToWatchCount || 0) + (statsData.onHoldCount || 0) + (statsData.droppedCount || 0);
+        + (statsData.onHoldCount || 0) + (statsData.droppedCount || 0);
+      this.planToWatchCount = statsData.planToWatchCount || 0;
       this.watchedAnimeCount = statsData.watchedCount || 0;
       this.watchingAnimeCount = statsData.watchingCount || 0;
       this.animePreferiti = statsData.favoritesCount || 0;
@@ -354,13 +357,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     this.cdr.detectChanges();
-  }
-
-  scrollToEvidenzaSection(): void {
-    const evidenzaSection = document.getElementById('inEvidenzaSection');
-    if (evidenzaSection) {
-      evidenzaSection.scrollIntoView({ behavior: 'smooth' });
-    }
   }
 
   async refreshProfile(): Promise<void> {

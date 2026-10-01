@@ -14,6 +14,7 @@ import { NewsListComponent } from './news-list/news-list.component';
 import { RecommendedAnimeSidebarComponent } from './recommended-anime-sidebar/recommended-anime-sidebar.component';
 import { ToastService } from '../../services/toast.service';
 import { AuthService } from '../../services/auth.service';
+import { ListStatus, UserListService } from '../../services/user-list.service';
 
 /** Stato di un blocco caricato a parte (consigli, streaming) */
 export type LoadStatus = 'loading' | 'ready' | 'error';
@@ -67,7 +68,8 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
     private userAnimeService: UserAnimeService,
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
-    private authService: AuthService
+    private authService: AuthService,
+    private userList: UserListService
   ) {}
 
   ngOnInit(): void {
@@ -347,6 +349,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           this.userAnimeData = response;
+          this.userList.setStatus(this.animeId, backendStatus as ListStatus);
 
           if (newState === 'completato') {
             // Usa i dettagli già caricati se disponibili,
@@ -403,6 +406,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.initializeDefaultState();
+          this.userList.setStatus(this.animeId, null);
           this.cdr.markForCheck();
         },
         error: (error) => {
