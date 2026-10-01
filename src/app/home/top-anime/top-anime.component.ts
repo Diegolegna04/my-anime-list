@@ -1,10 +1,11 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { AnimeCardComponent } from '../../services/shared/anime-card.component';
+import { TitleLanguageToggleComponent } from '../../services/shared/title-language-toggle.component';
 
 @Component({
   selector: 'app-top-anime',
   standalone: true,
-  imports: [AnimeCardComponent],
+  imports: [TitleLanguageToggleComponent, AnimeCardComponent],
   templateUrl: './top-anime.component.html',
   styleUrl: './top-anime.component.css'
 })
@@ -20,12 +21,8 @@ export class TopAnimeComponent {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
   }
 
-  toggleView(): void {
-    this.isGridView = !this.isGridView;
-  }
-
-  toggleTitleLanguage(): void {
-    this.titleLanguage = this.titleLanguage === 'english' ? 'original' : 'english';
-    localStorage.setItem('titleLanguage', this.titleLanguage);
+  setTitleLanguage(language: 'english' | 'original'): void {
+    this.titleLanguage = language;
+    localStorage.setItem('titleLanguage', language);
   }
 }

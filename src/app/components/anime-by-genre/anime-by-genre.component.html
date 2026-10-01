@@ -51,10 +51,7 @@
             <option value="date">Novità</option>
           </select>
         </div>
-        <button type="button" (click)="toggleTitleLanguage()" class="btn btn-primary btn-sm">
-          <i class="fas fa-language" aria-hidden="true"></i>
-          {{titleLanguage === 'english' ? 'Titolo giapponese' : 'Titolo inglese'}}
-        </button>
+        <app-title-language-toggle [value]="titleLanguage" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
         <div class="segmented" role="group" aria-label="Visualizzazione">
           <button type="button" [class.active]="isGridView" [attr.aria-pressed]="isGridView" (click)="setGridView(true)" aria-label="Griglia">
             <i class="fas fa-th-large" aria-hidden="true"></i>

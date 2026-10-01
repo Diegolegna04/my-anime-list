@@ -52,7 +52,8 @@ describe('anime-utils', () => {
 
   it('slug ed etichetta', () => {
     expect(seasonSlug({ season: 'fall', year: 2026 })).toBe('fall-2026');
-    expect(seasonLabel({ season: 'fall', year: 2026 })).toBe('Fall 2026');
+    expect(seasonLabel({ season: 'fall', year: 2026 })).toBe('Autunno 2026');
+    expect(seasonLabel({ season: 'summer', year: 2026 })).toBe('Estate 2026');
   });
 
   describe('finestra di cambio stagione', () => {

@@ -1,96 +1,5 @@
-/* Card anime: stesso aspetto di app-anime-card (services/shared) */
-.anime-card {
-  display: block;
-  overflow: hidden;
-  border-radius: var(--radius-md);
-  background-color: var(--card-bg);
-  box-shadow: var(--card-shadow);
-  cursor: pointer;
-  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
-}
-
-.anime-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-hover);
-}
-
-.img-wrapper {
-  position: relative;
-  width: 100%;
-  height: 280px;
-  overflow: hidden;
-}
-
-.anime-card img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--dur) var(--ease-out);
-}
-
-.anime-card:hover img {
-  transform: scale(1.05);
-}
-
-.anime-card-content {
-  padding: 1rem;
-}
-
-.anime-title {
-  display: -webkit-box;
-  height: 2.5rem;
-  margin-bottom: 0.5rem;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.anime-meta {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
-
-.anime-score {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.anime-score i {
-  color: var(--star-color);
-}
-
-.anime-type {
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-sm);
-  background-color: var(--bg-tertiary);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.anime-synopsis {
-  display: -webkit-box;
-  margin: 0.8rem 0 0.5rem;
-  overflow: hidden;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: var(--text-secondary);
-}
-
+/* Le card sono app-anime-card (services/shared). Qui solo i chip dei
+   generi proiettati nella vista elenco e il pulsante "Carica altri". */
 .anime-genres {
   display: flex;
   flex-wrap: wrap;
@@ -98,57 +7,10 @@
   margin-top: 0.5rem;
 }
 
-/* Vista elenco */
-.anime-list .anime-card {
-  display: flex;
-  height: 180px;
-}
-
-.anime-list .img-wrapper {
-  flex-shrink: 0;
-  width: 140px;
-  height: 180px;
-}
-
-.anime-list .anime-card-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.anime-list .anime-title {
-  height: auto;
-  font-size: 1.1rem;
-}
-
-.anime-list .anime-meta {
-  margin-bottom: 0.5rem;
-}
-
 .load-more {
   display: flex;
   justify-content: center;
   margin-top: 2rem;
-}
-
-.back-to-home {
-  margin: 3rem 0;
-  text-align: center;
-}
-
-@media (max-width: 768px) {
-  .img-wrapper {
-    height: 200px;
-  }
-
-  .anime-list .anime-card {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .anime-list .img-wrapper {
-    width: 100%;
-    height: 150px;
-  }
 }
 
 @media (max-width: 480px) {

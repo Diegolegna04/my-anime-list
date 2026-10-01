@@ -13,6 +13,8 @@ import { AuthService } from '../services/auth.service';
   standalone: true,
   styleUrl: './footer.component.css'
 })
-export class FooterComponent {  
+export class FooterComponent {
+  readonly currentYear = new Date().getFullYear();
+
   constructor(public authService: AuthService) {}
 }

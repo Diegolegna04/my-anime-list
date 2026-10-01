@@ -3,12 +3,13 @@ import { AnimeService } from '../../services/anime.service';
 import { UserAnimeService } from '../../services/userAnimeService.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TitleLanguageToggleComponent } from '../../services/shared/title-language-toggle.component';
 
 @Component({
   selector: 'app-favorite-anime',
   templateUrl: './favorite-anime.component.html',
   standalone: true,
-  imports: [CommonModule],
+  imports: [TitleLanguageToggleComponent, CommonModule],
   styleUrls: ['./favorite-anime.component.css']
 })
 export class FavoriteAnimeComponent implements OnInit {

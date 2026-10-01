@@ -21,7 +21,12 @@ export interface RecommendedAnime {
 })
 export class RecommendedAnimeSidebarComponent implements OnChanges {
   @Input() recommendedAnime: RecommendedAnime[] = [];
+  @Input() status: 'loading' | 'ready' | 'error' = 'ready';
   @Output() animeClicked = new EventEmitter<number>();
+  @Output() retry = new EventEmitter<void>();
+
+  /** Righe segnaposto mostrate durante il caricamento */
+  readonly skeletonRows = [1, 2, 3, 4];
 
   displayedAnime: RecommendedAnime[] = [];
   private itemsToShow = 5;

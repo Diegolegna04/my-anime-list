@@ -82,7 +82,17 @@
       Dove vederlo:
     </span>
 
-    @if (hasStreamingServices) {
+    @if (streamingStatus === 'loading') {
+      <p class="streaming-loading" role="status">
+        <span class="spinner spinner-sm" aria-hidden="true"></span>
+        Cerco dove vederlo...
+      </p>
+    } @else if (streamingStatus === 'error') {
+      <div class="state state-compact state-error no-streaming" role="status">
+        <span class="state-icon" aria-hidden="true"><i class="fas fa-exclamation-triangle"></i></span>
+        <p class="state-text">Non riusciamo a recuperare i servizi di streaming in questo momento.</p>
+      </div>
+    } @else if (hasStreamingServices) {
       <div class="streaming-list">
         @for (service of streamingServices; track trackByServiceName($index, service)) {
           <a

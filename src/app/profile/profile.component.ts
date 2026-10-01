@@ -7,12 +7,13 @@ import { UserAnimeService } from '../services/userAnimeService.service';
 import { AuthService } from '../services/auth.service';
 import { ToastService } from '../services/toast.service';
 import { Subscription, firstValueFrom } from 'rxjs';
+import { TitleLanguageToggleComponent } from '../services/shared/title-language-toggle.component';
 
 @Component({
   selector: 'app-user-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
-  imports: [
+  imports: [TitleLanguageToggleComponent, 
     RouterLink,
     DragDropModule,
     FormsModule

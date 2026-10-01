@@ -1,7 +1,7 @@
 .hero-section {
   background-image: var(--hero-gradient);
-  color: white;
-  border-radius: 16px;
+  color: #fff;
+  border-radius: var(--radius-lg);
   padding: 4.5rem 2rem;
   margin: 2rem 0;
   text-align: center;
@@ -64,43 +64,7 @@
   gap: 1rem;
 }
 
-.primary-btn {
-  background-color: #fff;
-  color: var(--accent-color);
-  border: none;
-  padding: 0.8rem 1.7rem;
-  border-radius: 30px;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.primary-btn:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-.primary-btn:active {
-  transform: translateY(-1px);
-}
-
-/* Secondo bottone leggermente diverso per gerarchia visiva */
-.hero-buttons .primary-btn:nth-child(2) {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(4px);
-}
-
-.hero-buttons .primary-btn:nth-child(2):hover {
-  background-color: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.6);
-}
+/* Pulsanti: .btn-light e .btn-glass globali */
 
 @media (max-width: 768px) {
   .hero-section {
@@ -120,17 +84,16 @@
     gap: 0.8rem;
   }
 
-  .primary-btn {
+  .hero-buttons .btn {
     width: 100%;
     max-width: 300px;
-    justify-content: center;
   }
 }
 
 @media (max-width: 480px) {
   .hero-section {
     padding: 2.2rem 1.2rem;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
 
   .hero-section h1 {
@@ -142,7 +105,7 @@
     margin-bottom: 1.6rem;
   }
 
-  .primary-btn {
+  .hero-buttons .btn {
     padding: 0.75rem 1.4rem;
     font-size: 0.95rem;
   }

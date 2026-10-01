@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 export type AnimeState = 'non visto' | 'in visione' | 'completato' | 'da vedere' | 'droppato' | 'in pausa';
 
@@ -16,7 +17,7 @@ export interface StateOption {
 @Component({
   selector: 'app-anime-state-manager',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './anime-state-manager.component.html',
   styleUrls: ['./anime-state-manager.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -25,6 +26,8 @@ export class AnimeStateManagerComponent {
   @Input() currentState: AnimeState = 'non visto';
   @Input() isLoading: boolean = false;
   @Input() disabled: boolean = false;
+  /** Da sloggati i pulsanti sono spenti e un avviso invita ad accedere */
+  @Input() loggedIn: boolean = true;
   
   @Output() stateChanged = new EventEmitter<AnimeState>();
 
@@ -100,7 +103,7 @@ export class AnimeStateManagerComponent {
    * Verifica se un bottone è disabilitato
    */
   isDisabled(state: AnimeState): boolean {
-    return this.disabled || this.isLoading || this.currentState === state;
+    return !this.loggedIn || this.disabled || this.isLoading || this.currentState === state;
   }
 
   /**

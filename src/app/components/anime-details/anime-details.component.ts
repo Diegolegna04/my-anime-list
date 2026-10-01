@@ -13,6 +13,10 @@ import { FavoriteToggleComponent } from './favorite-toggle/favorite-toggle.compo
 import { NewsListComponent } from './news-list/news-list.component';
 import { RecommendedAnimeSidebarComponent } from './recommended-anime-sidebar/recommended-anime-sidebar.component';
 import { ToastService } from '../../services/toast.service';
+import { AuthService } from '../../services/auth.service';
+
+/** Stato di un blocco caricato a parte (consigli, streaming) */
+export type LoadStatus = 'loading' | 'ready' | 'error';
 
 @Component({
   selector: 'app-anime-details',
@@ -36,7 +40,10 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   animeId: number = 0;
   animeDetails: any = null;
   recommendedAnime: any[] = [];
+  recommendedStatus: LoadStatus = 'loading';
   animeStreaming: any[] = [];
+  streamingStatus: LoadStatus = 'loading';
+  isLoggedIn = false;
   news: any[] = [];
   userAnimeData: UserAnime | null = null;
   animeState: AnimeState = 'non visto';
@@ -48,6 +55,8 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   isTranslating: boolean = false;
   isLoadingUserData: boolean = true;
   isLoadingAnimeData: boolean = true;
+  /** Su telefono la sinossi parte chiusa a 6 righe */
+  synopsisExpanded = false;
   private readonly animeDetailUrl = '/api/anime-proxy/anime';
   private destroy$ = new Subject<void>();
 
@@ -57,11 +66,18 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
     private animeService: AnimeService,
     private userAnimeService: UserAnimeService,
     private cdr: ChangeDetectorRef,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.initializeTitleLanguage();
+    this.authService.accessoEffettuato$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((loggedIn) => {
+        this.isLoggedIn = loggedIn;
+        this.cdr.markForCheck();
+      });
     this.subscribeToRouteChanges();
   }
 
@@ -88,6 +104,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   private loadAllData(): void {
     this.isLoadingAnimeData = true;
+    this.synopsisExpanded = false;
     this.isLoadingUserData = true;
     this.loadAnimeDetails();
     this.loadRecommendedAnime();
@@ -118,23 +135,34 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
       });
   }
 
-  private loadRecommendedAnime(): void {
+  /** Sopra questa lunghezza su telefono la sinossi si chiude con "Leggi tutto" */
+  get isSynopsisLong(): boolean {
+    return (this.animeDetails?.synopsis?.length ?? 0) > 350;
+  }
+
+  loadRecommendedAnime(): void {
+    this.recommendedStatus = 'loading';
     const url = `${this.animeDetailUrl}/${this.animeId}/recommendations`;
 
     this.http.get<any>(url)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.recommendedAnime = response.data.map((rec: any) => rec.entry);
+          this.recommendedAnime = (response.data || []).map((rec: any) => rec.entry);
+          this.recommendedStatus = 'ready';
+          this.cdr.markForCheck();
         },
         error: (error) => {
           console.error('Errore caricamento raccomandazioni:', error);
           this.recommendedAnime = [];
+          this.recommendedStatus = 'error';
+          this.cdr.markForCheck();
         }
       });
   }
 
   private loadStreaming(): void {
+    this.streamingStatus = 'loading';
     const url = `${this.animeDetailUrl}/${this.animeId}/streaming`;
 
     this.http.get<any>(url)
@@ -142,10 +170,14 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           this.animeStreaming = Array.isArray(response.data) ? response.data : [];
+          this.streamingStatus = 'ready';
+          this.cdr.markForCheck();
         },
         error: (error) => {
           console.error('Errore caricamento streaming:', error);
           this.animeStreaming = [];
+          this.streamingStatus = 'error';
+          this.cdr.markForCheck();
         }
       });
   }

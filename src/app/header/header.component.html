@@ -3,16 +3,27 @@
   <div class="mobile-header">
     <div class="mobile-top-row">
       <a routerLink="/" class="app-logo" (click)="goToHome()">
-        <img src="logo-circle.png" alt="Logo" class="logo-image">
-        <span>Anime List</span>
+        <img src="logo-circle.png" alt="" class="logo-image">
+        <span>My Anime DB</span>
       </a>
-      
+
       <div class="mobile-actions">
-        <button (click)="toggleTheme()" class="mobile-icon-btn theme-toggle-btn">
-          <i [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'"></i>
+        <button
+          type="button"
+          (click)="toggleTheme()"
+          class="mobile-icon-btn theme-toggle-btn"
+          [attr.aria-label]="currentTheme === 'light' ? 'Attiva tema scuro' : 'Attiva tema chiaro'">
+          <i [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'" aria-hidden="true"></i>
         </button>
-        
-        <button (click)="toggleMobileMenu()" class="mobile-menu-btn" [class.active]="showMobileMenu">
+
+        <button
+          type="button"
+          (click)="toggleMobileMenu()"
+          class="mobile-menu-btn"
+          [class.active]="showMobileMenu"
+          aria-label="Apri il menu"
+          aria-controls="mobile-menu"
+          [attr.aria-expanded]="showMobileMenu">
           <span></span>
           <span></span>
           <span></span>
@@ -21,59 +32,60 @@
     </div>
 
     <!-- Search Bar Mobile -->
-    <div class="mobile-search-bar">
+    <form class="mobile-search-bar" role="search" (ngSubmit)="searchAnime()">
       <div class="search-bar">
         <input
-          type="text"
+          type="search"
+          name="q-mobile"
           [(ngModel)]="query"
-          (keyup.enter)="searchAnime()"
           placeholder="Cerca un anime..."
+          aria-label="Cerca un anime"
           class="search-input"
         />
-        <button (click)="searchAnime()" class="search-btn">
-          <i class="fas fa-search"></i>
+        <button type="submit" class="search-btn" aria-label="Cerca">
+          <i class="fas fa-search" aria-hidden="true"></i>
         </button>
       </div>
-    </div>
+    </form>
 
     <!-- Mobile Menu Overlay -->
     <div class="mobile-menu-overlay" [class.show]="showMobileMenu" (click)="closeMobileMenu()">
-      <div class="mobile-menu" (click)="$event.stopPropagation()">
+      <nav class="mobile-menu" id="mobile-menu" aria-label="Menu" (click)="$event.stopPropagation()">
         <div class="mobile-menu-header">
           @if (accessoEffettuato) {
             <div class="mobile-profile-info">
-              <img [src]="profileImage" alt="Profile Image" class="mobile-profile-pic">
+              <img [src]="profileImage" alt="" class="mobile-profile-pic">
               <span class="mobile-username">{{ username }}</span>
             </div>
           }
-          <button (click)="closeMobileMenu()" class="close-menu-btn">
-            <i class="fas fa-times"></i>
+          <button type="button" (click)="closeMobileMenu()" class="close-menu-btn" aria-label="Chiudi il menu">
+            <i class="fas fa-times" aria-hidden="true"></i>
           </button>
         </div>
 
         <div class="mobile-menu-items">
-          <a class="mobile-menu-item" (click)="goToGenres()">
-            <i class="fas fa-filter"></i>
+          <a class="mobile-menu-item" routerLink="/genres" (click)="closeMobileMenu()">
+            <i class="fas fa-filter" aria-hidden="true"></i>
             <span>Generi</span>
           </a>
 
           @if (!accessoEffettuato) {
-            <a class="mobile-menu-item login-item" (click)="goToLoginRegister()">
-              <i class="fas fa-user-circle"></i>
-              <span>Login / Registrati</span>
+            <a class="mobile-menu-item login-item" routerLink="/register-login" (click)="closeMobileMenu()">
+              <i class="fas fa-user-circle" aria-hidden="true"></i>
+              <span>Accedi / Registrati</span>
             </a>
           } @else {
-            <a class="mobile-menu-item" (click)="goToProfile()">
-              <i class="fas fa-user"></i>
-              <span>Il mio Profilo</span>
+            <a class="mobile-menu-item" routerLink="/profile" (click)="closeMobileMenu()">
+              <i class="fas fa-user" aria-hidden="true"></i>
+              <span>Il mio profilo</span>
             </a>
-            <a class="mobile-menu-item logout-item" (click)="logout()">
-              <i class="fas fa-sign-out-alt"></i>
-              <span>Logout</span>
-            </a>
+            <button type="button" class="mobile-menu-item logout-item" (click)="logout()">
+              <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+              <span>Esci</span>
+            </button>
           }
         </div>
-      </div>
+      </nav>
     </div>
   </div>
 
@@ -81,54 +93,64 @@
   <div class="desktop-header">
     <div class="header-left">
       <a routerLink="/" class="app-logo" (click)="goToHome()">
-        <img src="logo-circle.png" alt="Logo" class="logo-image">
-        <span>Anime List</span>
+        <img src="logo-circle.png" alt="" class="logo-image">
+        <span>My Anime DB</span>
       </a>
     </div>
 
     <div class="header-center"></div>
 
     <div class="header-right">
-      <button (click)="toggleTheme()" class="action-button secondary theme-toggle-btn">
-        <i [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'"></i>
+      <button
+        type="button"
+        (click)="toggleTheme()"
+        class="action-button secondary theme-toggle-btn"
+        [attr.aria-label]="currentTheme === 'light' ? 'Attiva tema scuro' : 'Attiva tema chiaro'">
+        <i [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'" aria-hidden="true"></i>
       </button>
 
-      <button (click)="goToGenres()" class="action-button secondary">
-        <i class="fas fa-filter"></i>
+      <a routerLink="/genres" class="action-button secondary">
+        <i class="fas fa-filter" aria-hidden="true"></i>
         <span>Generi</span>
-      </button>
+      </a>
 
-      <div class="search-section">
+      <form class="search-section" role="search" (ngSubmit)="searchAnime()">
         <div class="search-bar">
           <input
-            type="text"
+            type="search"
+            name="q"
             [(ngModel)]="query"
-            (keyup.enter)="searchAnime()"
             placeholder="Cerca un anime..."
+            aria-label="Cerca un anime"
             class="search-input"
           />
-          <button (click)="searchAnime()" class="search-btn">
-            <i class="fas fa-search"></i>
+          <button type="submit" class="search-btn" aria-label="Cerca">
+            <i class="fas fa-search" aria-hidden="true"></i>
           </button>
         </div>
-      </div>
+      </form>
 
       @if (!accessoEffettuato) {
-        <button (click)="goToLoginRegister()" class="action-button primary">
-          <i class="fas fa-user-circle"></i>
-          <span>Login / Registrati</span>
-        </button>
+        <a routerLink="/register-login" class="action-button primary">
+          <i class="fas fa-user-circle" aria-hidden="true"></i>
+          <span>Accedi / Registrati</span>
+        </a>
       } @else {
         <div class="profile-menu-container" [ngClass]="{'show-dropdown': showDropdown}">
-          <div class="profile-pic-area" (click)="toggleDropdown()">
-            <img [src]="profileImage" alt="Profile Image" class="profile-pic-thumb">
+          <button
+            type="button"
+            class="profile-pic-area"
+            (click)="toggleDropdown()"
+            aria-controls="profile-menu"
+            [attr.aria-expanded]="showDropdown">
+            <img [src]="profileImage" alt="" class="profile-pic-thumb">
             <span class="profile-username">{{ username }}</span>
-            <i class="fas fa-caret-down dropdown-arrow" [class.rotated]="showDropdown"></i>
-          </div>
+            <i class="fas fa-caret-down dropdown-arrow" [class.rotated]="showDropdown" aria-hidden="true"></i>
+          </button>
 
-          <div class="dropdown-menu">
-            <a (click)="goToProfile()"><i class="fas fa-user"></i> Il mio Profilo</a>
-            <a (click)="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          <div class="dropdown-menu" id="profile-menu">
+            <a routerLink="/profile" (click)="showDropdown = false"><i class="fas fa-user" aria-hidden="true"></i> Il mio profilo</a>
+            <button type="button" (click)="logout()"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Esci</button>
           </div>
         </div>
       }

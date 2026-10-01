@@ -60,7 +60,13 @@
   margin: 0 auto;
   border-radius: 30px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-heavy);
+  transition: box-shadow var(--dur-fast) var(--ease-out);
+}
+
+/* Il campo non ha un suo anello (outline: none): il focus si vede sul gruppo */
+.newsletter-form:focus-within {
+  box-shadow: var(--shadow-heavy), 0 0 0 3px rgba(255, 255, 255, 0.7);
 }
 
 .newsletter-input {
@@ -71,16 +77,21 @@
   outline: none;
   background-color: var(--card-bg);
   color: var(--text-primary);
-  transition: background-color 0.3s ease;
+  transition: background-color var(--dur-fast) var(--ease-out);
 }
 
 .newsletter-input:focus {
   background-color: var(--bg-secondary);
 }
 
+.newsletter-btn:focus-visible {
+  outline-color: #fff;
+  outline-offset: -4px;
+}
+
 .newsletter-btn {
   background-color: var(--highlight-color);
-  color: white;
+  color: #fff;
   border: none;
   padding: 0 1.7rem;
   font-size: 1rem;

@@ -6,13 +6,14 @@ import { GenreCategory, GenreService } from '../../services/genre.service';
 import { AnimeCardComponent } from '../../services/shared/anime-card.component';
 import { getGenreDescription, getGenreShortDescription } from '../../services/constants/anime-genre-descriptions';
 import { getGenreIcon } from '../../services/constants/genre-icons';
+import { TitleLanguageToggleComponent } from '../../services/shared/title-language-toggle.component';
 
 @Component({
   selector: 'app-anime-by-genre',
   standalone: true,
   templateUrl: './anime-by-genre.component.html',
   styleUrls: ['./anime-by-genre.component.css'],
-  imports: [AnimeCardComponent, RouterLink],
+  imports: [TitleLanguageToggleComponent, AnimeCardComponent, RouterLink],
 })
 export class AnimeByGenreComponent implements OnInit {
   animeList: any[] = [];

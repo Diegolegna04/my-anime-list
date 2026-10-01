@@ -1,20 +1,22 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AnimeService } from '../../services/anime.service';
 import { AnimeCardComponent } from '../../services/shared/anime-card.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { from, of } from 'rxjs';
 import { catchError, delay, concatMap } from 'rxjs/operators';
+import { TitleLanguageToggleComponent } from '../../services/shared/title-language-toggle.component';
 
 @Component({
   selector: 'app-anime-search',
   templateUrl: './anime-search.component.html',
   styleUrls: ['./anime-search.component.css'],
-  imports: [
+  imports: [TitleLanguageToggleComponent, 
     CommonModule,
     FormsModule,
-    AnimeCardComponent
+    AnimeCardComponent,
+    RouterLink
   ],
   standalone: true,
 })
@@ -22,6 +24,17 @@ export class AnimeSearchComponent implements OnInit {
   searchResults: any[] = [];
   displayedResults: any[] = [];
   query: string = '';
+  /** Generi proposti quando si arriva alla ricerca senza una parola (id MyAnimeList) */
+  readonly suggestedGenres = [
+    { id: 1, label: 'Azione' },
+    { id: 2, label: 'Avventura' },
+    { id: 4, label: 'Commedia' },
+    { id: 8, label: 'Drammatico' },
+    { id: 10, label: 'Fantasy' },
+    { id: 22, label: 'Romance' },
+    { id: 24, label: 'Sci-Fi' },
+    { id: 36, label: 'Slice of Life' }
+  ];
   isGridView: boolean = true;
   selectedSortCriteria: string = 'score';
   titleLanguage: 'english' | 'original' = 'original';
@@ -41,9 +54,12 @@ export class AnimeSearchComponent implements OnInit {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
     
     this.route.queryParams.subscribe((params) => {
-      this.query = params['q'] || '';
+      this.query = (params['q'] || '').trim();
       if (this.query) {
         this.performFullSearch(this.query);
+      } else {
+        this.searchResults = [];
+        this.displayedResults = [];
       }
     });
   }

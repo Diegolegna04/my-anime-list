@@ -1,45 +1,48 @@
-.genres-section {
-  background-color: var(--card-bg);
-  border-radius: 16px;
-  padding: 2rem;
-  margin: 2rem 0;
-  box-shadow: var(--card-shadow);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
+/* Pannello: .panel globale. Qui solo la griglia dei generi. */
 
+/* 7 generi + "Altri generi" = 8: righe piene sia a 8 sia a 4 colonne */
 .genres-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
-  margin-top: 1.5rem;
+}
+
+@media (min-width: 1000px) {
+  .genres-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
 }
 
 .genre-card {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.6rem 1rem;
-  text-align: center;
-  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
-  cursor: pointer;
   position: relative;
+  display: block;
   overflow: hidden;
+  padding: 1.6rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-secondary);
+  color: inherit;
+  text-align: center;
+  text-decoration: none;
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
 }
 
+/* Al passaggio la tessera si riempie con il viola dei pulsanti */
 .genre-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
-  opacity: 0;
-  transition: opacity 0.3s ease;
   z-index: 0;
+  background: var(--button-gradient);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
 
 .genre-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-3px);
   border-color: transparent;
-  box-shadow: 0 10px 20px var(--accent-glow);
+  box-shadow: var(--shadow-accent-hover);
 }
 
 .genre-card:hover::before {
@@ -52,62 +55,52 @@
   z-index: 1;
 }
 
-.genre-card:hover h3,
-.genre-card:hover i {
-  color: white;
-}
-
 .genre-icon {
-  font-size: 1.8rem;
-  margin-bottom: 0.8rem;
-  color: var(--accent-color);
-  transition: color 0.3s ease, transform 0.3s ease;
   display: block;
-}
-
-.genre-card:hover .genre-icon {
-  transform: scale(1.15);
+  margin-bottom: 0.8rem;
+  font-size: 1.8rem;
+  color: var(--accent-text);
+  transition: color var(--dur-fast) var(--ease-out);
 }
 
 .genre-card h3 {
   font-size: 0.9rem;
   font-weight: 600;
+  line-height: 1.25;
   color: var(--text-primary);
-  transition: color 0.3s ease;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.genre-card:hover h3,
+.genre-card:hover .genre-icon {
+  color: #fff;
 }
 
 @media (max-width: 768px) {
-  .genres-section {
-    padding: 1.25rem;
-    border-radius: 12px;
-    margin: 1.5rem 0;
-  }
-
   .genres-grid {
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
     gap: 0.75rem;
   }
 
   .genre-card {
-    padding: 1.2rem 0.6rem;
+    padding: 1.2rem 0.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .genres-section {
-    padding: 1rem;
+  .genres-grid {
+    gap: 0.5rem;
   }
 
-  .genres-grid {
-    grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
-    gap: 0.6rem;
+  .genre-card {
+    padding: 1rem 0.25rem;
   }
 
   .genre-icon {
+    margin-bottom: 0.5rem;
     font-size: 1.4rem;
   }
 
   .genre-card h3 {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
 }

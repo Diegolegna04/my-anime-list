@@ -1,6 +1,11 @@
 <div class="page">
   <header class="page-hero">
-    <h1 class="page-hero-title">Risultati per “{{ query }}”</h1>
+    @if (query) {
+      <h1 class="page-hero-title">Risultati per “{{ query }}”</h1>
+    } @else {
+      <h1 class="page-hero-title">Cerca un anime</h1>
+      <p class="page-hero-lead">Scrivi un titolo nella barra di ricerca in alto, oppure parti da un genere.</p>
+    }
     @if (!isLoading && searchResults.length > 0) {
       <p class="page-hero-lead">
         {{ searchResults.length }} {{ searchResults.length === 1 ? 'anime trovato' : 'anime trovati' }}
@@ -9,6 +14,22 @@
   </header>
 
   <section class="panel">
+    @if (!query) {
+      <div class="state">
+        <span class="state-icon" aria-hidden="true"><i class="fas fa-compass"></i></span>
+        <h2 class="state-title">Non sai da dove iniziare?</h2>
+        <p class="state-text">Scegli un genere per vedere gli anime migliori.</p>
+        <div class="genre-suggestions">
+          @for (genre of suggestedGenres; track genre.id) {
+            <a class="chip" [routerLink]="['/genres/anime-by-genre', genre.id]">{{ genre.label }}</a>
+          }
+        </div>
+        <a class="btn btn-secondary" routerLink="/genres">
+          <i class="fas fa-filter" aria-hidden="true"></i>
+          Tutti i generi
+        </a>
+      </div>
+    } @else {
     <div class="section-header">
       <h2 class="section-title">
         Risultati
@@ -25,19 +46,15 @@
             <option value="date">Novità</option>
           </select>
         </div>
-        <button type="button" (click)="toggleTitleLanguage()" class="btn btn-sm btn-primary" [disabled]="isLoading">
-          <i class="fas fa-language" aria-hidden="true"></i>
-          {{titleLanguage === 'english' ? 'Titolo Giapponese' : 'Titolo Inglese'}}
-        </button>
-        <button
-          type="button"
-          class="btn-icon"
-          (click)="toggleView()"
-          [attr.aria-label]="isGridView ? 'Passa alla vista elenco' : 'Passa alla vista griglia'"
-          [attr.title]="isGridView ? 'Vista elenco' : 'Vista griglia'"
-          [disabled]="isLoading">
-          <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th-large'" aria-hidden="true"></i>
-        </button>
+        <app-title-language-toggle [value]="titleLanguage" [disabled]="isLoading" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
+        <div class="segmented" role="group" aria-label="Visualizzazione">
+          <button type="button" [class.active]="isGridView" [attr.aria-pressed]="isGridView" (click)="isGridView = true" aria-label="Griglia" [disabled]="isLoading">
+            <i class="fas fa-th-large" aria-hidden="true"></i>
+          </button>
+          <button type="button" [class.active]="!isGridView" [attr.aria-pressed]="!isGridView" (click)="isGridView = false" aria-label="Lista" [disabled]="isLoading">
+            <i class="fas fa-list" aria-hidden="true"></i>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -69,7 +86,7 @@
           Non ci sono risultati per <strong>“{{ query }}”</strong>. Prova una ricerca diversa.
         </p>
         <button type="button" (click)="goBackToHome()" class="btn btn-primary">
-          <i class="fas fa-home" aria-hidden="true"></i> Torna alla Home
+          <i class="fas fa-home" aria-hidden="true"></i> Torna alla home
         </button>
       </div>
     }
@@ -78,13 +95,14 @@
       <div class="results-actions">
         @if (hasMoreResults) {
           <button type="button" (click)="loadMoreResults()" class="btn btn-primary">
-            <i class="fas fa-plus" aria-hidden="true"></i> Carica Altri Risultati ({{ displayedResults.length }}/{{ searchResults.length }})
+            <i class="fas fa-plus" aria-hidden="true"></i> Carica altri risultati ({{ displayedResults.length }}/{{ searchResults.length }})
           </button>
         }
         <button type="button" (click)="goBackToHome()" class="btn btn-secondary">
-          <i class="fas fa-home" aria-hidden="true"></i> Torna alla Home
+          <i class="fas fa-home" aria-hidden="true"></i> Torna alla home
         </button>
       </div>
+    }
     }
   </section>
 </div>

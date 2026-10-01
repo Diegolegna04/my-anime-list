@@ -1,24 +1,32 @@
-<div class="anime-card" [class.list-card]="viewMode === 'list'" [routerLink]="['/anime', anime.mal_id]" [title]="title">
+<a class="anime-card" [class.list-card]="viewMode === 'list'" [routerLink]="['/anime', anime.mal_id]" [title]="title">
     @if (rank !== null) {
       <span class="anime-card-rank">#{{ rank }}</span>
     }
     <div class="img-wrapper">
-      <img [src]="anime.images?.jpg?.image_url" [alt]="title" />
+      @if (anime.images?.jpg?.image_url) {
+        <img [src]="anime.images.jpg.image_url" [alt]="title" loading="lazy" decoding="async" />
+      } @else {
+        <div class="img-placeholder">
+          <i class="fas fa-image" aria-hidden="true"></i>
+        </div>
+      }
     </div>
     <div class="anime-card-content">
       <h3 class="anime-title">{{ title }}</h3>
       <div class="anime-meta">
         @if (anime.score) {
           <div class="anime-score">
-            <i class="fas fa-star"></i> {{ anime.score }}
+            <i class="fas fa-star" aria-hidden="true"></i> {{ anime.score | number:'1.1-2' }}
           </div>
         }
-        <div class="anime-type">
-          {{ anime.type || 'N/A' }}
-        </div>
+        @if (anime.type) {
+          <div class="anime-type">{{ anime.type }}</div>
+        }
       </div>
       @if (viewMode === 'list' && showSynopsis && anime.synopsis) {
         <div class="anime-synopsis">{{ truncatedSynopsis }}</div>
       }
+      <!-- Contenuto extra della pagina, per esempio i chip dei generi -->
+      <ng-content></ng-content>
     </div>
-</div>
+</a>

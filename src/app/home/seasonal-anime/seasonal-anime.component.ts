@@ -1,11 +1,12 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SeasonRef, seasonLabel, seasonSlug } from '../../services/anime-utils';
 
 @Component({
   selector: 'app-seasonal-anime',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, DecimalPipe],
   templateUrl: './seasonal-anime.component.html',
   styleUrl: './seasonal-anime.component.css'
 })

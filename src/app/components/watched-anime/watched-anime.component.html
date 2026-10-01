@@ -3,14 +3,11 @@
     <h1 class="page-hero-title">La tua Libreria Anime</h1>
     <p class="page-hero-lead">Tieni traccia di cosa hai visto, cosa stai guardando e cosa vuoi ancora recuperare.</p>
     <div class="page-hero-actions">
-      <button type="button" routerLink="/profile/watched-anime/favourites" class="btn btn-light">
+      <a routerLink="/profile/watched-anime/favourites" class="btn btn-light">
         <i class="fas fa-heart" aria-hidden="true"></i>
-        <span>Visualizza Anime Preferiti</span>
-      </button>
-      <button type="button" class="btn btn-glass" (click)="toggleTitleLanguage()">
-        <i class="fas fa-language" aria-hidden="true"></i>
-        <span>Cambia lingua titolo</span>
-      </button>
+        <span>I tuoi preferiti</span>
+      </a>
+      <app-title-language-toggle [value]="titleLanguage" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
     </div>
   </header>
 
@@ -75,6 +72,8 @@
                   [src]="anime.details.data.images.jpg.large_image_url"
                   alt="{{ getTitle(anime.details?.data) }}"
                   class="anime-image"
+                  loading="lazy"
+                  decoding="async"
                 />
               } @else {
                 <div class="anime-image-placeholder">

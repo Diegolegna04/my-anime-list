@@ -102,10 +102,11 @@ input[type="button"] {
   --info-color: #1a73e8;
   --info-bg: #e8f0fe;
 
-  /* Evidenza calda della home (etichette HOT/stagione, newsletter) e stelle del voto */
-  --highlight-color: #ff7043;
-  --highlight-hover: #f4511e;
-  --highlight-gradient: linear-gradient(135deg, #ff7043, #ff5722);
+  /* Evidenza calda della home (etichette HOT/stagione, newsletter) e stelle del voto.
+     Arancione bruciato: il testo bianco sopra regge 4.5:1 (#ff7043 arrivava a 2.7) */
+  --highlight-color: #c2410c;
+  --highlight-hover: #a8370a;
+  --highlight-gradient: linear-gradient(135deg, #cf4510, #bf360c);
   --highlight-glow: rgba(255, 87, 34, 0.38);
   --star-color: #ffc107;
 
@@ -153,7 +154,8 @@ input[type="button"] {
 .dark-theme {
   color-scheme: dark;
   --bg-primary: #1a1a1a;
-  --bg-secondary: #2d2d2d;
+  /* Più scuro dei pannelli (#2d2d2d): le tessere interne si staccano dal fondo */
+  --bg-secondary: #242424;
   --bg-tertiary: #404040;
   --bg-quaternary: #4a4a4a;
   --text-primary: #ffffff;
@@ -302,8 +304,10 @@ html.custom-scrollbar::-webkit-scrollbar {
   color: var(--text-primary);
 }
 
+/* --accent-text e non --accent-color: sui pannelli scuri il viola pieno
+   arriva a ~2.4:1 e l'anello quasi non si vede */
 :focus-visible {
-  outline: 2px solid var(--accent-color);
+  outline: 2px solid var(--accent-text);
   outline-offset: 2px;
 }
 
@@ -704,6 +708,35 @@ a {
 .segmented button[aria-pressed="true"] {
   background: var(--accent-color);
   color: #fff;
+}
+
+.segmented button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Sopra i banner viola: vetro come .btn-glass, opzione attiva bianca */
+.page-hero .segmented {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.page-hero .segmented button {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.page-hero .segmented button:hover {
+  color: #fff;
+}
+
+.page-hero .segmented button.active,
+.page-hero .segmented button[aria-pressed="true"] {
+  background: #fff;
+  color: var(--accent-color);
+}
+
+.page-hero .segmented button:focus-visible {
+  outline-color: #fff;
 }
 
 /* =====================================================================

@@ -10,6 +10,15 @@
   color: var(--text-primary);
 }
 
+/* Ricerca senza parola: generi proposti come chip */
+.genre-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
 .results-actions {
   display: flex;
   flex-direction: column;

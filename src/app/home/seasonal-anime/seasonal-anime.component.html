@@ -1,24 +1,28 @@
-<div class="seasonal-section">
+<section class="panel seasonal-section">
   <div class="section-header">
-    <h2 class="section-title">Top Anime della Stagione</h2>
+    <h2 class="section-title">Top anime della stagione</h2>
     @if (seasonTag) {
       <span class="season-tag">{{ seasonTag }}</span>
     }
   </div>
   <div class="seasonal-slider">
     <div class="slider-controls">
-      <div
+      <button
+        type="button"
         class="slider-arrow prev-arrow"
-        [class.disabled]="!canGoPrev()"
+        aria-label="Anime precedenti"
+        [disabled]="!canGoPrev()"
         (click)="prevSlide()">
-        <i class="fas fa-chevron-left"></i>
-      </div>
-      <div
+        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+      </button>
+      <button
+        type="button"
         class="slider-arrow next-arrow"
-        [class.disabled]="!canGoNext()"
+        aria-label="Anime successivi"
+        [disabled]="!canGoNext()"
         (click)="nextSlide()">
-        <i class="fas fa-chevron-right"></i>
-      </div>
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+      </button>
     </div>
     <div
       class="seasonal-anime-container"
@@ -26,25 +30,30 @@
       (scroll)="onScroll()"
     >
       @for (anime of filteredSeasonalAnime; track anime.mal_id) {
-        <div class="seasonal-anime-card" routerLink="/anime/{{ anime.mal_id }}">
+        <a class="seasonal-anime-card" [routerLink]="['/anime', anime.mal_id]" draggable="false">
           <span class="seasonal-badge">HOT</span>
           <div class="img-wrapper">
-            <img [src]="anime.images.jpg.image_url" [alt]="getTitle(anime)" draggable="false">
+            <img [src]="anime.images.jpg.image_url" [alt]="getTitle(anime)" draggable="false" loading="lazy" decoding="async">
           </div>
           <div class="seasonal-anime-info">
             <h3>{{ getTitle(anime) }}</h3>
             <div class="anime-stats">
               @if (anime.score) {
-                <span><i class="fas fa-star"></i> {{ anime.score }}</span>
+                <span class="anime-stat-score"><i class="fas fa-star" aria-hidden="true"></i> {{ anime.score | number:'1.1-2' }}</span>
               }
-              <span>{{ anime.type }}</span>
+              @if (anime.type) {
+                <span class="anime-stat-type">{{ anime.type }}</span>
+              }
             </div>
           </div>
-        </div>
+        </a>
       }
     </div>
-    <button class="load-more-btn" routerLink="/seasonal/{{ seasonLink }}">
-      Vai agli anime di questa stagione
-    </button>
+    <div class="seasonal-actions">
+      <a class="btn btn-primary" [routerLink]="['/seasonal', seasonLink]">
+        Tutta la stagione
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
   </div>
-</div>
+</section>

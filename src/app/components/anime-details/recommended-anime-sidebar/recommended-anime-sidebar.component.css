@@ -96,6 +96,42 @@
   margin-top: 1.5rem;
 }
 
+/* Segnaposto durante il caricamento: stessa forma delle card vere */
+.recommended-skeleton {
+  cursor: default;
+}
+
+.recommended-skeleton:hover {
+  transform: none;
+  box-shadow: var(--card-shadow);
+}
+
+.skeleton-poster {
+  flex-shrink: 0;
+  width: 70px;
+  height: 100px;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-lines {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeleton-line {
+  height: 0.9rem;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+.recommended-section .state {
+  padding: 1rem 0 0.5rem;
+}
+
 @media (max-width: 768px) {
   .recommended-section {
     flex: 1 1 100%;

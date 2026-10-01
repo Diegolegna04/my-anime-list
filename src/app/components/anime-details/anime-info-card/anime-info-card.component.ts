@@ -38,6 +38,7 @@ export interface AnimeInfo {
 export class AnimeInfoCardComponent {
   @Input({ required: true }) animeDetails!: AnimeInfo;
   @Input() streamingServices: StreamingService[] = [];
+  @Input() streamingStatus: 'loading' | 'ready' | 'error' = 'ready';
 
   /**
    * Formatta il numero di episodi

@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { AnimeService } from '../../services/anime.service';
 import { uniqueByMalId } from '../../services/anime-utils';
 import { SeasonService } from '../../services/season.service';
+import { TitleLanguageToggleComponent } from '../../services/shared/title-language-toggle.component';
+import { AnimeCardComponent } from '../../services/shared/anime-card.component';
 
 @Component({
   selector: 'app-seasonal-anime',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [TitleLanguageToggleComponent, AnimeCardComponent, CommonModule, RouterLink],
   templateUrl: './seasonal-anime-page.component.html',
   styleUrls: ['./seasonal-anime-page.component.css']
 })

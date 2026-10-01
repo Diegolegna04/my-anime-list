@@ -27,10 +27,7 @@
           I Tuoi Preferiti <span class="section-count">{{ favoriteAnime.length }}</span>
         </h2>
         <div class="section-controls">
-          <button type="button" (click)="toggleTitleLanguage()" class="btn btn-sm btn-primary">
-            <i class="fas fa-language" aria-hidden="true"></i>
-            {{titleLanguage === 'english' ? 'Titolo Giapponese' : 'Titolo Inglese'}}
-          </button>
+          <app-title-language-toggle [value]="titleLanguage" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
         </div>
       </div>
 
@@ -58,6 +55,8 @@
                 <img
                   [src]="anime.details.data.images?.jpg?.large_image_url || anime.details.data.images?.jpg?.image_url"
                   [alt]="getTitle(anime.details.data)"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <div class="anime-card-content">

@@ -50,9 +50,16 @@
 
 .synopsis {
   margin-bottom: 1.5rem;
+  white-space: pre-line;
   font-size: 1rem;
   line-height: 1.6;
   color: var(--text-secondary);
+}
+
+/* "Leggi tutto" serve solo su telefono, dove la sinossi spingeva info e
+   stato sotto una ventina di righe */
+.synopsis-toggle {
+  display: none;
 }
 
 /* Blocchi secondari (voto, evidenza) */
@@ -129,6 +136,7 @@
     width: 100%;
     max-width: 300px;
     height: auto;
+    aspect-ratio: 5 / 7;
   }
 
   .info-text {
@@ -137,6 +145,19 @@
 
   .synopsis {
     font-size: 0.95rem;
+  }
+
+  .synopsis.collapsed {
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .synopsis-toggle {
+    display: inline-block;
+    margin-bottom: 1.5rem;
   }
 
   .voto-section,

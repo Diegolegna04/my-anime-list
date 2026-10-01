@@ -7,9 +7,10 @@
 }
 
 /* Info Grid */
+/* Due colonne fisse: con auto-fit "Stato" restava da solo su una riga */
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
@@ -101,14 +102,21 @@
   padding: 1rem;
 }
 
+.streaming-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
 @media (max-width: 768px) {
   .anime-info-card {
     padding: 1rem;
   }
 
   .info-grid {
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
+    gap: 0.6rem;
   }
 
   .info-item {

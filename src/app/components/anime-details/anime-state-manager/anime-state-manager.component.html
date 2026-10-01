@@ -2,13 +2,21 @@
   <div class="state-manager-header">
     <h3 class="section-title">Stato Anime</h3>
 
-    @if (showLoadingIndicator) {
+    @if (showLoadingIndicator && loggedIn) {
       <div class="badge badge-accent loading-indicator" role="status">
         <span class="spinner spinner-sm" aria-hidden="true"></span>
         <span class="loading-text">Aggiornamento...</span>
       </div>
     }
   </div>
+
+  @if (!loggedIn) {
+    <div class="alert alert-info login-hint">
+      <i class="fas fa-info-circle" aria-hidden="true"></i>
+      <span>Accedi per salvare questo anime nella tua lista.</span>
+      <a routerLink="/register-login" class="btn btn-primary btn-sm">Accedi</a>
+    </div>
+  }
 
   <div class="state-buttons-container">
     @for (option of allStates; track trackByState($index, option)) {

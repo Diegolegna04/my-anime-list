@@ -86,11 +86,14 @@ Token e classi stanno in `src/styles.css`. I componenti li usano e non ridefinis
 | `.chip` / `.chip-glass` | Etichette (generi) e link a pillola. |
 | `.badge .badge-success/-warning/-error/-info/-accent` oppure `style="--tone: var(--status-watching)"` | Etichetta di stato colorata. |
 | `.anime-grid` / `.anime-list` | Griglia e lista di card anime. |
+| `<app-anime-card>` (`services/shared`) | **L'unica** card anime da usare nelle griglie. È un `<a>` verso `/anime/:id`, quindi si apre anche con Invio. Il contenuto extra, come i chip dei generi, si passa dentro il tag. |
+| `<app-title-language-toggle>` (`services/shared`) | Scelta "Originale \| Inglese" dei titoli, uguale in ogni pagina. Funziona anche sopra i banner. |
 | `.auth-page` `.auth-card` `.auth-card-icon` `.auth-title` `.auth-subtitle` `.auth-footer` | Pagine di login, password, verifica email e simili. |
 
 ## Altri token
 
-- `--highlight-color`, `--highlight-hover` e `--highlight-gradient`: l'arancione della home (etichette HOT e della stagione, pulsante della newsletter). Si usano solo lì.
+- `--highlight-color`, `--highlight-hover` e `--highlight-gradient`: l'arancione della home (etichette HOT e della stagione, pulsante della newsletter). Si usano solo lì. È un arancione bruciato perché il testo bianco sopra deve reggere 4.5:1.
+- **Navigazione:** si usa `<a routerLink class="btn …">`, mai `<button routerLink>` o un `<div (click)>`. Così il link si apre in una nuova scheda e funziona da tastiera.
 - `--star-color`: le stelle del voto.
 - `--header-height`: l'altezza dell'header, da usare nelle pagine a tutta altezza, per esempio `min-height: calc(100vh - var(--header-height))`.
 

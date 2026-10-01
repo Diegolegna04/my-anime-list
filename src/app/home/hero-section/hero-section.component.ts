@@ -12,7 +12,9 @@ export class HeroSectionComponent {
   @Input() currentSeason: string | undefined;
   @Output() topAnimeClick = new EventEmitter<void>();
 
+  /** Porta alla classifica, la prima sezione sotto il banner */
   onTopAnimeClick(): void {
+    document.getElementById('top-anime')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     this.topAnimeClick.emit();
   }
 }

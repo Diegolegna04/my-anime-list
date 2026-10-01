@@ -1,20 +1,20 @@
-<div class="top-anime-section">
+<section class="panel top-anime-section" id="top-anime">
   <div class="section-header">
-    <h2 class="section-title">Top Anime</h2>
+    <h2 class="section-title">Top anime</h2>
     <div class="section-controls">
-      <button (click)="toggleTitleLanguage()" class="language-toggle-btn" [attr.aria-label]="titleLanguage === 'english' ? 'Mostra titoli originali' : 'Mostra titoli inglesi'">
-        <i class="fas fa-language"></i>
-        <span>{{ titleLanguage === 'english' ? 'Mostra titoli originali' : 'Mostra titoli inglesi' }}</span>
-      </button>
-      <div class="view-toggle">
-        <button (click)="toggleView()" aria-label="Cambia Visualizzazione">
-          <i [class]="isGridView ? 'fas fa-list' : 'fas fa-th-large'"></i>
+      <app-title-language-toggle [value]="titleLanguage" (valueChange)="setTitleLanguage($event)"></app-title-language-toggle>
+      <div class="segmented" role="group" aria-label="Visualizzazione">
+        <button type="button" [class.active]="isGridView" [attr.aria-pressed]="isGridView" (click)="isGridView = true" aria-label="Griglia">
+          <i class="fas fa-th-large" aria-hidden="true"></i>
+        </button>
+        <button type="button" [class.active]="!isGridView" [attr.aria-pressed]="!isGridView" (click)="isGridView = false" aria-label="Lista">
+          <i class="fas fa-list" aria-hidden="true"></i>
         </button>
       </div>
     </div>
   </div>
 
-  <div [class]="isGridView ? 'grid' : 'list'" class="anime-container">
+  <div [class.anime-grid]="isGridView" [class.anime-list]="!isGridView">
     @for (anime of animeList; track anime; let i = $index) {
       <app-anime-card
         [anime]="anime"
@@ -26,15 +26,18 @@
   </div>
 
   @if (isLoading) {
-    <div class="loading-container">
-      <div class="spinner top-anime-spinner" aria-hidden="true"></div>
-      <p class="loading-text">Caricamento anime in corso...</p>
+    <div class="loading-state" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <p>Caricamento anime in corso...</p>
     </div>
   }
 
   @if (!isLoading && animeList.length > 0) {
-    <button (click)="loadMore.emit()" class="load-more-btn">
-      <i class="fas fa-plus-circle"></i> Carica Altri Anime
-    </button>
+    <div class="top-anime-actions">
+      <button type="button" (click)="loadMore.emit()" class="btn btn-primary">
+        <i class="fas fa-plus-circle" aria-hidden="true"></i>
+        Carica altri anime
+      </button>
+    </div>
   }
-</div>
+</section>

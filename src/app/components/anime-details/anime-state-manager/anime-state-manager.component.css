@@ -19,6 +19,20 @@
   font-size: 0.85rem;
 }
 
+/* Avviso per chi non ha fatto l'accesso: .alert-info globale */
+.login-hint {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.login-hint span {
+  flex: 1;
+  min-width: 12rem;
+}
+
 /* Buttons Container */
 .state-buttons-container {
   display: grid;
@@ -125,10 +139,10 @@
     font-size: 1.3rem;
   }
 
+  /* Sulle tessere in riga la spunta copriva l'etichetta ("Non Visto"):
+     lo stato attivo si legge già dal fondo tinto e dal bordo doppio */
   .active-indicator {
-    top: 50%;
-    right: 1rem;
-    transform: translateY(-50%);
+    display: none;
   }
 }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -37,7 +37,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private router: Router,
     private animeService: AnimeService,
     private authService: AuthService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private elementRef: ElementRef<HTMLElement>
   ) {}
 
   ngOnInit(): void {
@@ -108,6 +109,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   toggleDropdown(): void {
     this.showDropdown = !this.showDropdown;
+  }
+
+  /** Esc chiude menu del profilo e menu mobile */
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.showDropdown = false;
+    if (this.showMobileMenu) this.closeMobileMenu();
+  }
+
+  /** Un clic fuori dal menu del profilo lo chiude */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.showDropdown) return;
+    const container = this.elementRef.nativeElement.querySelector('.profile-menu-container');
+    if (container && !container.contains(event.target as Node)) this.showDropdown = false;
   }
 
   // Mobile menu methods

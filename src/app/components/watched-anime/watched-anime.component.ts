@@ -6,6 +6,7 @@ import { RouterLink, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { TitleLanguageToggleComponent } from '../../services/shared/title-language-toggle.component';
 
 /** Stato salvato nel backend -> etichetta usata dai filtri della pagina */
 const STATE_LABELS: Record<string, string> = {
@@ -20,7 +21,7 @@ const STATE_LABELS: Record<string, string> = {
   selector: 'app-watched-anime',
   templateUrl: './watched-anime.component.html',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [TitleLanguageToggleComponent, RouterLink, CommonModule],
   styleUrls: ['./watched-anime.component.css'],
 })
 export class WatchedAnimeComponent implements OnInit {

@@ -1,22 +1,57 @@
-<aside class="recommended-section" aria-labelledby="recommended-title">
-  <h2 class="section-title recommended-title" id="recommended-title">Anime Consigliati</h2>
-  <div class="recommended-list">
-    @for (anime of displayedAnime; track anime.mal_id) {
-      <a
-        class="recommended-card"
-        [routerLink]="'/anime/' + anime.mal_id">
-        <img [src]="anime.images.jpg.image_url" [alt]="anime.title" loading="lazy" />
-        <h4>{{ anime.title }}</h4>
-      </a>
+<aside class="recommended-section" aria-labelledby="recommended-title" [attr.aria-busy]="status === 'loading'">
+  <h2 class="section-title recommended-title" id="recommended-title">Anime consigliati</h2>
+
+  @switch (status) {
+    @case ('loading') {
+      <div class="recommended-list" aria-hidden="true">
+        @for (placeholder of skeletonRows; track placeholder) {
+          <div class="recommended-card recommended-skeleton">
+            <span class="skeleton skeleton-poster"></span>
+            <span class="skeleton-lines">
+              <span class="skeleton skeleton-line"></span>
+              <span class="skeleton skeleton-line short"></span>
+            </span>
+          </div>
+        }
+      </div>
     }
-  </div>
-  @if (displayedAnime.length < recommendedAnime.length) {
-    <button
-      type="button"
-      class="btn btn-secondary btn-sm btn-block load-more-btn"
-      (click)="loadMore()">
-      <i class="fas fa-plus" aria-hidden="true"></i>
-      Carica Altri
-    </button>
+    @case ('error') {
+      <div class="state state-compact state-error" role="status">
+        <span class="state-icon" aria-hidden="true"><i class="fas fa-exclamation-triangle"></i></span>
+        <p class="state-text">I consigli non sono disponibili al momento.</p>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="retry.emit()">
+          <i class="fas fa-redo" aria-hidden="true"></i>
+          Riprova
+        </button>
+      </div>
+    }
+    @default {
+      @if (recommendedAnime.length === 0) {
+        <div class="state state-compact" role="status">
+          <span class="state-icon" aria-hidden="true"><i class="fas fa-lightbulb"></i></span>
+          <p class="state-text">Ancora nessun consiglio per questo anime.</p>
+        </div>
+      } @else {
+        <div class="recommended-list">
+          @for (anime of displayedAnime; track anime.mal_id) {
+            <a
+              class="recommended-card"
+              [routerLink]="'/anime/' + anime.mal_id">
+              <img [src]="anime.images.jpg.image_url" alt="" loading="lazy" decoding="async" />
+              <h4>{{ anime.title }}</h4>
+            </a>
+          }
+        </div>
+        @if (displayedAnime.length < recommendedAnime.length) {
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm btn-block load-more-btn"
+            (click)="loadMore()">
+            <i class="fas fa-plus" aria-hidden="true"></i>
+            Carica altri
+          </button>
+        }
+      }
+    }
   }
 </aside>

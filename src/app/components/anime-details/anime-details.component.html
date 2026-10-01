@@ -10,7 +10,7 @@
         <h1 class="anime-title">{{ getDisplayedTitle() }}</h1>
 
         <div class="anime-info">
-          <img [src]="animeDetails.images.jpg.large_image_url" [alt]="animeDetails.title" class="cover-image" />
+          <img [src]="animeDetails.images.jpg.large_image_url" [alt]="animeDetails.title" class="cover-image" fetchpriority="high" />
 
           <div class="info-text">
             <button type="button"
@@ -22,22 +22,34 @@
               } @else {
                 <i class="fas fa-language" aria-hidden="true"></i>
               }
-              {{ isTranslating ? 'Traduzione in corso...' : 'Traduci in Italiano' }}
+              {{ isTranslating ? 'Traduzione in corso...' : 'Traduci in italiano' }}
             </button>
-            <p class="synopsis">{{ animeDetails.synopsis }}</p>
+            <p class="synopsis" id="anime-synopsis" [class.collapsed]="isSynopsisLong && !synopsisExpanded">{{ animeDetails.synopsis }}</p>
+            @if (isSynopsisLong) {
+              <button
+                type="button"
+                class="link synopsis-toggle"
+                aria-controls="anime-synopsis"
+                [attr.aria-expanded]="synopsisExpanded"
+                (click)="synopsisExpanded = !synopsisExpanded">
+                {{ synopsisExpanded ? 'Mostra meno' : 'Leggi tutto' }}
+              </button>
+            }
           </div>
         </div>
 
         <!-- Info Card Component (per extra info, generi, streaming) -->
         <app-anime-info-card
           [animeDetails]="animeDetails"
-          [streamingServices]="animeStreaming">
+          [streamingServices]="animeStreaming"
+          [streamingStatus]="streamingStatus">
         </app-anime-info-card>
 
         <!-- State Manager Section -->
         <app-anime-state-manager
           [currentState]="animeState"
           [isLoading]="isLoadingUserData"
+          [loggedIn]="isLoggedIn"
           (stateChanged)="onStateChanged($event)">
         </app-anime-state-manager>
 
@@ -97,6 +109,8 @@
       <!-- Recommended Sidebar -->
       <app-recommended-anime-sidebar
         [recommendedAnime]="recommendedAnime"
+        [status]="recommendedStatus"
+        (retry)="loadRecommendedAnime()"
         (animeClicked)="onRecommendedAnimeClick($event)">
       </app-recommended-anime-sidebar>
     </div>

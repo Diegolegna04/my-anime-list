@@ -50,9 +50,17 @@ export function seasonSlug({ season, year }: SeasonRef): string {
   return `${season}-${year}`;
 }
 
-/** Etichetta mostrata in home, es. "Fall 2026" */
+const SEASON_NAMES_IT: Record<string, string> = {
+  winter: 'Inverno',
+  spring: 'Primavera',
+  summer: 'Estate',
+  fall: 'Autunno'
+};
+
+/** Etichetta mostrata in home, es. "Autunno 2026" */
 export function seasonLabel({ season, year }: SeasonRef): string {
-  return `${season.charAt(0).toUpperCase()}${season.slice(1)} ${year}`;
+  const name = SEASON_NAMES_IT[season] ?? `${season.charAt(0).toUpperCase()}${season.slice(1)}`;
+  return `${name} ${year}`;
 }
 
 /** Data locale in formato YYYY-MM-DD, confrontabile con aired.from */
