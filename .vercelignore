@@ -1,0 +1,9 @@
+# La CLI di Vercel non legge .gitignore: qui ciò che non va caricato con `vercel --prod`
+# (Vercel ricompila da sorgente con npm run build)
+node_modules
+dist
+.angular
+.playwright-mcp
+.impeccable
+.claude
+coverage
