@@ -1,5 +1,8 @@
+/* Va a capo quando lo spazio non basta: le 10 stelle più "8/10 · Ottimo"
+   superano i ~400px e altrimenti uscivano dal riquadro del voto */
 .star-rating-container {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 0;

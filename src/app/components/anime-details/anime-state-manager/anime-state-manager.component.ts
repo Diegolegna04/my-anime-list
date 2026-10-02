@@ -10,7 +10,7 @@ export const STATE_LABELS: Record<AnimeState, string> = {
   'in visione': 'In visione',
   'completato': 'Completato',
   'da vedere': 'Da vedere',
-  'droppato': 'Abbandonato',
+  'droppato': 'Droppato',
   'in pausa': 'In pausa'
 };
 

@@ -22,14 +22,12 @@
   text-wrap: balance;
 }
 
-/* Layout copertina + "La tua lista": se lo spazio accanto alla copertina è
-   troppo stretto per i pulsanti di stato, la lista va sotto */
+/* Layout immagine + info */
 .anime-info {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 1.5rem 2rem;
-  margin-bottom: 2.5rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .cover-image {
@@ -41,22 +39,12 @@
   box-shadow: var(--shadow-medium);
 }
 
-.list-panel {
+.info-text {
   flex: 1;
-  min-width: min(100%, 22rem);
+  min-width: 0;
 }
 
-/* Trama: sotto la lista, con il traduttore come azione secondaria accanto al titolo */
-.synopsis-section {
-  margin-bottom: 2rem;
-}
-
-.synopsis-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem 1rem;
+.translate-btn {
   margin-bottom: 1rem;
 }
 
@@ -69,8 +57,8 @@
   color: var(--text-secondary);
 }
 
-/* "Leggi tutto" serve solo su telefono, dove una sinossi lunga spinge
-   l'info card sotto una ventina di righe */
+/* "Leggi tutto" serve solo su telefono, dove la sinossi spingeva info e
+   stato sotto una ventina di righe */
 .synopsis-toggle {
   display: none;
 }
@@ -143,19 +131,16 @@
   .anime-info {
     flex-direction: column;
     align-items: center;
-    margin-bottom: 2rem;
   }
 
-  /* Copertina più piccola: lo stato in lista deve comparire entro il primo schermo */
   .cover-image {
     width: 100%;
-    max-width: 200px;
+    max-width: 300px;
     height: auto;
     aspect-ratio: 5 / 7;
   }
 
-  .list-panel {
-    width: 100%;
+  .info-text {
     min-width: 100%;
   }
 

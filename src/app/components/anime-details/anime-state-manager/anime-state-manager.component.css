@@ -1,6 +1,6 @@
-/* Primo blocco di "La tua lista", accanto alla copertina: titolo con barretta (.section-title) */
+/* Sezione del pannello principale: titolo con barretta (.section-title) */
 .state-manager {
-  margin: 0 0 1.5rem;
+  margin: 2rem 0 1.5rem;
 }
 
 .state-manager-header {
@@ -118,6 +118,10 @@
 }
 
 @media (max-width: 768px) {
+  .state-manager {
+    margin-top: 1.5rem;
+  }
+
   .state-buttons-container {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
