@@ -8,6 +8,7 @@ import { AuthService } from '../services/auth.service';
 import { ToastService } from '../services/toast.service';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { TitleLanguageToggleComponent } from '../services/shared/title-language-toggle.component';
+import { FriendsPanelComponent } from './friends-panel/friends-panel.component';
 
 @Component({
   selector: 'app-user-profile',
@@ -16,7 +17,8 @@ import { TitleLanguageToggleComponent } from '../services/shared/title-language-
   imports: [TitleLanguageToggleComponent, 
     RouterLink,
     DragDropModule,
-    FormsModule
+    FormsModule,
+    FriendsPanelComponent
   ],
   standalone: true
 })

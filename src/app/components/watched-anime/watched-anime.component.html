@@ -1,20 +1,51 @@
 <div class="page">
-  <header class="page-hero">
-    <h1 class="page-hero-title">La tua Libreria Anime</h1>
-    <p class="page-hero-lead">Tieni traccia di cosa hai visto, cosa stai guardando e cosa vuoi ancora recuperare.</p>
-    <div class="page-hero-actions">
-      <a routerLink="/profile/watched-anime/favourites" class="btn btn-light">
-        <i class="fas fa-heart" aria-hidden="true"></i>
-        <span>I tuoi preferiti</span>
-      </a>
-      <app-title-language-toggle [value]="titleLanguage" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
-    </div>
-  </header>
+  @if (isFriendView) {
+    <header class="page-hero">
+      <a routerLink="/profile" class="page-hero-back"><i class="fas fa-arrow-left" aria-hidden="true"></i> I tuoi amici</a>
+      <h1 class="page-hero-title">La lista di {{ friendUsername }}</h1>
+      <p class="page-hero-lead">Cosa ha visto, cosa sta guardando e cosa vuole ancora recuperare.</p>
+      @if (friendStats) {
+        <div class="page-hero-meta">
+          <span class="chip chip-glass"><i class="fas fa-tv" aria-hidden="true"></i> {{ friendStats.watchedCount }} visti</span>
+          <span class="chip chip-glass"><i class="fas fa-play" aria-hidden="true"></i> {{ friendStats.watchingCount }} in visione</span>
+          <span class="chip chip-glass"><i class="fas fa-bookmark" aria-hidden="true"></i> {{ friendStats.planToWatchCount }} da vedere</span>
+          <span class="chip chip-glass"><i class="fas fa-heart" aria-hidden="true"></i> {{ friendStats.favoritesCount }} preferiti</span>
+        </div>
+      }
+      <div class="page-hero-actions">
+        <app-title-language-toggle [value]="titleLanguage" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
+      </div>
+    </header>
+  } @else {
+    <header class="page-hero">
+      <h1 class="page-hero-title">La tua Libreria Anime</h1>
+      <p class="page-hero-lead">Tieni traccia di cosa hai visto, cosa stai guardando e cosa vuoi ancora recuperare.</p>
+      <div class="page-hero-actions">
+        <a routerLink="/profile/watched-anime/favourites" class="btn btn-light">
+          <i class="fas fa-heart" aria-hidden="true"></i>
+          <span>I tuoi preferiti</span>
+        </a>
+        <app-title-language-toggle [value]="titleLanguage" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
+      </div>
+    </header>
+  }
 
+  @if (friendNotFound) {
+    <section class="panel">
+      <div class="state state-error">
+        <span class="state-icon"><i class="fas fa-user-slash" aria-hidden="true"></i></span>
+        <h2 class="state-title">{{ friendUsername }} non risulta tra i tuoi amici.</h2>
+        <p class="state-text">La lista si vede solo tra amici: controlla lo username o manda una richiesta dal profilo.</p>
+        <a routerLink="/profile" class="btn btn-secondary">
+          <i class="fas fa-user-friends" aria-hidden="true"></i> Vai ai tuoi amici
+        </a>
+      </div>
+    </section>
+  } @else {
   <section class="panel">
     <div class="section-header">
       <h2 class="section-title">
-        I tuoi anime
+        {{ isFriendView ? 'I suoi anime' : 'I tuoi anime' }}
         @if (!isLoading) {
           <span class="section-count">{{ filteredAnime.length }}</span>
         }
@@ -46,7 +77,7 @@
     @if (isLoading) {
       <div class="loading-state" role="status">
         <span class="spinner" aria-hidden="true"></span>
-        <p>Caricamento dei tuoi anime...</p>
+        <p>{{ isFriendView ? 'Caricamento della sua lista...' : 'Caricamento dei tuoi anime...' }}</p>
       </div>
     }
 
@@ -107,7 +138,7 @@
       <div class="state">
         <span class="state-icon"><i class="fas fa-box-open" aria-hidden="true"></i></span>
         <h3 class="state-title">Nessun anime trovato per questa categoria.</h3>
-        <p class="state-text">Inizia ad aggiungere anime alla tua lista!</p>
+        <p class="state-text">{{ isFriendView ? 'Qui non ha ancora aggiunto niente.' : 'Inizia ad aggiungere anime alla tua lista!' }}</p>
         @if (filter !== 'all') {
           <button type="button" class="btn btn-secondary" (click)="setFilter('all')">
             Mostra tutti
@@ -116,4 +147,5 @@
       </div>
     }
   </section>
+  }
 </div>

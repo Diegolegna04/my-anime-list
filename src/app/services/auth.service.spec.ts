@@ -54,7 +54,8 @@ describe('AuthService - logout', () => {
 describe('Route del profilo', () => {
   it('tutte le pagine del profilo richiedono il login', () => {
     const profileRoutes = routes.filter(r => r.path?.startsWith('profile'));
-    expect(profileRoutes.length).toBe(3);
+    // profilo, libreria, preferiti, lista di un amico
+    expect(profileRoutes.length).toBe(4);
     for (const route of profileRoutes) {
       expect(route.canActivate).withContext(route.path!).toContain(authGuard);
     }

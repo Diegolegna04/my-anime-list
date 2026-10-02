@@ -28,6 +28,8 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'profile/watched-anime', component: WatchedAnimeComponent, canActivate: [authGuard] },
   { path: 'profile/watched-anime/favourites', component: FavoriteAnimeComponent, canActivate: [authGuard] },
+  // Lista di un amico in sola lettura: stessa pagina della libreria, dati dell'amico
+  { path: 'profile/friends/:username', component: WatchedAnimeComponent, canActivate: [authGuard] },
   { path: 'seasonal/:season', component: SeasonalAnimePageComponent },
   { path: '**', component: NotFoundComponent }
 ];

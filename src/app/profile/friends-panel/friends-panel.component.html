@@ -1,0 +1,142 @@
+<section class="panel friends-section" aria-labelledby="friends-title">
+  <div class="section-header">
+    <h2 class="section-title" id="friends-title">
+      Amici
+      @if (!isLoading && overview.friends.length) {
+        <span class="section-count">{{ overview.friends.length }}</span>
+      }
+    </h2>
+  </div>
+
+  <form class="add-friend" (ngSubmit)="sendRequest()" novalidate>
+    <label class="field-label" for="friend-username">Aggiungi un amico</label>
+    <div class="add-friend-row">
+      <input
+        id="friend-username"
+        name="friendUsername"
+        class="input"
+        type="text"
+        placeholder="Il suo username"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        maxlength="50"
+        [(ngModel)]="username"
+        [attr.aria-invalid]="sendError ? true : null"
+        [attr.aria-describedby]="sendError ? 'friend-username-error' : 'friend-username-hint'" />
+      <button type="submit" class="btn btn-primary" [disabled]="isSending">
+        @if (isSending) {
+          <span class="spinner spinner-sm" aria-hidden="true"></span>
+        } @else {
+          <i class="fas fa-user-plus" aria-hidden="true"></i>
+        }
+        Invia richiesta
+      </button>
+    </div>
+    @if (sendError) {
+      <p class="field-error" id="friend-username-error" role="alert">{{ sendError }}</p>
+    } @else {
+      <p class="field-hint" id="friend-username-hint">Quando accetta, vedrete l'uno la lista dell'altro.</p>
+    }
+  </form>
+
+  @if (isLoading) {
+    <div class="loading-state" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <p>Caricamento degli amici...</p>
+    </div>
+  } @else if (loadError) {
+    <div class="state state-error state-compact">
+      <span class="state-icon"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></span>
+      <p class="state-title">Non riusciamo a caricare i tuoi amici.</p>
+      <button type="button" class="btn btn-secondary" (click)="load()">
+        <i class="fas fa-redo" aria-hidden="true"></i> Riprova
+      </button>
+    </div>
+  } @else {
+    @if (overview.incoming.length) {
+      <div class="friends-group">
+        <h3 class="group-title">Richieste ricevute <span class="group-count">{{ overview.incoming.length }}</span></h3>
+        <ul class="people-list">
+          @for (request of overview.incoming; track request.id) {
+            <li class="person">
+              <img src="pfp-no-bg.png" alt="" class="person-avatar" width="44" height="44" />
+              <span class="person-name">{{ request.username }}</span>
+              <div class="person-actions">
+                <button type="button" class="btn btn-primary btn-sm" [disabled]="busyId === request.id" (click)="accept(request.id, request.username)">
+                  <i class="fas fa-check" aria-hidden="true"></i> Accetta
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" [disabled]="busyId === request.id" (click)="decline(request.id)">
+                  Rifiuta
+                </button>
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (overview.friends.length) {
+      <div class="friends-group">
+      <h3 class="group-title">I tuoi amici</h3>
+      <ul class="people-list friends-list">
+        @for (friend of overview.friends; track friend.id) {
+          <li class="person">
+            <a class="person-link" [routerLink]="['/profile/friends', friend.username]">
+              <img src="pfp-no-bg.png" alt="" class="person-avatar" width="44" height="44" />
+              <span class="person-text">
+                <span class="person-name">{{ friend.username }}</span>
+                @if (friend.since) {
+                  <span class="person-meta">Amici dal {{ formatDate(friend.since) }}</span>
+                }
+              </span>
+              <span class="person-cta">Vedi la lista <i class="fas fa-chevron-right" aria-hidden="true"></i></span>
+            </a>
+            <div class="person-actions">
+              @if (confirmRemoveId === friend.id) {
+                <span class="confirm-text">Rimuovere {{ friend.username }}?</span>
+                <button type="button" class="btn btn-danger btn-sm" [disabled]="busyId === friend.id" (click)="remove(friend.id, friend.username)">Rimuovi</button>
+                <button type="button" class="btn btn-secondary btn-sm" (click)="keepFriend()">Annulla</button>
+              } @else {
+                <button type="button" class="btn-icon remove-btn" [disabled]="busyId === friend.id" (click)="askRemove(friend.id)" [attr.aria-label]="'Rimuovi ' + friend.username + ' dagli amici'" title="Rimuovi dagli amici">
+                  <i class="fas fa-user-minus" aria-hidden="true"></i>
+                </button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+      </div>
+    }
+
+    @if (overview.outgoing.length) {
+      <div class="friends-group">
+        <h3 class="group-title">Richieste inviate</h3>
+        <ul class="people-list">
+          @for (request of overview.outgoing; track request.id) {
+            <li class="person">
+              <img src="pfp-no-bg.png" alt="" class="person-avatar" width="44" height="44" />
+              <span class="person-text">
+                <span class="person-name">{{ request.username }}</span>
+                <span class="person-meta">In attesa di risposta</span>
+              </span>
+              <div class="person-actions">
+                <button type="button" class="btn btn-secondary btn-sm" [disabled]="busyId === request.id" (click)="cancel(request.id)">
+                  Annulla richiesta
+                </button>
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (isEmpty) {
+      <div class="state state-compact empty-friends">
+        <span class="state-icon"><i class="fas fa-user-friends" aria-hidden="true"></i></span>
+        <p class="state-title">Non hai ancora amici.</p>
+        <p class="state-text">Cerca un amico per username: quando accetta, potrete vedere cosa state guardando.</p>
+      </div>
+    }
+  }
+</section>

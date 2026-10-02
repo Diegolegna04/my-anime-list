@@ -7,6 +7,8 @@ import { CommonModule } from '@angular/common';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TitleLanguageToggleComponent } from '../../services/shared/title-language-toggle.component';
+import { FriendService, FriendStats } from '../../services/friend.service';
+import { LibraryEntry } from '../../services/userAnimeService.service';
 
 /** Stato salvato nel backend -> etichetta usata dai filtri della pagina */
 const STATE_LABELS: Record<string, string> = {
@@ -34,9 +36,16 @@ export class WatchedAnimeComponent implements OnInit {
 
   titleLanguage: 'english' | 'original' = 'original';
 
+  /** Valorizzato sulla rotta /profile/friends/:username: la pagina mostra la lista dell'amico */
+  friendUsername: string | null = null;
+  friendStats: FriendStats | null = null;
+  /** L'amico non esiste o non è (più) tra gli amici */
+  friendNotFound = false;
+
   constructor(
     private animeService: AnimeService,
     private userAnimeService: UserAnimeService,
+    private friendService: FriendService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute
   ) {}
@@ -50,24 +59,68 @@ export class WatchedAnimeComponent implements OnInit {
       }
     });
 
-    this.loadWatchedAnime();
-    window.scroll(0, 0);
+    // Da un amico all'altro il componente resta lo stesso: si ricarica al cambio di username
+    this.route.paramMap.subscribe(params => {
+      this.friendUsername = params.get('username');
+      this.loadWatchedAnime();
+      window.scroll(0, 0);
+    });
+  }
+
+  get isFriendView(): boolean {
+    return this.friendUsername !== null;
   }
 
   loadWatchedAnime(): void {
     this.isLoading = true;
+    this.friendNotFound = false;
+    this.watchedAnime = [];
+    this.filteredAnime = [];
+
+    if (this.friendUsername !== null) {
+      this.loadFriendLibrary(this.friendUsername);
+      return;
+    }
 
     // Una sola richiesta con titoli e copertine già inclusi
     this.userAnimeService.getLibrary().subscribe({
-      next: (library) => {
-        this.watchedAnime = library
-          .filter(entry => STATE_LABELS[entry.status])
-          .map(entry => this.toEntry(entry, STATE_LABELS[entry.status], entry.anime ? { data: entry.anime } : null));
-        this.showLoadedAndFetchMissing();
-      },
+      next: (library) => this.showLibrary(library),
       // Backend senza /library (es. deploy non ancora arrivato): si va per stato
       error: () => this.loadByStatus()
     });
+  }
+
+  private loadFriendLibrary(username: string): void {
+    this.friendStats = null;
+    // Se nel frattempo si è passati a un altro amico, la risposta vecchia si scarta
+    const stillCurrent = () => this.friendUsername === username;
+    this.friendService.getStats(username).subscribe({
+      next: (stats) => {
+        if (!stillCurrent()) return;
+        this.friendStats = stats;
+        this.cdr.detectChanges();
+      },
+      // Le statistiche sono un di più: senza, la lista resta comunque visibile
+      error: () => {}
+    });
+    this.friendService.getLibrary(username).subscribe({
+      next: (library) => {
+        if (stillCurrent()) this.showLibrary(library);
+      },
+      error: () => {
+        if (!stillCurrent()) return;
+        this.isLoading = false;
+        this.friendNotFound = true;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private showLibrary(library: LibraryEntry[]): void {
+    this.watchedAnime = library
+      .filter(entry => STATE_LABELS[entry.status])
+      .map(entry => this.toEntry(entry, STATE_LABELS[entry.status], entry.anime ? { data: entry.anime } : null));
+    this.showLoadedAndFetchMissing();
   }
 
   /** Vecchio caricamento: lista per stato e dettagli di ogni anime chiesti uno per uno */

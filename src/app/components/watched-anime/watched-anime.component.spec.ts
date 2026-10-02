@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
@@ -15,7 +15,8 @@ describe('WatchedAnimeComponent', () => {
   let component: WatchedAnimeComponent;
   let http: HttpTestingController;
 
-  beforeEach(async () => {
+  /** routeParams vuoto = la propria libreria; { username } = la lista di un amico */
+  async function setup(routeParams: Record<string, string> = {}) {
     localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [WatchedAnimeComponent],
@@ -24,7 +25,10 @@ describe('WatchedAnimeComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         // Pagina aperta dal profilo con il filtro già scelto
-        { provide: ActivatedRoute, useValue: { queryParams: of({ filter: 'in visione' }) } }
+        {
+          provide: ActivatedRoute,
+          useValue: { queryParams: of({ filter: 'in visione' }), paramMap: of(convertToParamMap(routeParams)) }
+        }
       ]
     }).compileComponents();
 
@@ -32,11 +36,12 @@ describe('WatchedAnimeComponent', () => {
     component = fixture.componentInstance;
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-  });
+  }
 
   afterEach(() => http.verify());
 
-  it('aperta col filtro mostra subito gli anime di quello stato, senza aspettare gli altri', () => {
+  it('aperta col filtro mostra subito gli anime di quello stato, senza aspettare gli altri', async () => {
+    await setup();
     http.expectOne('/api/user-anime/library').flush([
       { animeId: 1, status: 'watching', episodesWatched: 3, anime: summary(1, 'Beta') },
       { animeId: 2, status: 'completed', episodesWatched: 12, anime: summary(2, 'Gamma') },
@@ -54,7 +59,8 @@ describe('WatchedAnimeComponent', () => {
     expect(component.pendingDetails).toBe(0);
   });
 
-  it('se il backend non ha /library ripiega sulle liste per stato', () => {
+  it('se il backend non ha /library ripiega sulle liste per stato', async () => {
+    await setup();
     http.expectOne('/api/user-anime/library').flush({}, { status: 404, statusText: 'Not Found' });
 
     for (const status of ['completed', 'watching', 'plan_to_watch', 'on_hold', 'dropped']) {
@@ -64,5 +70,31 @@ describe('WatchedAnimeComponent', () => {
     expect(component.isLoading).toBeFalse();
     http.expectOne('/api/anime-proxy/anime/7').flush({ data: summary(7, 'Solo') });
     expect(component.filteredAnime.map(a => a.details.data.title)).toEqual(['Solo']);
+  });
+
+  it("sulla rotta di un amico mostra la sua lista e le sue statistiche", async () => {
+    await setup({ username: 'Sara' });
+    expect(component.isFriendView).toBeTrue();
+
+    http.expectOne('/api/friends/Sara/stats').flush({ watchedCount: 4, watchingCount: 1, planToWatchCount: 2, droppedCount: 0, onHoldCount: 0, favoritesCount: 1 });
+    http.expectOne('/api/friends/Sara/library').flush([
+      { animeId: 1, status: 'watching', episodesWatched: 3, anime: summary(1, 'Beta') }
+    ]);
+
+    expect(component.friendStats?.watchedCount).toBe(4);
+    expect(component.filteredAnime.map(a => a.details.data.title)).toEqual(['Beta']);
+    expect(fixture.nativeElement.querySelector('.page-hero-title').textContent).toContain('La lista di Sara');
+  });
+
+  it("se non è tra gli amici lo dice, senza ripiegare sulla propria libreria", async () => {
+    await setup({ username: 'Luca' });
+
+    http.expectOne('/api/friends/Luca/stats').flush({ error: 'Non risulta tra i tuoi amici' }, { status: 404, statusText: 'Not Found' });
+    http.expectOne('/api/friends/Luca/library').flush({ error: 'Non risulta tra i tuoi amici' }, { status: 404, statusText: 'Not Found' });
+    fixture.detectChanges();
+
+    expect(component.friendNotFound).toBeTrue();
+    expect(component.isLoading).toBeFalse();
+    expect(fixture.nativeElement.textContent).toContain('Luca non risulta tra i tuoi amici');
   });
 });

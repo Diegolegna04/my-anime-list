@@ -1,0 +1,197 @@
+/* Pannello "Amici" del profilo: aspetto da .panel e .section-header globali */
+
+/* Aggiungi per username */
+.add-friend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.75rem;
+}
+
+.add-friend-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.add-friend-row .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.add-friend-row .btn {
+  min-height: 44px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Gruppi: richieste ricevute e inviate */
+.friends-group + .friends-group {
+  margin-top: 1.75rem;
+}
+
+.group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.group-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  padding: 0 0.4rem;
+  border-radius: var(--radius-pill);
+  background-color: var(--accent-color);
+  color: #fff;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Elenco persone */
+.people-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-secondary);
+}
+
+.person-avatar {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--bg-tertiary);
+  object-fit: cover;
+}
+
+.person-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.person-name {
+  overflow: hidden;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.person-meta {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Riga dell'amico: tutta la parte sinistra porta alla sua lista */
+.person-link {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+  min-height: 44px;
+  border-radius: var(--radius-sm);
+  color: inherit;
+  text-decoration: none;
+}
+
+.person-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent-text);
+  white-space: nowrap;
+}
+
+.person-link:hover .person-name {
+  color: var(--accent-text);
+}
+
+.person-link:hover .person-cta {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.person-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.person-actions .btn {
+  min-height: 44px;
+}
+
+.remove-btn {
+  width: 44px;
+  height: 44px;
+}
+
+.remove-btn:hover:not(:disabled) {
+  border-color: var(--error-color);
+  background: var(--error-color);
+}
+
+.confirm-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.empty-friends {
+  padding-top: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .add-friend-row {
+    flex-direction: column;
+  }
+
+  /* In colonna flex: 1 farebbe da base 0 in altezza e schiaccerebbe il campo */
+  .add-friend-row .input {
+    flex: none;
+  }
+
+  .person-cta {
+    display: none;
+  }
+
+  .person-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .person-actions .btn {
+    flex: 1;
+  }
+
+  /* Nella riga dell'amico il solo pulsante di rimozione resta accanto al nome */
+  .friends-list .person-actions:has(.remove-btn) {
+    width: auto;
+  }
+}
