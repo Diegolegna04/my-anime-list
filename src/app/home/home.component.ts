@@ -11,7 +11,6 @@ import { HeroSectionComponent } from './hero-section/hero-section.component';
 import { TopAnimeComponent } from './top-anime/top-anime.component';
 import { SeasonalAnimeComponent } from './seasonal-anime/seasonal-anime.component';
 import { GenresHomeComponent } from "./genres-home/genres-home.component";
-import { NewsletterComponent } from "./newsletter/newsletter.component";
 
 @Component({
   selector: 'app-home',
@@ -23,8 +22,7 @@ import { NewsletterComponent } from "./newsletter/newsletter.component";
     HeroSectionComponent,
     TopAnimeComponent,
     SeasonalAnimeComponent,
-    GenresHomeComponent,
-    NewsletterComponent
+    GenresHomeComponent
 ],
 })
 export class HomeComponent implements OnInit, OnDestroy {

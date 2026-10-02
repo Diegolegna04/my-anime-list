@@ -4,7 +4,7 @@ Client Angular del clone di MyAnimeList. Consuma il backend Quarkus (repo sorell
 
 ## Stack
 
-- Angular 21 (standalone components, signals, RxJS) — vedi `package.json`, dipendenze `@angular/*` `^20.0.0`
+- Angular 20 (standalone components, signals, RxJS) — vedi `package.json`, dipendenze `@angular/*` `^20.0.0`
 - `crypto-js` per l'hashing SHA-256 lato client della password (solo in un punto, vedi sotto)
 - `sweetalert2`, `@angular/cdk` (drag & drop nella pagina profilo)
 - Test: Karma + Jasmine, con `.spec.ts` per una parte dei componenti (non tutti)
@@ -28,7 +28,7 @@ src/app/
 │   ├── anime-details/        # dettaglio anime + sotto-componenti (rating, episodi, preferiti, news, sidebar)
 │   ├── anime-search/, anime-by-genre/, seasonal-anime-page/, random-anime/, favorite-anime/, watched-anime/
 │   └── shared/ (anime-card), toast/
-└── home/                     # hero, top-anime, seasonal-anime, genres-home, newsletter
+└── home/                     # hero, top-anime, seasonal-anime, genres-home
 ```
 
 ## Autenticazione (lato client)
@@ -46,7 +46,7 @@ src/app/
 
 ## Stato dei test
 
-Solo una parte dei componenti/servizi ha uno `.spec.ts` (es. star-rating, episodes-tracker, favorite-toggle, toast, hero-section, seasonal-anime, top-anime, genres-home, newsletter, random-anime, auth.guard). Mancano test per i servizi core (`auth.service.ts`, `anime.service.ts`, `userAnimeService.service.ts`) e per `login-register`, `profile`, `header`.
+Solo una parte dei componenti/servizi ha uno `.spec.ts` (es. star-rating, episodes-tracker, favorite-toggle, toast, hero-section, seasonal-anime, top-anime, genres-home, random-anime, auth.guard). Mancano test per i servizi core (`auth.service.ts`, `anime.service.ts`, `userAnimeService.service.ts`) e per `login-register`, `profile`, `header`.
 
 ## Comandi
 

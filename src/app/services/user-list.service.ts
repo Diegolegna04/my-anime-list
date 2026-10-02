@@ -10,7 +10,7 @@ export const LIST_STATUS_META: Record<ListStatus, { label: string; icon: string;
   completed: { label: 'Completato', icon: 'fa-check', tone: 'var(--status-completed)' },
   plan_to_watch: { label: 'Da vedere', icon: 'fa-bookmark', tone: 'var(--status-plan)' },
   on_hold: { label: 'In pausa', icon: 'fa-pause', tone: 'var(--status-on-hold)' },
-  dropped: { label: 'Droppato', icon: 'fa-times', tone: 'var(--status-dropped)' }
+  dropped: { label: 'Abbandonato', icon: 'fa-times', tone: 'var(--status-dropped)' }
 };
 
 /**

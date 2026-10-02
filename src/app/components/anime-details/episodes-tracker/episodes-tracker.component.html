@@ -37,15 +37,12 @@
         class="input episodes-input"
         [value]="localEpisodes"
         [min]="0"
-        [max]="totalEpisodes"
+        [attr.max]="hasKnownTotal ? totalEpisodes : null"
         [disabled]="disabled"
         (input)="onInputChange($event)"
         (blur)="onInputBlur()"
         (keypress)="onInputKeyPress($event)"
-        aria-label="Numero di episodi visti"
-        [attr.aria-valuemin]="0"
-        [attr.aria-valuemax]="totalEpisodes"
-        [attr.aria-valuenow]="currentEpisodes" />
+        aria-label="Numero di episodi visti" />
 
       <span class="input-separator" aria-hidden="true">/</span>
 
@@ -111,14 +108,18 @@
         (click)="resetProgress()"
         title="Azzera il progresso">
         <i class="fas fa-undo" aria-hidden="true"></i>
-        <span class="btn-label">Reset</span>
+        <span class="btn-label">Azzera</span>
       </button>
     </div>
   }
 
-  <!-- Info tooltip (opzionale) -->
-  <p class="tracker-hint">
-    <i class="fas fa-lightbulb hint-icon" aria-hidden="true"></i>
-    Premi Invio o clicca fuori per salvare
+  <!-- Esito del salvataggio: sempre presente, così il lettore di schermo annuncia i cambi -->
+  <p class="save-status" [attr.data-status]="saveStatus" role="status" aria-live="polite">
+    @switch (saveStatus) {
+      @case ('saving') { <span class="spinner spinner-sm" aria-hidden="true"></span> }
+      @case ('saved') { <i class="fas fa-check-circle save-icon" aria-hidden="true"></i> }
+      @case ('error') { <i class="fas fa-exclamation-circle save-icon" aria-hidden="true"></i> }
+    }
+    <span>{{ saveStatusMessage }}</span>
   </p>
 </div>

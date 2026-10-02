@@ -9,12 +9,74 @@
       <div class="main-content">
         <h1 class="anime-title">{{ getDisplayedTitle() }}</h1>
 
+        <!-- In cima copertina e lista: aggiornare stato ed episodi è il motivo
+             principale per aprire la scheda, la trama viene dopo -->
         <div class="anime-info">
           <img [src]="animeDetails.images.jpg.large_image_url" [alt]="animeDetails.title" class="cover-image" fetchpriority="high" />
 
-          <div class="info-text">
+          <section class="list-panel" aria-labelledby="list-panel-title">
+            <app-anime-state-manager
+              [currentState]="animeState"
+              [isLoading]="isLoadingUserData"
+              [loggedIn]="isLoggedIn"
+              (stateChanged)="onStateChanged($event)">
+            </app-anime-state-manager>
+
+            <!-- Episodes Tracker (solo se "in visione") -->
+            @if (showEpisodesTracker) {
+              <app-episodes-tracker
+                [currentEpisodes]="episodiVisti"
+                [totalEpisodes]="animeDetails.episodes"
+                [saveStatus]="episodesSaveStatus"
+                (episodesUpdated)="onEpisodesUpdated($event)">
+              </app-episodes-tracker>
+            }
+
+            <!-- Rating Section (solo se completato) -->
+            @if (showRating) {
+              <div class="voto-section">
+                <h3 class="block-title">
+                  <i class="fas fa-star" aria-hidden="true"></i>
+                  Il tuo voto:
+                </h3>
+                <app-star-rating
+                  [rating]="voto"
+                  [maxRating]="10"
+                  [readonly]="false"
+                  (ratingChanged)="onRatingChanged($event)">
+                </app-star-rating>
+              </div>
+            }
+
+            <!-- Favorite Toggle (se voto >= 8) -->
+            @if (showFavoriteToggle) {
+              <app-favorite-toggle
+                [isFavorite]="preferito"
+                [canFavorite]="canFavorite"
+                (favoriteToggled)="onFavoriteToggled()">
+              </app-favorite-toggle>
+            }
+
+            <!-- In Evidenza (se visto o episodi >= 5) -->
+            @if (showInEvidenza) {
+              <div class="evidenza-section">
+                <label>
+                  <input
+                    type="checkbox"
+                    [checked]="inEvidenza"
+                    (change)="onInEvidenzaChanged($event)" />
+                  Mostra in evidenza sul profilo
+                </label>
+              </div>
+            }
+          </section>
+        </div>
+
+        <section class="synopsis-section" aria-labelledby="synopsis-title">
+          <div class="synopsis-header">
+            <h2 class="section-title" id="synopsis-title">Trama</h2>
             <button type="button"
-                    class="btn btn-primary btn-sm translate-btn"
+                    class="btn btn-secondary btn-sm"
                     (click)="onTranslateRequested()"
                     [disabled]="isTranslating">
               @if (isTranslating) {
@@ -24,19 +86,19 @@
               }
               {{ isTranslating ? 'Traduzione in corso...' : 'Traduci in italiano' }}
             </button>
-            <p class="synopsis" id="anime-synopsis" [class.collapsed]="isSynopsisLong && !synopsisExpanded">{{ animeDetails.synopsis }}</p>
-            @if (isSynopsisLong) {
-              <button
-                type="button"
-                class="link synopsis-toggle"
-                aria-controls="anime-synopsis"
-                [attr.aria-expanded]="synopsisExpanded"
-                (click)="synopsisExpanded = !synopsisExpanded">
-                {{ synopsisExpanded ? 'Mostra meno' : 'Leggi tutto' }}
-              </button>
-            }
           </div>
-        </div>
+          <p class="synopsis" id="anime-synopsis" [class.collapsed]="isSynopsisLong && !synopsisExpanded">{{ animeDetails.synopsis }}</p>
+          @if (isSynopsisLong) {
+            <button
+              type="button"
+              class="link synopsis-toggle"
+              aria-controls="anime-synopsis"
+              [attr.aria-expanded]="synopsisExpanded"
+              (click)="synopsisExpanded = !synopsisExpanded">
+              {{ synopsisExpanded ? 'Mostra meno' : 'Leggi tutto' }}
+            </button>
+          }
+        </section>
 
         <!-- Info Card Component (per extra info, generi, streaming) -->
         <app-anime-info-card
@@ -44,61 +106,6 @@
           [streamingServices]="animeStreaming"
           [streamingStatus]="streamingStatus">
         </app-anime-info-card>
-
-        <!-- State Manager Section -->
-        <app-anime-state-manager
-          [currentState]="animeState"
-          [isLoading]="isLoadingUserData"
-          [loggedIn]="isLoggedIn"
-          (stateChanged)="onStateChanged($event)">
-        </app-anime-state-manager>
-
-        <!-- Episodes Tracker (solo se "in visione") -->
-        @if (showEpisodesTracker) {
-          <app-episodes-tracker
-            [currentEpisodes]="episodiVisti"
-            [totalEpisodes]="animeDetails.episodes"
-            (episodesUpdated)="onEpisodesUpdated($event)">
-          </app-episodes-tracker>
-        }
-
-        <!-- Rating Section (se visto o in visione) -->
-        @if (showRating) {
-          <div class="voto-section">
-            <h3 class="block-title">
-              <i class="fas fa-star" aria-hidden="true"></i>
-              Il tuo voto:
-            </h3>
-            <app-star-rating
-              [rating]="voto"
-              [maxRating]="10"
-              [readonly]="false"
-              (ratingChanged)="onRatingChanged($event)">
-            </app-star-rating>
-          </div>
-        }
-
-        <!-- Favorite Toggle (se voto >= 8) -->
-        @if (showFavoriteToggle) {
-          <app-favorite-toggle
-            [isFavorite]="preferito"
-            [canFavorite]="canFavorite"
-            (favoriteToggled)="onFavoriteToggled()">
-          </app-favorite-toggle>
-        }
-
-        <!-- In Evidenza (se visto o episodi >= 5) -->
-        @if (showInEvidenza) {
-          <div class="evidenza-section">
-            <label>
-              <input
-                type="checkbox"
-                [checked]="inEvidenza"
-                (change)="onInEvidenzaChanged($event)" />
-              Mostra in evidenza sul profilo
-            </label>
-          </div>
-        }
 
         <!-- News Section -->
         <app-news-list

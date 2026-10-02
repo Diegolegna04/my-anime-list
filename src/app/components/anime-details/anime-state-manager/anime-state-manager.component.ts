@@ -4,6 +4,16 @@ import { RouterLink } from '@angular/router';
 
 export type AnimeState = 'non visto' | 'in visione' | 'completato' | 'da vedere' | 'droppato' | 'in pausa';
 
+/** Etichette mostrate all'utente (pulsanti e conferme); i valori interni restano invariati */
+export const STATE_LABELS: Record<AnimeState, string> = {
+  'non visto': 'Non in lista',
+  'in visione': 'In visione',
+  'completato': 'Completato',
+  'da vedere': 'Da vedere',
+  'droppato': 'Abbandonato',
+  'in pausa': 'In pausa'
+};
+
 export interface StateOption {
   value: AnimeState;
   label: string;
@@ -37,21 +47,21 @@ export class AnimeStateManagerComponent {
   readonly stateOptions: StateOption[] = [
     {
       value: 'non visto',
-      label: 'Non Visto',
+      label: STATE_LABELS['non visto'],
       icon: 'fa-eye-slash',
       color: 'neutral',
       description: 'Rimuovi dalla tua lista'
     },
     {
       value: 'in visione',
-      label: 'In Visione',
+      label: STATE_LABELS['in visione'],
       icon: 'fa-play-circle',
       color: 'watching',
       description: 'Stai guardando questo anime'
     },
     {
       value: 'completato',
-      label: 'Completato',
+      label: STATE_LABELS['completato'],
       icon: 'fa-check-circle',
       color: 'completed',
       description: 'Hai completato questo anime'
@@ -64,21 +74,21 @@ export class AnimeStateManagerComponent {
   readonly extendedStates: StateOption[] = [
     {
       value: 'da vedere',
-      label: 'Da Vedere',
+      label: STATE_LABELS['da vedere'],
       icon: 'fa-bookmark',
       color: 'plan',
       description: 'Pianificato per il futuro'
     },
     {
       value: 'droppato',
-      label: 'Droppato',
+      label: STATE_LABELS['droppato'],
       icon: 'fa-times-circle',
       color: 'dropped',
       description: 'Hai abbandonato questo anime'
     },
     {
       value: 'in pausa',
-      label: 'In Pausa',
+      label: STATE_LABELS['in pausa'],
       icon: 'fa-pause-circle',
       color: 'on-hold',
       description: 'Temporaneamente sospeso'

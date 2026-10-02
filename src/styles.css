@@ -71,7 +71,7 @@ input[type="button"] {
   --bg-quaternary: #dee2e6;
   --text-primary: #333333;
   --text-secondary: #666666;
-  --text-muted: #767676;          /* 4.5:1 su bianco (prima #888, 3.5:1) */
+  --text-muted: #707070;          /* 4.75:1 su --bg-secondary, 4.95:1 su bianco (#767676 su #f8f9fa era 4.3:1) */
   --text-on-accent: #ffffff;
   --border-color: #e0e0e0;
   --card-bg: #ffffff;
@@ -89,7 +89,8 @@ input[type="button"] {
   --accent-bg: #f1ecff;
   --primary-color: var(--accent-color);      /* alias storici */
   --primary-hover: var(--accent-hover);
-  --hero-gradient: linear-gradient(135deg, #7c4dff 0%, #a27aff 100%);
+  /* Il bianco regge almeno 4.8:1 su tutto il gradiente (con #a27aff in fondo scendeva a 3.1:1) */
+  --hero-gradient: linear-gradient(135deg, #6a45e5 0%, #7c4dff 100%);
   --button-gradient: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
 
   /* Stati */
@@ -102,7 +103,7 @@ input[type="button"] {
   --info-color: #1a73e8;
   --info-bg: #e8f0fe;
 
-  /* Evidenza calda della home (etichette HOT/stagione, newsletter) e stelle del voto.
+  /* Evidenza calda della home (etichette HOT/stagione) e stelle del voto.
      Arancione bruciato: il testo bianco sopra regge 4.5:1 (#ff7043 arrivava a 2.7) */
   --highlight-color: #c2410c;
   --highlight-hover: #a8370a;
@@ -421,13 +422,12 @@ a {
   gap: 0.4rem;
   font-size: 0.875rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: #fff;
   text-decoration: none;
   z-index: 1;
 }
 
 .page-hero-back:hover {
-  color: #fff;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -607,16 +607,16 @@ a {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* Il "vetro" sui banner è solo bordo: un riempimento bianco sotto il testo
+   bianco lo porta sotto 4.5:1 (con il 15% scendeva a 3.7:1) */
 .btn-glass {
-  background: rgba(255, 255, 255, 0.15);
+  background: transparent;
   color: #fff;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(4px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
 }
 
 .btn-glass:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.6);
+  border-color: #fff;
   transform: translateY(-2px);
 }
 
@@ -715,18 +715,19 @@ a {
   opacity: 0.55;
 }
 
-/* Sopra i banner viola: vetro come .btn-glass, opzione attiva bianca */
+/* Sopra i banner viola: solo bordo come .btn-glass, opzione attiva bianca */
 .page-hero .segmented {
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.6);
+  background: transparent;
 }
 
 .page-hero .segmented button {
-  color: rgba(255, 255, 255, 0.85);
+  color: #fff;
 }
 
 .page-hero .segmented button:hover {
-  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .page-hero .segmented button.active,
@@ -995,9 +996,9 @@ a.chip:hover {
   color: #fff;
 }
 
-/* Su banner viola */
+/* Su banner viola: solo bordo, come .btn-glass */
 .chip-glass {
-  background: rgba(255, 255, 255, 0.16);
+  background: transparent;
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.3);
 }

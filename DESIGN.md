@@ -14,7 +14,7 @@ Token e classi stanno in `src/styles.css`. I componenti li usano e non ridefinis
 
 1. **Nessun colore scritto a mano nei componenti.** Si usano i token `var(--…)`. Uniche eccezioni:
    - `#fff` per testo e icone sopra superfici viola;
-   - i `rgba(255,255,255,x)` dentro i banner.
+   - i `rgba(255,255,255,x)` dentro i banner, **solo per bordi e decorazioni**. Sotto testo bianco niente riempimento bianco: il "vetro" (`.btn-glass`, `.chip-glass`, `.segmented` nei banner) è solo bordo. Con un riempimento del 15% il testo scende a ~3.7:1, sotto AA. Il testo sui banner è `#fff` pieno, non trasparente.
 2. **I token-ombra sono ombre complete**: `box-shadow: var(--shadow-medium)`. Non vanno mai usati come colore, per esempio `0 4px 8px var(--shadow-medium)` oppure `border: 4px solid var(--shadow-medium)`: il browser scarta tutta la dichiarazione.
 3. **Viola:**
    - `--accent-color` si usa come *sfondo* (pulsanti, stati attivi), con testo bianco.
@@ -92,7 +92,7 @@ Token e classi stanno in `src/styles.css`. I componenti li usano e non ridefinis
 
 ## Altri token
 
-- `--highlight-color`, `--highlight-hover` e `--highlight-gradient`: l'arancione della home (etichette HOT e della stagione, pulsante della newsletter). Si usano solo lì. È un arancione bruciato perché il testo bianco sopra deve reggere 4.5:1.
+- `--highlight-color`, `--highlight-hover` e `--highlight-gradient`: l'arancione della home (etichette HOT e della stagione). Si usano solo lì. È un arancione bruciato perché il testo bianco sopra deve reggere 4.5:1.
 - **Navigazione:** si usa `<a routerLink class="btn …">`, mai `<button routerLink>` o un `<div (click)>`. Così il link si apre in una nuova scheda e funziona da tastiera.
 - `--star-color`: le stelle del voto.
 - `--header-height`: l'altezza dell'header, da usare nelle pagine a tutta altezza, per esempio `min-height: calc(100vh - var(--header-height))`.

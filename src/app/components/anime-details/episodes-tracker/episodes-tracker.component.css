@@ -30,8 +30,7 @@
   color: var(--text-primary);
 }
 
-.label-icon,
-.hint-icon {
+.label-icon {
   color: var(--accent-text);
 }
 
@@ -91,7 +90,13 @@
   text-align: center;
 }
 
-/* Quick Action Buttons (.btn-icon globale) */
+/* Quick Action Buttons (.btn-icon globale): ±1 è il gesto più frequente,
+   quindi a misura di dito (44px) */
+.quick-action-btn {
+  width: 44px;
+  height: 44px;
+}
+
 .quick-action-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -160,17 +165,28 @@
   color: var(--success-color);
 }
 
-/* Hint */
-.tracker-hint {
+/* Esito del salvataggio: altezza fissa, così la riga che appare non sposta il layout */
+.save-status {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 1rem;
-  padding: 0.6rem 1rem;
-  border-radius: var(--radius-sm);
-  background-color: var(--accent-soft);
-  font-size: 0.85rem;
+  min-height: 1.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
   color: var(--text-secondary);
+}
+
+.save-status[data-status="saved"] .save-icon {
+  color: var(--success-color);
+}
+
+.save-status[data-status="error"] {
+  color: var(--text-primary);
+}
+
+.save-status[data-status="error"] .save-icon {
+  color: var(--error-color);
 }
 
 @media (max-width: 768px) {
@@ -204,10 +220,5 @@
   .episodes-input {
     width: 4.5rem;
     font-size: 1.1rem;
-  }
-
-  .tracker-hint {
-    padding: 0.5rem 0.8rem;
-    font-size: 0.8rem;
   }
 }

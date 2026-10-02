@@ -1,6 +1,12 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+/** Esito dell'ultimo salvataggio degli episodi, deciso dal genitore */
+export type EpisodesSaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
+/** Dopo quanto dall'ultima cifra digitata il campo salva da solo */
+const AUTOSAVE_DELAY_MS = 800;
 
 @Component({
   selector: 'app-episodes-tracker',
@@ -10,19 +16,34 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./episodes-tracker.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EpisodesTrackerComponent implements OnInit {
+export class EpisodesTrackerComponent implements OnChanges, OnDestroy {
   @Input() currentEpisodes: number = 0;
+  /** 0 = totale sconosciuto (serie in corso): niente limite superiore */
   @Input() totalEpisodes: number = 0;
   @Input() disabled: boolean = false;
   @Input() showQuickActions: boolean = true;
-  
+  @Input() saveStatus: EpisodesSaveStatus = 'idle';
+
   @Output() episodesUpdated = new EventEmitter<number>();
 
   // Stato interno per gestire l'input
   localEpisodes: number = 0;
-  
-  ngOnInit(): void {
-    this.localEpisodes = this.currentEpisodes;
+
+  private autosaveTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // Riallinea il campo quando il valore arriva (o torna, dopo un errore) dal genitore
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['currentEpisodes']) {
+      this.localEpisodes = this.currentEpisodes;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.clearAutosave();
+  }
+
+  get hasKnownTotal(): boolean {
+    return this.totalEpisodes > 0;
   }
 
   /**
@@ -58,7 +79,11 @@ export class EpisodesTrackerComponent implements OnInit {
     if (this.currentEpisodes === 0) {
       return 'Inizia a guardare!';
     }
-    
+
+    if (!this.hasKnownTotal) {
+      return this.currentEpisodes === 1 ? '1 episodio visto' : `${this.currentEpisodes} episodi visti`;
+    }
+
     if (this.progressPercentage >= 100) {
       return 'Serie completata!';
     }
@@ -103,14 +128,40 @@ export class EpisodesTrackerComponent implements OnInit {
     }
 
     this.localEpisodes = value;
+
+    // Salva da solo poco dopo l'ultima cifra: su telefono non serve né Invio né uscire dal campo
+    this.clearAutosave();
+    this.autosaveTimer = setTimeout(() => this.commitInput(), AUTOSAVE_DELAY_MS);
   }
 
   /**
-   * Emette l'evento quando l'utente finisce di modificare (blur)
+   * Uscendo dal campo si salva subito, senza aspettare il timer
    */
   onInputBlur(): void {
+    this.commitInput();
+  }
+
+  private commitInput(): void {
+    this.clearAutosave();
     if (this.localEpisodes !== this.currentEpisodes) {
       this.episodesUpdated.emit(this.localEpisodes);
+    }
+  }
+
+  private clearAutosave(): void {
+    if (this.autosaveTimer) {
+      clearTimeout(this.autosaveTimer);
+      this.autosaveTimer = null;
+    }
+  }
+
+  /** Testo della riga di stato del salvataggio (annunciata ai lettori di schermo) */
+  get saveStatusMessage(): string {
+    switch (this.saveStatus) {
+      case 'saving': return 'Salvataggio…';
+      case 'saved': return 'Salvato';
+      case 'error': return 'Non salvato, riprova';
+      default: return '';
     }
   }
 
@@ -127,11 +178,12 @@ export class EpisodesTrackerComponent implements OnInit {
    * Quick action: incrementa di 1
    */
   incrementEpisode(): void {
-    if (this.disabled || this.currentEpisodes >= this.totalEpisodes) {
+    if (this.isIncrementDisabled) {
       return;
     }
-    
+
     const newValue = this.currentEpisodes + 1;
+    this.clearAutosave();
     this.localEpisodes = newValue;
     this.episodesUpdated.emit(newValue);
   }
@@ -145,6 +197,7 @@ export class EpisodesTrackerComponent implements OnInit {
     }
     
     const newValue = this.currentEpisodes - 1;
+    this.clearAutosave();
     this.localEpisodes = newValue;
     this.episodesUpdated.emit(newValue);
   }
@@ -157,6 +210,7 @@ export class EpisodesTrackerComponent implements OnInit {
       return;
     }
     
+    this.clearAutosave();
     this.localEpisodes = this.totalEpisodes;
     this.episodesUpdated.emit(this.totalEpisodes);
   }
@@ -169,6 +223,7 @@ export class EpisodesTrackerComponent implements OnInit {
       return;
     }
     
+    this.clearAutosave();
     this.localEpisodes = 0;
     this.episodesUpdated.emit(0);
   }
@@ -177,7 +232,7 @@ export class EpisodesTrackerComponent implements OnInit {
    * Verifica se il pulsante + è disabilitato
    */
   get isIncrementDisabled(): boolean {
-    return this.disabled || this.currentEpisodes >= this.totalEpisodes;
+    return this.disabled || (this.hasKnownTotal && this.currentEpisodes >= this.totalEpisodes);
   }
 
   /**
