@@ -14,10 +14,12 @@
   padding: 0;
 }
 
+/* clip e non hidden: hidden rendeva body un contenitore di scroll (overflow-y: auto)
+   che non scorre mai, e l'header sticky ci restava agganciato invece di stare in cima */
 html,
 body {
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Anche html: lo sfondo è giusto prima ancora che body abbia contenuto */

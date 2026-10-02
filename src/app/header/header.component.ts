@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, HostListener, NgZone, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NavigationStart, Router, RouterLink } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -14,6 +14,9 @@ import { LIST_STATUS_META, UserListService } from '../services/user-list.service
 const SUGGEST_MIN_CHARS = 3;
 const SUGGEST_DEBOUNCE_MS = 350;
 
+/** Pixel di scroll nella stessa direzione prima di nascondere o mostrare l'header (evita lo sfarfallio) */
+const SCROLL_DELTA = 8;
+
 @Component({
   selector: 'app-header',
   imports: [
@@ -25,6 +28,11 @@ const SUGGEST_DEBOUNCE_MS = 350;
   templateUrl: './header.component.html',
   standalone: true,
   styleUrls: ['./header.component.css'],
+  host: {
+    '[class.header-hidden]': 'isHidden',
+    // Con il Tab si può entrare nell'header anche quando è nascosto: ricompare
+    '(focusin)': 'reveal()'
+  }
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   query: string = '';
@@ -47,6 +55,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private authStatusSubscription!: Subscription;
   private userDataSubscription!: Subscription;
 
+  /** Nascosto scorrendo verso il basso, ricompare scorrendo verso l'alto */
+  isHidden = false;
+  private lastScrollY = 0;
+  private scrollFrame = 0;
+  private readonly onScroll = () => {
+    // Un solo controllo per frame, e fuori da Angular: si rientra solo se lo stato cambia
+    if (this.scrollFrame) return;
+    this.scrollFrame = requestAnimationFrame(() => {
+      this.scrollFrame = 0;
+      this.updateVisibility();
+    });
+  };
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -54,12 +75,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private themeService: ThemeService,
     private elementRef: ElementRef<HTMLElement>,
-    private userList: UserListService
+    private userList: UserListService,
+    private zone: NgZone
   ) {}
 
   ngOnInit(): void {
     this.currentTheme = this.themeService.getCurrentTheme();
     this.setupSuggestions();
+    this.lastScrollY = window.scrollY;
+    this.zone.runOutsideAngular(() => window.addEventListener('scroll', this.onScroll, { passive: true }));
     // Cambiando pagina l'anteprima si chiude
     this.navigationSubscription = this.router.events
       .pipe(filter((event) => event instanceof NavigationStart))
@@ -94,6 +118,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.onScroll);
+    if (this.scrollFrame) cancelAnimationFrame(this.scrollFrame);
     // Disiscriviti da entrambe le subscription
     if (this.authStatusSubscription) {
       this.authStatusSubscription.unsubscribe();
@@ -225,6 +251,42 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.showDropdown = !this.showDropdown;
   }
 
+  /**
+   * In cima alla pagina l'header si vede sempre; più giù si nasconde scendendo e
+   * ricompare salendo. Resta fermo se c'è qualcosa di aperto o il focus è dentro.
+   */
+  private updateVisibility(): void {
+    const y = Math.max(0, window.scrollY);
+    const delta = y - this.lastScrollY;
+    const headerHeight = this.elementRef.nativeElement.offsetHeight;
+    let hidden = this.isHidden;
+
+    if (y <= headerHeight || this.mustStayVisible()) {
+      hidden = false;
+      this.lastScrollY = y;
+    } else if (Math.abs(delta) >= SCROLL_DELTA) {
+      hidden = delta > 0;
+      this.lastScrollY = y;
+    }
+
+    if (hidden !== this.isHidden) {
+      this.zone.run(() => (this.isHidden = hidden));
+    }
+  }
+
+  private mustStayVisible(): boolean {
+    // Solo il focus da tastiera (o il campo di ricerca): dopo un clic su un pulsante
+    // il focus resta lì, ma l'header deve potersi nascondere lo stesso
+    const focused = document.activeElement;
+    const keyboardFocusInside = !!focused && this.elementRef.nativeElement.contains(focused)
+      && focused.matches(':focus-visible');
+    return this.showMobileMenu || this.showDropdown || this.suggestOpen || keyboardFocusInside;
+  }
+
+  reveal(): void {
+    this.isHidden = false;
+  }
+
   /** Esc chiude menu del profilo e menu mobile */
   @HostListener('document:keydown.escape')
   onEscape(): void {
@@ -248,7 +310,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // Mobile menu methods
   toggleMobileMenu(): void {
     this.showMobileMenu = !this.showMobileMenu;
-    
+    this.reveal();
+
     // Prevent body scrolling when menu is open
     if (this.showMobileMenu) {
       document.body.style.overflow = 'hidden';

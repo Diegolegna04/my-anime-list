@@ -1,9 +1,22 @@
-.app-header {
-  background-color: var(--card-bg);
-  box-shadow: var(--card-shadow);
+/* Lo sticky sta sull'host: su .app-header non funzionava, perché il suo
+   contenitore (<app-header>) è alto quanto l'header e lo trascinava via */
+:host {
+  display: block;
   position: sticky;
   top: 0;
   z-index: 999;
+  transition: transform var(--dur) var(--ease-out);
+}
+
+/* Scorrendo in giù esce verso l'alto. Il transform c'è solo da nascosto: un
+   transform sempre attivo confinerebbe il menu mobile (position: fixed) nell'header */
+:host(.header-hidden) {
+  transform: translateY(-100%);
+}
+
+.app-header {
+  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
