@@ -44,3 +44,5 @@ Thumbs.db
 
 # Impeccable Claude Skill
 .impeccable
+# Screenshot e log di Playwright
+.playwright-mcp/
