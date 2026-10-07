@@ -1,8 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 import { AnimeService } from '../../services/anime.service';
-import { uniqueByMalId } from '../../services/anime-utils';
+import {
+  SeasonRef,
+  dayBefore,
+  formatItalianDate,
+  hasAnnouncedTitles,
+  nextSeason,
+  previousSeason,
+  seasonSlug,
+  seasonStartDate,
+  uniqueByMalId
+} from '../../services/anime-utils';
 import { SeasonService } from '../../services/season.service';
 import { TitleLanguageToggleComponent } from '../../services/shared/title-language-toggle.component';
 import { AnimeCardComponent } from '../../services/shared/anime-card.component';
@@ -14,7 +25,7 @@ import { AnimeCardComponent } from '../../services/shared/anime-card.component';
   templateUrl: './seasonal-anime-page.component.html',
   styleUrls: ['./seasonal-anime-page.component.css']
 })
-export class SeasonalAnimePageComponent implements OnInit {
+export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
   seasonalAnimeList: any[] = [];
   isLoading: boolean = false;
   currentSeason: string = '';
@@ -26,6 +37,13 @@ export class SeasonalAnimePageComponent implements OnInit {
   hasNextPage: boolean = true;
   /** Endpoint scelto a pagina 1 (seasons/now o anno/stagione) */
   private viaNow: boolean | undefined;
+  /** Inizio reale di questa stagione e della successiva (YYYY-MM-DD), dai dati */
+  seasonStart: string | null = null;
+  private nextSeasonStart: string | null = null;
+  /** La stagione successiva ha titoli annunciati; null finché non si sa */
+  private nextSeasonAvailable: boolean | null = null;
+  private pageSubscription?: Subscription;
+  private nextSeasonSubscription?: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -70,11 +88,20 @@ export class SeasonalAnimePageComponent implements OnInit {
   }
 
   resetAndLoadSeasonalAnime(): void {
+    // Cambiando stagione mentre la precedente carica, la sua risposta non deve
+    // finire in questa pagina (e isLoading rimasto true bloccava il caricamento)
+    this.pageSubscription?.unsubscribe();
+    this.nextSeasonSubscription?.unsubscribe();
+    this.isLoading = false;
     this.currentPage = 1;
     this.seasonalAnimeList = [];
     this.hasNextPage = true;
     this.viaNow = undefined;
+    this.seasonStart = null;
+    this.nextSeasonStart = null;
+    this.nextSeasonAvailable = null;
     this.loadSeasonalAnime();
+    this.loadNextSeasonInfo();
   }
 
   loadSeasonalAnime(): void {
@@ -83,10 +110,13 @@ export class SeasonalAnimePageComponent implements OnInit {
     this.isLoading = true;
     // A pagina 1 SeasonService sceglie tra seasons/now e anno/stagione;
     // le pagine successive vanno chieste allo stesso endpoint
-    const target = { season: this.season, year: this.year };
-    this.seasonService.getSeasonPage(target, this.currentPage, this.viaNow).subscribe({
+    const firstPage = this.currentPage === 1;
+    this.pageSubscription = this.seasonService.getSeasonPage(this.target, this.currentPage, this.viaNow).subscribe({
       next: (page) => {
         this.viaNow = page.viaNow;
+        if (firstPage) {
+          this.seasonStart = seasonStartDate(page.data);
+        }
         if (page.data.length > 0) {
           const newAnime = page.data
             .filter((anime: any) => anime.images?.jpg?.image_url)
@@ -146,90 +176,57 @@ export class SeasonalAnimePageComponent implements OnInit {
     return `${seasonNames[this.season] || this.season} ${this.year}`;
   }
 
+  // L'inverno che segue l'autunno 2026 è l'inverno 2027 (anime da fine dicembre
+  // 2026 a marzo 2027): prima qui l'anno restava lo stesso e si finiva
+  // sull'inverno 2026, già passato. nextSeason/previousSeason lo gestiscono.
   goToPreviousSeason(): void {
-    let newYear = this.year;
-    let newSeason = '';
-
-    switch (this.season) {
-      case 'spring':
-        newSeason = 'winter';
-        newYear = this.year - 1;
-        break;
-      case 'summer':
-        newSeason = 'spring';
-        break;
-      case 'fall':
-        newSeason = 'summer';
-        break;
-      case 'winter':
-        newSeason = 'fall';
-        newYear = this.year - 1;
-        break;
-    }
-
-    const seasonParam = `${newSeason}-${newYear}`;
-    this.router.navigate(['/seasonal', seasonParam]);
+    this.router.navigate(['/seasonal', seasonSlug(previousSeason(this.target))]);
   }
 
   goToNextSeason(): void {
-    let newYear = this.year;
-    let newSeason = '';
-
-    switch (this.season) {
-      case 'spring':
-        newSeason = 'summer';
-        break;
-      case 'summer':
-        newSeason = 'fall';
-        break;
-      case 'fall':
-        newSeason = 'winter';
-        break;
-      case 'winter':
-        newSeason = 'spring';
-        newYear = this.year + 1;
-        break;
-    }
-
-    const seasonParam = `${newSeason}-${newYear}`;
-    this.router.navigate(['/seasonal', seasonParam]);
+    this.router.navigate(['/seasonal', seasonSlug(nextSeason(this.target))]);
   }
 
+  /**
+   * "Successiva" solo se la stagione dopo ha già abbastanza titoli annunciati.
+   * Finché non si sa (o se la richiesta fallisce) vale il limite di calendario:
+   * fino all'autunno dell'anno prossimo.
+   */
   canGoToNextSeason(): boolean {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1;
-    
-    let actualCurrentSeason = '';
-    if (currentMonth >= 1 && currentMonth <= 3) {
-      actualCurrentSeason = 'winter';
-    } else if (currentMonth >= 4 && currentMonth <= 6) {
-      actualCurrentSeason = 'spring';
-    } else if (currentMonth >= 7 && currentMonth <= 9) {
-      actualCurrentSeason = 'summer';
-    } else {
-      actualCurrentSeason = 'fall';
-    }
+    if (this.nextSeasonAvailable !== null) return this.nextSeasonAvailable;
+    const order = ['winter', 'spring', 'summer', 'fall'];
+    const limitYear = new Date().getFullYear() + 1;
+    return this.year * 10 + order.indexOf(this.season) < limitYear * 10 + order.indexOf('fall');
+  }
 
-    const seasonOrder = ['winter', 'spring', 'summer', 'fall'];
-    const currentSeasonIndex = seasonOrder.indexOf(actualCurrentSeason);
-    const thisSeasonIndex = seasonOrder.indexOf(this.season);
+  /** Date reali sotto il titolo, es. "Dal 1 ott 2026 al 26 dic 2026"; null se non si conoscono */
+  get seasonRange(): string | null {
+    if (!this.seasonStart) return null;
+    const from = `Dal ${formatItalianDate(this.seasonStart)}`;
+    if (!this.nextSeasonStart || this.nextSeasonStart <= this.seasonStart) return from;
+    return `${from} al ${formatItalianDate(dayBefore(this.nextSeasonStart))}`;
+  }
 
-    let nextSeasonIndex = thisSeasonIndex + 1;
-    let nextSeasonYear = this.year;
-    if (nextSeasonIndex >= seasonOrder.length) {
-      nextSeasonIndex = 0;
-      nextSeasonYear++;
-    }
-    const nextLogicalSeason = seasonOrder[nextSeasonIndex];
-    const futureLimitYear = currentYear + 1;
-    const futureLimitSeason = 'fall';
+  /** Inizio e disponibilità della stagione successiva, dalla sua prima pagina */
+  private loadNextSeasonInfo(): void {
+    this.nextSeasonSubscription = this.seasonService.getSeasonPage(nextSeason(this.target), 1).subscribe({
+      next: (page) => {
+        this.nextSeasonAvailable = hasAnnouncedTitles(page.data);
+        this.nextSeasonStart = seasonStartDate(page.data);
+      },
+      error: () => {
+        this.nextSeasonAvailable = null;
+        this.nextSeasonStart = null;
+      }
+    });
+  }
 
-    const limitSeasonIndex = seasonOrder.indexOf(futureLimitSeason);
+  private get target(): SeasonRef {
+    return { season: this.season, year: this.year };
+  }
 
-    const thisSeasonScore = this.year * 10 + thisSeasonIndex;
-    const currentSeasonScore = currentYear * 10 + currentSeasonIndex;
-    const limitSeasonScore = futureLimitYear * 10 + limitSeasonIndex;
-    return thisSeasonScore < limitSeasonScore;
+  ngOnDestroy(): void {
+    this.pageSubscription?.unsubscribe();
+    this.nextSeasonSubscription?.unsubscribe();
   }
 }

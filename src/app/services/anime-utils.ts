@@ -165,6 +165,66 @@ export function seasonOfList(list: any[]): SeasonRef | null {
   return { season, year: Number(year) };
 }
 
+/*
+ * Date reali di una stagione, dalla pagina stagionale.
+ * Le stagioni non partono il primo del mese: l'inverno 2026 su AniList va dal
+ * 20 dicembre 2025, l'autunno 2026 ha un titolo già il 27 settembre. Il primo
+ * anime in assoluto è spesso un caso isolato, quindi l'inizio è la prima uscita
+ * tra le serie TV più popolari.
+ */
+
+/** Tra quante serie TV più popolari si cerca la prima uscita */
+export const SEASON_START_TOP_N = 10;
+/** Titoli annunciati che servono per poter aprire una stagione futura */
+export const MIN_ANNOUNCED_TITLES = 5;
+
+/**
+ * Data di inizio (YYYY-MM-DD) di una stagione dalla sua lista: la prima uscita
+ * tra le SEASON_START_TOP_N serie TV più seguite (members, o la posizione nella
+ * lista se manca). null se nessuna ha ancora una data, come le stagioni future.
+ */
+export function seasonStartDate(list: any[]): string | null {
+  const tv = uniqueByMalId(list.filter(a => a?.type === 'TV'));
+  const hasMembers = tv.every(a => a.members > 0);
+  const top = hasMembers ? [...tv].sort((a, b) => b.members - a.members) : tv;
+  const dates = top
+    .slice(0, SEASON_START_TOP_N)
+    .map(knownStartDate)
+    .filter((d): d is string => !!d)
+    .sort();
+  return dates[0] ?? null;
+}
+
+/**
+ * Data di uscita (YYYY-MM-DD) solo se giorno e mese sono noti. Per un anime
+ * annunciato solo per "2027" aired.from è comunque "2027-01-01": aired.prop.from
+ * (Jikan, e il fallback AniList del backend) dice quali parti sono vere.
+ */
+export function knownStartDate(anime: any): string | null {
+  const from: string | undefined = anime?.aired?.from;
+  if (!from) return null;
+  const parts = anime.aired.prop?.from;
+  if (parts && (parts.day == null || parts.month == null)) return null;
+  return from.slice(0, 10);
+}
+
+/** true se per la stagione ci sono abbastanza titoli annunciati da mostrarla */
+export function hasAnnouncedTitles(list: any[]): boolean {
+  return uniqueByMalId(list.filter(a => a?.mal_id)).length >= MIN_ANNOUNCED_TITLES;
+}
+
+/** Giorno prima di una data YYYY-MM-DD (fine di una stagione = inizio della successiva - 1) */
+export function dayBefore(isoDate: string): string {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  return toIsoDate(new Date(y, m - 1, d - 1));
+}
+
+/** "2026-10-01" -> "1 ott 2026" */
+export function formatItalianDate(isoDate: string): string {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
 /** Quanti dei titoli più popolari servono con un voto per ordinare per voto */
 const SCORE_SORT_TOP_N = 20;
 

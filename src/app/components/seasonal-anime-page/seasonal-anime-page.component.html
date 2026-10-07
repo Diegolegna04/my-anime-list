@@ -1,7 +1,7 @@
 <div class="page">
   <header class="page-hero">
     <h1 class="page-hero-title">Anime {{ getFormattedSeason() }}</h1>
-    <p class="page-hero-lead">Scopri tutti gli anime di questa stagione</p>
+    <p class="page-hero-lead">{{ seasonRange ?? 'Scopri tutti gli anime di questa stagione' }}</p>
     <div class="page-hero-actions">
       <button
         type="button"
@@ -16,6 +16,7 @@
         class="btn btn-glass btn-sm"
         (click)="goToNextSeason()"
         [disabled]="!canGoToNextSeason()"
+        [attr.title]="canGoToNextSeason() ? null : 'Non ci sono ancora abbastanza anime annunciati'"
         aria-label="Stagione successiva">
         Successiva
         <i class="fas fa-chevron-right" aria-hidden="true"></i>
