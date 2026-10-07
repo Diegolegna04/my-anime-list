@@ -1,4 +1,5 @@
 import {
+  cleanSynopsis,
   currentSeason,
   dayBefore,
   fallbackSeasonStarted,
@@ -32,6 +33,27 @@ const FALL_2026 = [
 ].map(({ from, ...anime }) => ({ ...anime, aired: { from: `${from}T00:00:00+00:00` } }));
 
 describe('anime-utils', () => {
+  describe('cleanSynopsis', () => {
+    it('toglie i tag HTML delle descrizioni AniList tenendo gli a capo', () => {
+      // Com'è davvero la descrizione di Death Note che arriva da AniList
+      const raw = 'A notepad called a <i>Death Note</i>. Should anyone hold such power?<br>\n<br>\n'
+        + 'The consequences will set the world ablaze.<br>\n<br>\n(Source: VIZ Media)';
+      expect(cleanSynopsis(raw)).toBe('A notepad called a Death Note. Should anyone hold such power?\n\n'
+        + 'The consequences will set the world ablaze.\n\n(Source: VIZ Media)');
+    });
+
+    it('gestisce <br/>, maiuscole ed entità', () => {
+      expect(cleanSynopsis('<b>Uno</b><br/>due<BR />')).toBe('Uno\ndue');
+      expect(cleanSynopsis('Tom &amp; Jerry &quot;vs&quot; l&#039;altro')).toBe('Tom & Jerry "vs" l\'altro');
+    });
+
+    it('lascia invariate le sinossi di Jikan', () => {
+      const jikan = 'During their decade-long quest...\n\nDecades later, Frieren returns.\n\n[Written by MAL Rewrite]';
+      expect(cleanSynopsis(jikan)).toBe(jikan);
+      expect(cleanSynopsis(null)).toBeNull();
+    });
+  });
+
   it('toglie gli anime ripetuti tenendo il primo', () => {
     const list = [
       { mal_id: 1, title: 'Grand Blue Season 3' },

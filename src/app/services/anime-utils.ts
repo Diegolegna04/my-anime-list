@@ -13,6 +13,33 @@ export function uniqueByMalId<T extends { mal_id: number }>(list: T[]): T[] {
   });
 }
 
+/**
+ * Sinossi in testo semplice. Quelle che arrivano da AniList (fallback quando
+ * Jikan non risponde) contengono <br>, <i> e <b>, mostrati così com'erano.
+ * Il backend ora le pulisce, ma le risposte già in cache restano sporche per
+ * settimane. Gli a capo restano \n: la sinossi usa white-space: pre-line.
+ */
+export function cleanSynopsis(synopsis: string | null | undefined): string | null {
+  if (!synopsis) return synopsis ?? null;
+  const text = synopsis
+    .replace(/<br\s*\/?>\r?\n?/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;|&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+  return text || null;
+}
+
+/** Stesso anime con la sinossi ripulita (vedi cleanSynopsis) */
+export function withCleanSynopsis<T extends { synopsis?: string | null }>(anime: T): T {
+  return anime?.synopsis ? { ...anime, synopsis: cleanSynopsis(anime.synopsis) } : anime;
+}
+
 export interface SeasonRef {
   season: string;
   year: number;

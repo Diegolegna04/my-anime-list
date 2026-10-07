@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { retry, throwError, timer } from 'rxjs';
+import { withCleanSynopsis } from '../../services/anime-utils';
 
 interface AnimeData {
   mal_id: number;
@@ -54,7 +55,7 @@ export class RandomAnimeComponent {
       })
     ).subscribe({
       next: (response) => {
-        this.anime = response.data;
+        this.anime = withCleanSynopsis(response.data);
         this.loading = false;
       },
       error: (err) => {

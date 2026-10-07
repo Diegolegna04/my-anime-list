@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { AnimeService } from '../../services/anime.service';
+import { withCleanSynopsis } from '../../services/anime-utils';
 import { UserAnime, UserAnimeService } from '../../services/userAnimeService.service';
 import { AnimeInfoCardComponent } from './anime-info-card/anime-info-card.component';
 import { AnimeStateManagerComponent, AnimeState, STATE_LABELS } from './anime-state-manager/anime-state-manager.component';
@@ -131,7 +132,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (response) => {
-          this.animeDetails = response.data;
+          this.animeDetails = withCleanSynopsis(response.data);
         },
         error: (error) => {
           console.error('Errore caricamento anime:', error);
@@ -376,7 +377,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
                   next: (res) => {
                     const totalEpisodes = res.data?.episodes || 0;
                     if (totalEpisodes > 0) {
-                      this.animeDetails = res.data;
+                      this.animeDetails = withCleanSynopsis(res.data);
                       this.syncCompletedEpisodes(totalEpisodes);
                     }
                   },

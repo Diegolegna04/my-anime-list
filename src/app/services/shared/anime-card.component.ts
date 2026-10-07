@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LIST_STATUS_META, UserListService } from '../user-list.service';
+import { cleanSynopsis } from '../anime-utils';
 
 @Component({
   selector: 'app-anime-card',
@@ -34,7 +35,7 @@ export class AnimeCardComponent {
   }
 
   get truncatedSynopsis(): string {
-    const synopsis = this.anime?.synopsis;
+    const synopsis = cleanSynopsis(this.anime?.synopsis);
     if (!synopsis) return '';
     return synopsis.length > 150 ? synopsis.slice(0, 150) + '...' : synopsis;
   }
