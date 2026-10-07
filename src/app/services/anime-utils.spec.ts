@@ -1,13 +1,9 @@
 import {
   cleanSynopsis,
   currentSeason,
-  dayBefore,
   fallbackSeasonStarted,
-  formatItalianDate,
   hasAnnouncedTitles,
   isSeasonStarted,
-  knownStartDate,
-  seasonStartDate,
   nextSeason,
   previousSeason,
   seasonLabel,
@@ -128,47 +124,10 @@ describe('anime-utils', () => {
     });
   });
 
-  describe('date reali della stagione', () => {
-    it('autunno 2026 parte il 1/10: la ONA di JoJo del 25/9 non conta', () => {
-      expect(seasonStartDate(FALL_2026)).toBe('2026-10-01');
-    });
-
-    it('ignora la serie poco seguita uscita in anticipo', () => {
-      // Nella stagione vera le serie TV sono decine: quella uscita prima resta fuori dalle 10 più seguite
-      const more = [11, 12, 13, 14, 15].map(id =>
-        ({ mal_id: id, title: `Serie ${id}`, type: 'TV', members: 20000 - id, aired: { from: '2026-10-05T00:00:00+00:00' } }));
-      const early = { mal_id: 50, title: 'Uscita isolata', type: 'TV', members: 10, aired: { from: '2026-09-20T00:00:00+00:00' } };
-      expect(seasonStartDate([...FALL_2026, ...more, early])).toBe('2026-10-01');
-    });
-
-    it('stagione futura senza date: null', () => {
-      const announced = FALL_2026.map(({ aired, ...anime }) => anime);
-      expect(seasonStartDate(announced)).toBeNull();
-      expect(seasonStartDate([])).toBeNull();
-    });
-
-    it('annunciati solo per anno ("2027-01-01" con mese e giorno ignoti) non sono una data vera', () => {
-      const onlyYear = FALL_2026.map(anime => ({
-        ...anime,
-        aired: { from: '2027-01-01T00:00:00+00:00', prop: { from: { day: null, month: null, year: 2027 } } }
-      }));
-      expect(seasonStartDate(onlyYear)).toBeNull();
-
-      const jan1 = { aired: { from: '2026-01-01T00:00:00+00:00', prop: { from: { day: 1, month: 1, year: 2026 } } } };
-      expect(knownStartDate(jan1)).toBe('2026-01-01');
-    });
-
-    it('stagione apribile solo con abbastanza titoli annunciati', () => {
-      expect(hasAnnouncedTitles(FALL_2026)).toBeTrue();
-      expect(hasAnnouncedTitles(FALL_2026.slice(0, 4))).toBeFalse();
-      expect(hasAnnouncedTitles([])).toBeFalse();
-    });
-
-    it('fine = giorno prima dell\'inizio della successiva, anche a cavallo dell\'anno', () => {
-      expect(dayBefore('2027-01-03')).toBe('2027-01-02');
-      expect(dayBefore('2027-01-01')).toBe('2026-12-31');
-      expect(formatItalianDate('2026-10-01')).toBe('1 ott 2026');
-    });
+  it('stagione apribile solo con abbastanza titoli annunciati', () => {
+    expect(hasAnnouncedTitles(FALL_2026)).toBeTrue();
+    expect(hasAnnouncedTitles(FALL_2026.slice(0, 4))).toBeFalse();
+    expect(hasAnnouncedTitles([])).toBeFalse();
   });
 
   it('riconosce di che stagione è una lista', () => {

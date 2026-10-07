@@ -5,13 +5,10 @@ import { Subscription } from 'rxjs';
 import { AnimeService } from '../../services/anime.service';
 import {
   SeasonRef,
-  dayBefore,
-  formatItalianDate,
   hasAnnouncedTitles,
   nextSeason,
   previousSeason,
   seasonSlug,
-  seasonStartDate,
   uniqueByMalId
 } from '../../services/anime-utils';
 import { SeasonService } from '../../services/season.service';
@@ -37,9 +34,6 @@ export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
   hasNextPage: boolean = true;
   /** Endpoint scelto a pagina 1 (seasons/now o anno/stagione) */
   private viaNow: boolean | undefined;
-  /** Inizio reale di questa stagione e della successiva (YYYY-MM-DD), dai dati */
-  seasonStart: string | null = null;
-  private nextSeasonStart: string | null = null;
   /** La stagione successiva ha titoli annunciati; null finché non si sa */
   private nextSeasonAvailable: boolean | null = null;
   private pageSubscription?: Subscription;
@@ -97,8 +91,6 @@ export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
     this.seasonalAnimeList = [];
     this.hasNextPage = true;
     this.viaNow = undefined;
-    this.seasonStart = null;
-    this.nextSeasonStart = null;
     this.nextSeasonAvailable = null;
     this.loadSeasonalAnime();
     this.loadNextSeasonInfo();
@@ -110,13 +102,9 @@ export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     // A pagina 1 SeasonService sceglie tra seasons/now e anno/stagione;
     // le pagine successive vanno chieste allo stesso endpoint
-    const firstPage = this.currentPage === 1;
     this.pageSubscription = this.seasonService.getSeasonPage(this.target, this.currentPage, this.viaNow).subscribe({
       next: (page) => {
         this.viaNow = page.viaNow;
-        if (firstPage) {
-          this.seasonStart = seasonStartDate(page.data);
-        }
         if (page.data.length > 0) {
           const newAnime = page.data
             .filter((anime: any) => anime.images?.jpg?.image_url)
@@ -199,24 +187,14 @@ export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
     return this.year * 10 + order.indexOf(this.season) < limitYear * 10 + order.indexOf('fall');
   }
 
-  /** Date reali sotto il titolo, es. "Dal 1 ott 2026 al 26 dic 2026"; null se non si conoscono */
-  get seasonRange(): string | null {
-    if (!this.seasonStart) return null;
-    const from = `Dal ${formatItalianDate(this.seasonStart)}`;
-    if (!this.nextSeasonStart || this.nextSeasonStart <= this.seasonStart) return from;
-    return `${from} al ${formatItalianDate(dayBefore(this.nextSeasonStart))}`;
-  }
-
-  /** Inizio e disponibilità della stagione successiva, dalla sua prima pagina */
+  /** Se la stagione successiva ha titoli annunciati, dalla sua prima pagina */
   private loadNextSeasonInfo(): void {
     this.nextSeasonSubscription = this.seasonService.getSeasonPage(nextSeason(this.target), 1).subscribe({
       next: (page) => {
         this.nextSeasonAvailable = hasAnnouncedTitles(page.data);
-        this.nextSeasonStart = seasonStartDate(page.data);
       },
       error: () => {
         this.nextSeasonAvailable = null;
-        this.nextSeasonStart = null;
       }
     });
   }
