@@ -25,6 +25,18 @@
     }
   </div>
 
+  @if (hasError && !isLoading && animeList.length === 0) {
+    <div class="state state-error" role="alert">
+      <span class="state-icon"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></span>
+      <h3 class="state-title">Impossibile caricare i top anime</h3>
+      <p class="state-text">Il servizio anime non risponde. Riprova tra poco.</p>
+      <button type="button" class="btn btn-primary" (click)="retry.emit()">
+        <i class="fas fa-redo" aria-hidden="true"></i>
+        Riprova
+      </button>
+    </div>
+  }
+
   @if (isLoading) {
     <div class="loading-state" role="status">
       <span class="spinner" aria-hidden="true"></span>

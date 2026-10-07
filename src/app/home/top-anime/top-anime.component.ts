@@ -12,7 +12,10 @@ import { TitleLanguageToggleComponent } from '../../services/shared/title-langua
 export class TopAnimeComponent {
   @Input() animeList: any[] = [];
   @Input() isLoading: boolean = false;
+  /** La prima pagina non è arrivata: al posto della griglia vuota si mostra l'errore */
+  @Input() hasError: boolean = false;
   @Output() loadMore = new EventEmitter<void>();
+  @Output() retry = new EventEmitter<void>();
 
   isGridView: boolean = true;
   titleLanguage: 'english' | 'original' = 'original';

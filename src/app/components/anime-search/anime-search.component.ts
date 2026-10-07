@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AnimeService } from '../../services/anime.service';
 import { AnimeCardComponent } from '../../services/shared/anime-card.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { from, of } from 'rxjs';
-import { catchError, delay, concatMap } from 'rxjs/operators';
+import { EMPTY, from, of, Subscription } from 'rxjs';
+import { catchError, mergeMap, switchMap } from 'rxjs/operators';
 import { TitleLanguageToggleComponent } from '../../services/shared/title-language-toggle.component';
 
 @Component({
@@ -20,7 +20,7 @@ import { TitleLanguageToggleComponent } from '../../services/shared/title-langua
   ],
   standalone: true,
 })
-export class AnimeSearchComponent implements OnInit {
+export class AnimeSearchComponent implements OnInit, OnDestroy {
   searchResults: any[] = [];
   displayedResults: any[] = [];
   query: string = '';
@@ -43,6 +43,7 @@ export class AnimeSearchComponent implements OnInit {
   
   private itemsPerPage: number = 25;
   private currentDisplayPage: number = 1;
+  private searchSubscription?: Subscription;
 
   constructor(
     private animeService: AnimeService,
@@ -70,55 +71,56 @@ export class AnimeSearchComponent implements OnInit {
     this.searchResults = [];
     this.displayedResults = [];
     this.currentDisplayPage = 1;
-  
-    this.animeService.searchAnime(query, 1).subscribe({
-      next: (response: { data: any[]; pagination?: any }) => {
-        const firstPageData = response.data;
-        const totalPages = response.pagination?.last_visible_page || 1;
-        const maxPages = Math.min(totalPages, 5);
-  
-        this.searchResults = this.removeDuplicates(firstPageData);
+
+    // Una ricerca precedente ancora in corso non deve aggiungere risultati a questa
+    this.searchSubscription?.unsubscribe();
+
+    let maxPages = 1;
+    this.searchSubscription = this.animeService.searchAnime(query, 1).pipe(
+      switchMap((response: { data: any[]; pagination?: any }) => {
+        maxPages = Math.min(response.pagination?.last_visible_page || 1, 5);
+        this.searchResults = this.removeDuplicates(response.data || []);
         this.loadingProgress = Math.round((1 / maxPages) * 100);
-  
-        if (maxPages === 1) {
-          this.applySort();
-          this.updateDisplayedResults();
-          this.isLoading = false;
-          return;
-        }
-  
+
+        if (maxPages === 1) return EMPTY;
+
+        // Le altre pagine due alla volta: in sequenza, con una pausa fissa tra
+        // l'una e l'altra, la ricerca completa durava diversi secondi
         const pageNumbers = Array.from({ length: maxPages - 1 }, (_, i) => i + 2);
-  
-        from(pageNumbers).pipe(
-          concatMap(page =>
+        return from(pageNumbers).pipe(
+          mergeMap(page =>
             this.animeService.searchAnime(query, page).pipe(
-              delay(400),
               catchError(error => {
                 console.error(`Errore caricando la pagina ${page}:`, error);
                 return of({ data: [] });
               })
-            )
+            ),
+            2
           )
-        ).subscribe({
-          next: (pageResponse: any) => {
-            const pageData = Array.isArray(pageResponse) ? pageResponse : pageResponse.data;
-            this.searchResults = [...this.searchResults, ...pageData];
-            this.loadingProgress = Math.min(100, this.loadingProgress + Math.round(100 / maxPages));
-          },
-          complete: () => {
-            this.searchResults = this.removeDuplicates(this.searchResults);
-            this.applySort();
-            this.updateDisplayedResults();
-            this.isLoading = false;
-            this.loadingProgress = 100;
-          }
-        });
+        );
+      })
+    ).subscribe({
+      next: (pageResponse: any) => {
+        const pageData = Array.isArray(pageResponse) ? pageResponse : (pageResponse.data || []);
+        this.searchResults = [...this.searchResults, ...pageData];
+        this.loadingProgress = Math.min(100, this.loadingProgress + Math.round(100 / maxPages));
+      },
+      complete: () => {
+        this.searchResults = this.removeDuplicates(this.searchResults);
+        this.applySort();
+        this.updateDisplayedResults();
+        this.isLoading = false;
+        this.loadingProgress = 100;
       },
       error: (error) => {
         console.error('Errore durante la ricerca:', error);
         this.isLoading = false;
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.searchSubscription?.unsubscribe();
   }
 
   private removeDuplicates(animeList: any[]): any[] {

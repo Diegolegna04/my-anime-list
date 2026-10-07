@@ -31,6 +31,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   /** Stagione mostrata in home: null finché non è stata decisa */
   activeSeason: SeasonRef | null = null;
   isLoading: boolean = false;
+  /** Prima pagina dei top anime fallita: la sezione mostra "Riprova" */
+  topAnimeError: boolean = false;
   currentView: 'list' | 'search' = 'list';
   
   private topAnimeUrl = '/api/anime-proxy/top/anime';
@@ -60,6 +62,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   loadTopAnime(): void {
     this.isLoading = true;
+    this.topAnimeError = false;
     this.http.get<any>(`${this.topAnimeUrl}?page=${this.currentPage}`).subscribe({
       next: (response) => {
         this.animeList = [...this.animeList, ...(response.data || [])];
@@ -67,7 +70,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.isLoading = false;
-        if (this.currentPage > 1) {
+        if (this.currentPage === 1) {
+          this.topAnimeError = true;
+        } else {
           // Così il prossimo "carica altri" riprova la stessa pagina
           this.currentPage--;
           this.toastService.show('Impossibile caricare altri anime, riprova tra poco', 'error');

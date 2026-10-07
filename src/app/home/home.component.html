@@ -8,7 +8,9 @@
   <app-top-anime
     [animeList]="animeList"
     [isLoading]="isLoading"
-    (loadMore)="loadMoreAnime()">
+    [hasError]="topAnimeError"
+    (loadMore)="loadMoreAnime()"
+    (retry)="loadTopAnime()">
   </app-top-anime>
   <!-- Seasonal Section -->
   <app-seasonal-anime

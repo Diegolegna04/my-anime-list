@@ -49,7 +49,7 @@ export class AnimeService {
   }
 
   searchAnime(query: string, page: number = 1): Observable<any> {
-    return this.withRetry(this.http.get(`${this.apiUrl}/anime?q=${query}&page=${page}`));
+    return this.withRetry(this.http.get(`${this.apiUrl}/anime?q=${encodeURIComponent(query)}&page=${page}`));
   }
 
   /**
