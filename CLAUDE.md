@@ -15,7 +15,7 @@ Architettura, autenticazione e integrazione col backend: `PROJECT.md`. Sistema v
 
 ```bash
 npm start                                   # http://localhost:4200, /api proxato da proxy.conf.json
-npm run build                               # build di produzione + typecheck (dist/clone-cruncyroll/browser)
+npm run build                               # build di produzione + typecheck (dist/my-anime-list/browser)
 npx ng test --watch=false --browsers=ChromeHeadless
 ```
 
