@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, Subscription, throwError, of, timer } from 'rxjs';
-import { shareReplay, catchError, mergeMap, map, tap } from 'rxjs/operators';
+import { shareReplay, catchError, mergeMap, map, tap, finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import {
   AnimeData,
@@ -74,13 +74,14 @@ export class AnimeService {
 
   /** Una pagina dei top anime (home) */
   getTopAnime(page: number): Observable<JikanListResponse<AnimeData>> {
-    return this.queuedGet(`/top/anime?page=${page}`);
+    return this.queuedGet(`/top/anime?page=${page}`, { priority: true });
   }
 
   /** Una pagina di anime di un genere, dai più votati */
   getAnimeByGenre(genreId: number, genreName: string, page: number): Observable<JikanListResponse<AnimeData>> {
     return this.queuedGet(
-      `/anime?genres=${genreId}&genreName=${encodeURIComponent(genreName)}&page=${page}&order_by=score&sort=desc&limit=25`
+      `/anime?genres=${genreId}&genreName=${encodeURIComponent(genreName)}&page=${page}&order_by=score&sort=desc&limit=25`,
+      { priority: true }
     );
   }
 
@@ -91,19 +92,19 @@ export class AnimeService {
 
   /** Dettaglio di un anime sempre fresco (senza cache): per la pagina di dettaglio */
   getAnimeDetails(id: number): Observable<JikanItemResponse<AnimeData>> {
-    return this.queuedGet(`/anime/${id}`);
+    return this.queuedGet(`/anime/${id}`, { priority: true });
   }
 
   getRecommendations(id: number): Observable<JikanListResponse<AnimeRecommendation>> {
-    return this.queuedGet(`/anime/${id}/recommendations`);
+    return this.queuedGet(`/anime/${id}/recommendations`, { priority: true });
   }
 
   getStreaming(id: number): Observable<JikanListResponse<AnimeStreamingLink>> {
-    return this.queuedGet(`/anime/${id}/streaming`);
+    return this.queuedGet(`/anime/${id}/streaming`, { priority: true });
   }
 
   getNews(id: number): Observable<JikanListResponse<AnimeNews>> {
-    return this.queuedGet(`/anime/${id}/news`);
+    return this.queuedGet(`/anime/${id}/news`, { priority: true });
   }
 
   goToDetails(id: number): void {
@@ -145,9 +146,17 @@ export class AnimeService {
       return cached$;
     }
 
-    const request$ = this.queuedGet<any>(`/anime/${id}`, true).pipe(
+    // refCount: quando l'ultimo sottoscrittore se ne va prima della risposta la
+    // richiesta (in coda o in volo) viene annullata e la voce in memoria tolta,
+    // cosi' chi chiede dopo ne avvia una nuova. A risposta arrivata la voce resta.
+    let completed = false;
+    const request$ = this.queuedGet<any>(`/anime/${id}`, { retryServerErrors: true }).pipe(
       tap((res) => this.writeToLocalStorage(id, res)),
-      shareReplay({ bufferSize: 1, refCount: false }),
+      tap({ complete: () => (completed = true) }),
+      finalize(() => {
+        if (!completed) this.animeCache.delete(id);
+      }),
+      shareReplay({ bufferSize: 1, refCount: true }),
       catchError((err) => {
         this.animeCache.delete(id);
         return throwError(() => err);
@@ -163,10 +172,15 @@ export class AnimeService {
    * Su 429 ritenta e rallenta la coda; con `retryServerErrors` lo stesso vale
    * per 502/503/504 (solo per i dettagli in cache: gli altri endpoint non hanno
    * fallback e, con Jikan giu', devono fallire subito senza intasare la coda).
+   * Con `priority` il lavoro passa davanti a quelli in attesa: le pagine non
+   * aspettano l'arretrato delle liste (che chiedono un anime per voce).
    * Freddo: ogni sottoscrizione fa una richiesta; annullando la sottoscrizione
    * la richiesta in coda viene tolta e quella in volo annullata.
    */
-  private queuedGet<T>(path: string, retryServerErrors = false): Observable<T> {
+  private queuedGet<T>(
+    path: string,
+    { retryServerErrors = false, priority = false }: { retryServerErrors?: boolean; priority?: boolean } = {}
+  ): Observable<T> {
     return new Observable<T>((observer) => {
       let pending: (() => void) | null = null;
       let inFlight: Subscription | null = null;
@@ -192,7 +206,7 @@ export class AnimeService {
           });
         };
         pending = job;
-        this.enqueue(job);
+        this.enqueue(job, priority);
       };
 
       attempt();
@@ -236,8 +250,9 @@ export class AnimeService {
     }
   }
 
-  private enqueue(fn: () => void): void {
-    this.requestQueue.push(fn);
+  private enqueue(fn: () => void, priority = false): void {
+    if (priority) this.requestQueue.unshift(fn);
+    else this.requestQueue.push(fn);
     this.tryStartWorkers();
   }
 

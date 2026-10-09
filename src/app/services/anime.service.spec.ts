@@ -267,6 +267,65 @@ describe('AnimeService', () => {
       http.expectNone(`${API}/anime/5/news`);
     }));
 
+    describe('priorita e arretrato di getAnimeById', () => {
+      it('i dettagli partono appena si libera un worker, prima dell arretrato', fakeAsync(() => {
+        const subs = [10, 11, 12, 13].map((id) => service.getAnimeById(String(id)).subscribe());
+        http.expectOne(`${API}/anime/10`).flush({ data: {} });
+        http.expectOne(`${API}/anime/11`).flush({ data: {} });
+
+        service.getAnimeDetails(99).subscribe();
+        http.expectNone(`${API}/anime/99`);
+
+        tick(700);
+        http.expectOne(`${API}/anime/99`).flush({ data: {} });
+        http.expectOne(`${API}/anime/12`).flush({ data: {} });
+        http.expectNone(`${API}/anime/13`);
+
+        tick(700);
+        http.expectOne(`${API}/anime/13`).flush({ data: {} });
+        subs.forEach((s) => s.unsubscribe());
+        tick(700);
+      }));
+
+      it('disiscrivendo tutti i sottoscrittori i lavori in coda non partono', fakeAsync(() => {
+        const subs = [20, 21, 22, 23].map((id) => service.getAnimeById(String(id)).subscribe());
+        http.expectOne(`${API}/anime/20`);
+        http.expectOne(`${API}/anime/21`);
+
+        subs.forEach((s) => s.unsubscribe());
+        tick(3000);
+
+        http.expectNone(`${API}/anime/22`);
+        http.expectNone(`${API}/anime/23`);
+      }));
+
+      it('dopo l annullamento un nuovo getAnimeById per lo stesso id rifa la richiesta', fakeAsync(() => {
+        const first = service.getAnimeById('30').subscribe();
+        const req = http.expectOne(`${API}/anime/30`);
+        first.unsubscribe();
+        expect(req.cancelled).toBeTrue();
+
+        let result: any;
+        service.getAnimeById('30').subscribe((r) => (result = r));
+        tick(700);
+        http.expectOne(`${API}/anime/30`).flush({ data: { mal_id: 30 } });
+        expect(result).toEqual({ data: { mal_id: 30 } });
+        tick(700);
+      }));
+
+      it('una risposta arrivata resta in cache anche dopo che tutti si sono disiscritti', fakeAsync(() => {
+        const sub = service.getAnimeById('40').subscribe();
+        http.expectOne(`${API}/anime/40`).flush({ data: { mal_id: 40 } });
+        sub.unsubscribe();
+
+        let result: any;
+        service.getAnimeById('40').subscribe((r) => (result = r));
+        http.expectNone(`${API}/anime/40`);
+        expect(result).toEqual({ data: { mal_id: 40 } });
+        tick(700);
+      }));
+    });
+
     it('annullando una richiesta in volo la richiesta HTTP viene annullata', fakeAsync(() => {
       const sub = service.getStreaming(6).subscribe();
       const req = http.expectOne(`${API}/anime/6/streaming`);

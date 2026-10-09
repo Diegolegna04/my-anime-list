@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AnimeService } from '../../services/anime.service';
 import { UserAnimeService } from '../../services/userAnimeService.service';
 import { ChangeDetectorRef } from '@angular/core';
@@ -26,7 +27,8 @@ export class FavoriteAnimeComponent implements OnInit {
   constructor(
     private animeService: AnimeService,
     private userAnimeService: UserAnimeService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private destroyRef: DestroyRef
   ) {}
 
   ngOnInit(): void {
@@ -40,7 +42,7 @@ export class FavoriteAnimeComponent implements OnInit {
     this.favoriteAnime = [];
 
     // Una sola richiesta con titoli e copertine già inclusi
-    this.userAnimeService.getLibrary().subscribe({
+    this.userAnimeService.getLibrary().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (library) => {
         this.showLoadedAndFetchMissing(library
           .filter(entry => entry.isFavorite)
@@ -81,7 +83,7 @@ export class FavoriteAnimeComponent implements OnInit {
     const missing = entries.filter(anime => !anime.details);
     this.pendingDetails = missing.length;
     missing.forEach(anime => {
-      this.animeService.getAnimeById(anime.id).subscribe({
+      this.animeService.getAnimeById(anime.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (details) => {
           anime.details = details;
           this.pendingDetails--;
