@@ -1,8 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, of, timer } from 'rxjs';
-import { shareReplay, catchError, mergeMap, map } from 'rxjs/operators';
+import { shareReplay, catchError, mergeMap, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import {
+  AnimeData,
+  AnimeNews,
+  AnimeRecommendation,
+  AnimeStreamingLink,
+  JikanItemResponse,
+  JikanListResponse,
+} from './anime.models';
 
 const CACHE_PREFIX = 'animeCache:';
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
@@ -64,6 +72,35 @@ export class AnimeService {
       .pipe(map((response) => (response?.data ?? []).slice(0, limit)));
   }
 
+  /** Una pagina dei top anime (home) */
+  getTopAnime(page: number): Observable<JikanListResponse<AnimeData>> {
+    return this.queuedGet(`/top/anime?page=${page}`);
+  }
+
+  /** Una pagina di anime di un genere, dai più votati */
+  getAnimeByGenre(genreId: number, genreName: string, page: number): Observable<JikanListResponse<AnimeData>> {
+    return this.queuedGet(
+      `/anime?genres=${genreId}&genreName=${encodeURIComponent(genreName)}&page=${page}&order_by=score&sort=desc&limit=25`
+    );
+  }
+
+  /** Un anime a caso: mai in coda né in cache, ogni chiamata deve dare un risultato diverso */
+  getRandomAnime(): Observable<JikanItemResponse<AnimeData>> {
+    return this.withRetry(this.http.get<JikanItemResponse<AnimeData>>(`${this.apiUrl}/random/anime`), 1);
+  }
+
+  getRecommendations(id: number): Observable<JikanListResponse<AnimeRecommendation>> {
+    return this.queuedGet(`/anime/${id}/recommendations`);
+  }
+
+  getStreaming(id: number): Observable<JikanListResponse<AnimeStreamingLink>> {
+    return this.queuedGet(`/anime/${id}/streaming`);
+  }
+
+  getNews(id: number): Observable<JikanListResponse<AnimeNews>> {
+    return this.queuedGet(`/anime/${id}/news`);
+  }
+
   goToDetails(id: number): void {
     this.router.navigate(['/anime', id]);
   }
@@ -103,13 +140,31 @@ export class AnimeService {
       return cached$;
     }
 
-    const request$ = new Observable<any>((observer) => {
+    const request$ = this.queuedGet<any>(`/anime/${id}`).pipe(
+      tap((res) => this.writeToLocalStorage(id, res)),
+      shareReplay({ bufferSize: 1, refCount: false }),
+      catchError((err) => {
+        this.animeCache.delete(id);
+        return throwError(() => err);
+      })
+    );
+
+    this.animeCache.set(id, request$);
+    return request$;
+  }
+
+  /**
+   * GET sul proxy passando dalla coda (rispetta il rate limit di Jikan), con
+   * nuovi tentativi e rallentamento su 429/502/503/504. Freddo: ogni
+   * sottoscrizione fa una richiesta.
+   */
+  private queuedGet<T>(path: string): Observable<T> {
+    return new Observable<T>((observer) => {
       const attempt = (retryCount: number = 0) => {
         this.enqueue(() => {
-          this.http.get(`${this.apiUrl}/anime/${id}`).subscribe({
+          this.http.get<T>(`${this.apiUrl}${path}`).subscribe({
             next: (res) => {
               this.onRequestSuccess();
-              this.writeToLocalStorage(id, res);
               observer.next(res);
               observer.complete();
             },
@@ -126,16 +181,7 @@ export class AnimeService {
       };
 
       attempt();
-    }).pipe(
-      shareReplay({ bufferSize: 1, refCount: false }),
-      catchError((err) => {
-        this.animeCache.delete(id);
-        return throwError(() => err);
-      })
-    );
-
-    this.animeCache.set(id, request$);
-    return request$;
+    });
   }
 
   private readFromLocalStorage(id: string): any | null {

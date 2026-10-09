@@ -1,5 +1,4 @@
 import { Component, ElementRef, HostListener, NgZone, OnInit, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { NavigationStart, Router, RouterLink } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AnimeService } from '../services/anime.service';
@@ -69,7 +68,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private http: HttpClient,
     private router: Router,
     private animeService: AnimeService,
     private authService: AuthService,

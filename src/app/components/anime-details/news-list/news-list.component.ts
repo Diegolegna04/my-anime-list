@@ -1,22 +1,8 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AnimeNews } from '../../../services/anime.models';
 
-export interface AnimeNews {
-  mal_id: number;
-  url: string;
-  title: string;
-  excerpt: string;
-  date?: string;
-  author_username?: string;
-  author_url?: string;
-  forum_url?: string;
-  images?: {
-    jpg?: {
-      image_url?: string;
-    }
-  };
-  comments?: number;
-}
+export type { AnimeNews };
 
 @Component({
   selector: 'app-news-list',

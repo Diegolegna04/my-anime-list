@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { AnimeService } from '../services/anime.service';
@@ -35,11 +34,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   topAnimeError: boolean = false;
   currentView: 'list' | 'search' = 'list';
   
-  private topAnimeUrl = '/api/anime-proxy/top/anime';
   currentPage: number = 1;
 
   constructor(
-    private http: HttpClient,
     private router: Router,
     private animeService: AnimeService,
     private seasonService: SeasonService,
@@ -63,7 +60,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   loadTopAnime(): void {
     this.isLoading = true;
     this.topAnimeError = false;
-    this.http.get<any>(`${this.topAnimeUrl}?page=${this.currentPage}`).subscribe({
+    this.animeService.getTopAnime(this.currentPage).subscribe({
       next: (response) => {
         this.animeList = [...this.animeList, ...(response.data || [])];
         this.isLoading = false;

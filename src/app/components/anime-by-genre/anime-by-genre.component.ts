@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { AnimeService } from '../../services/anime.service';
 import { GenreCategory, GenreService } from '../../services/genre.service';
 import { AnimeCardComponent } from '../../services/shared/anime-card.component';
@@ -20,7 +19,6 @@ export class AnimeByGenreComponent implements OnInit {
   genreId: number | null = null;
   genreName: string | null = null;
   isGridView: boolean = true;
-  private animeByGenreUrl = '/api/anime-proxy/anime';
   private currentPage: number = 1;
   titleLanguage: 'english' | 'original' = 'original';
   isLoading: boolean = false;
@@ -40,7 +38,6 @@ export class AnimeByGenreComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient,
     private animeService: AnimeService,
     private genreService: GenreService
   ) {}
@@ -78,8 +75,7 @@ export class AnimeByGenreComponent implements OnInit {
   loadAnimeByGenre(): void {
     this.isLoading = true;
     if (this.genreId) {
-      const url = `${this.animeByGenreUrl}?genres=${this.genreId}&genreName=${encodeURIComponent(this.genreName || '')}&page=${this.currentPage}&order_by=score&sort=desc&limit=25`;
-      this.http.get<any>(url).subscribe({
+      this.animeService.getAnimeByGenre(this.genreId, this.genreName || '', this.currentPage).subscribe({
         next: (response) => {
           const newAnime = response.data;
           this.animeList = [...this.animeList, ...newAnime];

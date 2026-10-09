@@ -61,7 +61,6 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   isLoadingAnimeData: boolean = true;
   /** Su telefono la sinossi parte chiusa a 6 righe */
   synopsisExpanded = false;
-  private readonly animeDetailUrl = '/api/anime-proxy/anime';
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -120,9 +119,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   }
 
   private loadAnimeDetails(): void {
-    const url = `${this.animeDetailUrl}/${this.animeId}`;
-
-    this.http.get<any>(url)
+    this.animeService.getAnimeById(String(this.animeId))
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
@@ -148,13 +145,11 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   loadRecommendedAnime(): void {
     this.recommendedStatus = 'loading';
-    const url = `${this.animeDetailUrl}/${this.animeId}/recommendations`;
-
-    this.http.get<any>(url)
+    this.animeService.getRecommendations(this.animeId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.recommendedAnime = (response.data || []).map((rec: any) => rec.entry);
+          this.recommendedAnime = (response.data || []).map((rec) => rec.entry);
           this.recommendedStatus = 'ready';
           this.cdr.markForCheck();
         },
@@ -169,9 +164,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   private loadStreaming(): void {
     this.streamingStatus = 'loading';
-    const url = `${this.animeDetailUrl}/${this.animeId}/streaming`;
-
-    this.http.get<any>(url)
+    this.animeService.getStreaming(this.animeId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -189,9 +182,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   }
 
   private loadAnimeNews(): void {
-    const url = `${this.animeDetailUrl}/${this.animeId}/news`;
-
-    this.http.get<any>(url)
+    this.animeService.getNews(this.animeId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -371,7 +362,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
             if (this.animeDetails?.episodes > 0) {
               this.syncCompletedEpisodes(this.animeDetails.episodes);
             } else {
-              this.http.get<any>(`${this.animeDetailUrl}/${this.animeId}`)
+              this.animeService.getAnimeById(String(this.animeId))
                 .pipe(takeUntil(this.destroy$))
                 .subscribe({
                   next: (res) => {

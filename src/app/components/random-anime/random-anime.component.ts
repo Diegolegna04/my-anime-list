@@ -1,31 +1,9 @@
 import { Component } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { retry, throwError, timer } from 'rxjs';
+import { AnimeService } from '../../services/anime.service';
+import { AnimeData } from '../../services/anime.models';
 import { withCleanSynopsis } from '../../services/anime-utils';
-
-interface AnimeData {
-  mal_id: number;
-  title: string;
-  title_english?: string;
-  images: {
-    jpg: {
-      image_url: string;
-      large_image_url: string;
-    };
-  };
-  synopsis?: string;
-  score?: number;
-  episodes?: number;
-  status: string;
-  year?: number;
-  genres: Array<{ name: string }>;
-}
-
-interface AnimeResponse {
-  data: AnimeData;
-}
 
 @Component({
   selector: 'app-random-anime',
@@ -34,26 +12,17 @@ interface AnimeResponse {
   styleUrl: './random-anime.component.css'
 })
 export class RandomAnimeComponent {
-  private animeRandom = '/api/anime-proxy/random/anime';
-  
   anime: AnimeData | null = null;
   loading = false;
   error: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private animeService: AnimeService) {}
 
   getRandomAnime(): void {
     this.loading = true;
     this.error = null;
     
-    // Un secondo tentativo sugli errori temporanei del proxy/Jikan
-    this.http.get<AnimeResponse>(this.animeRandom).pipe(
-      retry({
-        count: 1,
-        delay: (err: HttpErrorResponse, attempt) =>
-          [502, 503, 504].includes(err.status) ? timer(600 * attempt) : throwError(() => err)
-      })
-    ).subscribe({
+    this.animeService.getRandomAnime().subscribe({
       next: (response) => {
         this.anime = withCleanSynopsis(response.data);
         this.loading = false;
