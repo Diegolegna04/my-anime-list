@@ -1,12 +1,12 @@
 # MyAnimeList Clone (Angular + Quarkus)
 
-![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=flat-square&logo=angular)
+![Angular](https://img.shields.io/badge/Angular-20-DD0031?style=flat-square&logo=angular)
 ![Quarkus](https://img.shields.io/badge/Quarkus-3.x-4695EB?style=flat-square&logo=quarkus)
-![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker)
+![MongoDB](https://img.shields.io/badge/MongoDB-8-47A248?style=flat-square&logo=mongodb)
+![Vercel](https://img.shields.io/badge/Vercel-deployed-000000?style=flat-square&logo=vercel)
 ![Status](https://img.shields.io/badge/Status-WIP-orange?style=flat-square)
 
-A personal anime tracking web app inspired by MyAnimeList, built with Angular 21 and a Java/Quarkus backend.
+A personal anime tracking web app inspired by MyAnimeList, built with Angular 20 and a Java/Quarkus backend.
 
 ---
 
@@ -22,7 +22,7 @@ MyAnimeList is great for data, but the UI feels dated and the experience is clun
 - **MAL-inspired tracking system** — status, episodes, rating, all in sync with a real database
 - **Dynamic user profile** with pinned anime, stats and favourites
 - **Session-based auth** with secure cookies and configurable expiry (remember me)
-- **Real-time anime search** powered by the Jikan API
+- **Anime search** powered by the Jikan API, proxied by the backend
 
 ---
 
@@ -33,9 +33,10 @@ MyAnimeList is great for data, but the UI feels dated and the experience is clun
 - ⭐ Rate anime (unlocked only after marking as completed)
 - ❤️ Favourites and pinned anime on profile
 - 👤 Profile stats: watched, watching, favourites, pinned
+- 🤝 Friends: send/accept requests and browse a friend's list (read-only)
 - 🌙 Dark / Light theme
 - 🌐 Title language toggle (Japanese / English)
-- 🔐 Register, login, logout, remember me
+- 🔐 Register (with email verification), login, logout, remember me, password reset
 
 ---
 
@@ -43,44 +44,33 @@ MyAnimeList is great for data, but the UI feels dated and the experience is clun
 
 | Layer | Technology |
 |---|---|
-| Frontend | Angular 21 — standalone components, signals, RxJS |
+| Frontend | Angular 20 — standalone components, signals, RxJS |
 | Backend | Java 21 · Quarkus 3 · Maven · Panache |
-| Database | MongoDB Atlas |
-| Reverse proxy | nginx |
-| Containers | Docker · Docker Compose |
-| Anime data | Jikan API v4 |
+| Database | MongoDB 8 |
+| Hosting | Vercel (frontend) · Railway (backend + MongoDB) |
+| Anime data | Jikan API v4, with AniList as fallback (handled by the backend) |
 
 ---
 
 ## Project Structure
 
+This repository contains only the frontend; the Quarkus backend lives in the sibling repo `my-anime-list-backend`.
+
 ```
-myanimelist/
-├── frontend/
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── components/      # Shared UI (toast, anime cards, trackers, state manager)
-│   │   │   ├── services/        # Auth, anime, user-anime, toast
-│   │   │   ├── pages/           # Page-level components (home, profile, details, list)
-│   │   │   └── environments/    # Dev / prod environment configs
-│   │   └── assets/
-│   ├── nginx.conf               # SPA routing (try_files → index.html)
-│   └── Dockerfile
-│
-├── backend/                     # Private repo — public soon
-│   ├── src/main/java/com/mal/
-│   │   ├── rest/                # JAX-RS resources (endpoints)
-│   │   ├── services/            # Business logic
-│   │   ├── persistence/
-│   │   │   ├── model/           # MongoDB entities
-│   │   │   └── repository/      # Panache repositories
-│   │   └── rest/model/          # Request / response DTOs
-│   └── Dockerfile
-│
-├── nginx/
-│   └── nginx.conf               # Reverse proxy config (routes /api → backend)
-│
-└── docker-compose.yml           # Full stack orchestration
+my-anime-list/
+├── src/app/
+│   ├── components/          # Anime pages and widgets (details, search, watched list, favourites, toast…)
+│   ├── home/                # Hero, top anime, seasonal anime, genres
+│   ├── profile/             # Dashboard, settings, friends panel
+│   ├── login-register/      # Combined login / registration form
+│   ├── services/            # Auth, anime (proxy + request queue), user-anime, friends, genres, theme, toast
+│   └── header/, footer/, genres/, forgot-password/, reset-password/, verify-email/, not-found/
+├── public/                  # Static assets (images, favicon)
+├── middleware.ts            # Vercel Routing Middleware (adds X-Proxy-Secret to /api calls)
+├── vercel.json              # Build output + rewrites (/api → Railway backend)
+├── proxy.conf.json          # Dev-server proxy for /api
+├── Dockerfile, nginx.conf   # Optional image: build + nginx serving the SPA
+└── PROJECT.md, DESIGN.md, CLAUDE.md
 ```
 
 ---
@@ -95,16 +85,19 @@ POST   /api/auth/login
 DELETE /api/auth/logout
 GET    /api/auth/profile
 
-GET    /api/anime/search?q=...
-GET    /api/anime/:id
+GET    /api/anime-proxy/...            # Jikan proxy (with AniList fallback)
 
 PUT    /api/user-anime/:id/status
 PUT    /api/user-anime/:id/rating
 PUT    /api/user-anime/:id/favorite
 GET    /api/user-anime/stats
+GET    /api/user-anime/library
+
+GET    /api/friends
+GET    /api/friends/:username/library
 ```
 
-Full API documentation coming alongside the backend repo.
+See the backend repo (`README.md`, `PROJECT.md`) for the full picture.
 
 ---
 
@@ -124,68 +117,68 @@ Auth is handled via **session cookies** — no tokens in `localStorage`, no JWT 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) v20+
-- [Angular CLI](https://angular.dev/tools/cli) v21+
-- Backend running locally (repo coming soon)
+- No local backend needed: the dev server proxies `/api` to the production backend on Railway
 
 ### Development
 
 ```bash
 npm install
-ng serve
+npm start
 ```
 
 Open `http://localhost:4200`. The app hot-reloads on file changes.  
-`/api` requests are proxied to the backend on port 8080.
+`/api` requests are proxied by `proxy.conf.json` to the **production Railway backend**, so you work on real data. To use a local backend, change the `target` in `proxy.conf.json` locally (the backend listens on port 8080).
 
-### Production build
+### Tests and production build
 
 ```bash
-ng build
+npx ng test --watch=false --browsers=ChromeHeadless
+npm run build
 ```
 
-Output goes to `dist/`, ready to be served by nginx.
+The build output goes to `dist/my-anime-list/browser`.
 
 ---
 
-## Running with Docker
+## Docker (optional)
+
+The `Dockerfile` builds the app and serves it with nginx (`nginx.conf`, SPA fallback to `index.html`):
 
 ```bash
-docker compose up --build
+docker build -t my-anime-list .
+docker run -p 8080:80 my-anime-list
 ```
 
-Starts the full stack — frontend, backend, MongoDB and nginx — as a single composed environment.  
-Available at `http://localhost` (port 80).
+The image contains only the frontend and does not proxy `/api`. The `docker-compose.yml` for backend + MongoDB lives in the backend repo.
 
 ---
 
-## Deployment (planned)
+## Deployment
+
+The app is live.
 
 | Service | Platform |
 |---|---|
-| Frontend | Vercel |
-| Backend | Railway or VPS |
-| Database | MongoDB Atlas (already in use) |
-| Reverse proxy | nginx (same config, different host) |
+| Frontend | Vercel, deployed from the CLI with `vercel --prod` (no Git integration) |
+| Backend + MongoDB | Railway, deployed from the CLI (see the backend repo) |
 
-Public deployment is the next milestone after the codebase stabilises.
+- `vercel.json` rewrites `/api/*` to the Railway backend and everything else to `index.html`.
+- `middleware.ts` (optional): when `BACKEND_PROXY_SECRET` is set on Vercel, it forwards `/api` calls to Railway with an `X-Proxy-Secret` header, so the backend trusts the client IP only for requests coming through Vercel. The value must match `APP_PROXY_SECRET` on the backend.
 
 ---
 
 ## Roadmap
 
-- [ ] Public deployment
 - [ ] Backend repository made public
 - [ ] Multi-language UI support
-- [ ] Email confirmation on registration
-- [ ] Mobile responsive improvements
 - [ ] Anime recommendations based on watch history
 
 ---
 
 ## Notes
 
-- Anime metadata is fetched live from [Jikan API](https://docs.api.jikan.moe/) and not persisted locally.
-- UI is currently in Italian — multi-language support is planned
+- Anime metadata comes from [Jikan API](https://docs.api.jikan.moe/) through the backend proxy, with a fallback on AniList when Jikan is down. The frontend keeps a 24h `localStorage` cache for the anime shown in the user lists.
+- UI is in Italian — multi-language support is planned
 
 ---
 

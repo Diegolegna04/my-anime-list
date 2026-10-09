@@ -9,7 +9,7 @@ Architettura, autenticazione e integrazione col backend: `PROJECT.md`. Sistema v
 - CSS puro per componente (`*.component.css`); token e classi globali in `src/styles.css`. Niente Tailwind, niente SCSS.
 - Icone: Font Awesome 6.0.0-beta3 da CDN (`src/index.html`). Nessun webfont: il testo usa `--font-sans` (oggi solo `sans-serif`).
 - `@angular/cdk` (drag & drop nel profilo).
-- Test: Karma + Jasmine, solo su una parte dei componenti.
+- Test: Karma + Jasmine (~95 specs: servizi core, login-register, profile, watched-anime e molti componenti).
 
 ## Comandi
 
@@ -17,6 +17,7 @@ Architettura, autenticazione e integrazione col backend: `PROJECT.md`. Sistema v
 npm start                                   # http://localhost:4200, /api proxato da proxy.conf.json
 npm run build                               # build di produzione + typecheck (dist/my-anime-list/browser)
 npx ng test --watch=false --browsers=ChromeHeadless
+vercel --prod                               # deploy: solo da CLI (niente integrazione Git); vedi README
 ```
 
 Non c'è lint configurato: la verifica minima è `npm run build`.
@@ -41,3 +42,5 @@ Non c'è lint configurato: la verifica minima è `npm run build`.
 ## Trappole note
 
 - La sessione è un cookie httpOnly del backend (`withCredentials: true`); `localStorage` contiene solo uno stato "specchio" per la UI.
+- Le chiamate al proxy anime passano da `AnimeService` (coda con rate limit, retry solo su 429; i 502/503/504 solo per `getAnimeById`). Non aggiungere `HttpClient` diretto verso `/api/anime-proxy` nei componenti. La cache localStorage da 24 ore vale solo per `getAnimeById` (liste); la pagina di dettaglio legge sempre dati freschi.
+- Login, registrazione e profilo passano da `AuthService`; la password viaggia in chiaro su HTTPS, niente hashing lato client.
