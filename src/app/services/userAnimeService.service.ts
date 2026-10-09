@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export interface UserAnime {
   id?: string;
@@ -29,12 +29,6 @@ export interface LibraryEntry {
 })
 export class UserAnimeService {
   private apiUrl = '/api/user-anime';
-
-  private userStatsSubject = new BehaviorSubject<any>(null);
-  public userStats$ = this.userStatsSubject.asObservable();
-
-  private inEvidenzaSubject = new BehaviorSubject<any[]>([]);
-  public inEvidenza$ = this.inEvidenzaSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -92,17 +86,5 @@ export class UserAnimeService {
 
   removeAnime(animeId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${animeId}`, { withCredentials: true });
-  }
-
-  refreshUserStats(): void {
-    this.getUserStats().subscribe(stats => {
-      this.userStatsSubject.next(stats);
-    });
-  }
-
-  refreshInEvidenza(): void {
-    this.getInEvidenza().subscribe(evidenza => {
-      this.inEvidenzaSubject.next(evidenza);
-    });
   }
 }

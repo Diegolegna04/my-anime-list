@@ -522,7 +522,6 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
         next: (response) => {
           this.inEvidenza = response.inEvidenza;
           this.userAnimeData = response;
-          this.userAnimeService.refreshInEvidenza();
           this.toastService.show(
             response.inEvidenza ? 'Aggiunto in evidenza' : 'Rimosso dall\'evidenza',
             'success'

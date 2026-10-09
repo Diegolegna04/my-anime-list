@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AnimeService } from '../../services/anime.service';
 import { UserAnimeService } from '../../services/userAnimeService.service';
 import { ChangeDetectorRef } from '@angular/core';
@@ -47,20 +48,21 @@ export class WatchedAnimeComponent implements OnInit {
     private userAnimeService: UserAnimeService,
     private friendService: FriendService,
     private cdr: ChangeDetectorRef,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private destroyRef: DestroyRef
   ) {}
 
   ngOnInit(): void {
     this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
 
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['filter']) {
         this.filter = params['filter'];
       }
     });
 
     // Da un amico all'altro il componente resta lo stesso: si ricarica al cambio di username
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       this.friendUsername = params.get('username');
       this.loadWatchedAnime();
       window.scroll(0, 0);
@@ -83,7 +85,7 @@ export class WatchedAnimeComponent implements OnInit {
     }
 
     // Una sola richiesta con titoli e copertine già inclusi
-    this.userAnimeService.getLibrary().subscribe({
+    this.userAnimeService.getLibrary().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (library) => this.showLibrary(library),
       // Backend senza /library (es. deploy non ancora arrivato): si va per stato
       error: () => this.loadByStatus()
@@ -94,7 +96,7 @@ export class WatchedAnimeComponent implements OnInit {
     this.friendStats = null;
     // Se nel frattempo si è passati a un altro amico, la risposta vecchia si scarta
     const stillCurrent = () => this.friendUsername === username;
-    this.friendService.getStats(username).subscribe({
+    this.friendService.getStats(username).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (stats) => {
         if (!stillCurrent()) return;
         this.friendStats = stats;
@@ -103,7 +105,7 @@ export class WatchedAnimeComponent implements OnInit {
       // Le statistiche sono un di più: senza, la lista resta comunque visibile
       error: () => {}
     });
-    this.friendService.getLibrary(username).subscribe({
+    this.friendService.getLibrary(username).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (library) => {
         if (stillCurrent()) this.showLibrary(library);
       },
@@ -132,7 +134,7 @@ export class WatchedAnimeComponent implements OnInit {
       })
     );
 
-    forkJoin(Object.keys(STATE_LABELS).map(byStatus)).subscribe({
+    forkJoin(Object.keys(STATE_LABELS).map(byStatus)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (lists: any[][]) => {
         const statuses = Object.keys(STATE_LABELS);
         this.watchedAnime = lists.flatMap((list, index) =>
@@ -173,7 +175,7 @@ export class WatchedAnimeComponent implements OnInit {
     this.pendingDetails = missing.length;
 
     missing.forEach(anime => {
-      this.animeService.getAnimeById(anime.id).subscribe({
+      this.animeService.getAnimeById(anime.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (details) => {
           anime.details = details;
           this.pendingDetails--;

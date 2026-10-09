@@ -115,11 +115,11 @@ export class AnimeService {
 
   sortAnime(animeList: any[], criteria: string): any[] {
     if (criteria === 'members') {
-      return animeList.sort((a, b) => b.members - a.members);
+      return [...animeList].sort((a, b) => b.members - a.members);
     } else if (criteria === 'score') {
-      return animeList.sort((a, b) => (b.score || 0) - (a.score || 0));
+      return [...animeList].sort((a, b) => (b.score || 0) - (a.score || 0));
     } else if (criteria === 'date') {
-      return animeList.sort((a, b) => {
+      return [...animeList].sort((a, b) => {
         const dateA = new Date(a.aired.from).getTime();
         const dateB = new Date(b.aired.from).getTime();
         return dateB - dateA;
