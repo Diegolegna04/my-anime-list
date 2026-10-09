@@ -38,7 +38,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   query: string = '';
   currentTheme: Theme = 'light';
   accessoEffettuato: boolean = false;
-  profileImage: string = 'pfp-no-bg.png';
+  profileImage: string = 'pfp-no-bg.webp';
   username: string = 'Username';
   showDropdown: boolean = false;
   showMobileMenu: boolean = false;

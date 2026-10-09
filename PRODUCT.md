@@ -36,7 +36,7 @@ Gli stessi dati di MyAnimeList (via Jikan) con un'esperienza più pulita e moder
 
 ## Evidence on Hand
 - Dati reali: catalogo Jikan (copertine, titoli, punteggi, generi, news) e liste reali degli utenti dal backend.
-- Asset in `public/`: `logo.png`, `logo-circle.png`, `pfp-no-bg.png` (avatar predefinito), sfondi del login.
+- Asset in `public/`: `logo-circle.webp` (logo), `favicon-48.png`, `pfp-no-bg.webp` (avatar predefinito), sfondo del login.
 - Contatto pubblico nel footer: `myanimedb.test@gmail.com`.
 - Assenti, da non inventare: utenti, recensioni o testimonianze, numeri di iscritti o attività, partnership, contenuti esclusivi.
 

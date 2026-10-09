@@ -60,7 +60,7 @@
         <ul class="people-list">
           @for (request of overview.incoming; track request.id) {
             <li class="person">
-              <img src="pfp-no-bg.png" alt="" class="person-avatar" width="44" height="44" />
+              <img src="pfp-no-bg.webp" alt="" class="person-avatar" width="44" height="44" />
               <span class="person-name">{{ request.username }}</span>
               <div class="person-actions">
                 <button type="button" class="btn btn-primary btn-sm" [disabled]="busyId === request.id" (click)="accept(request.id, request.username)">
@@ -83,7 +83,7 @@
         @for (friend of overview.friends; track friend.id) {
           <li class="person">
             <a class="person-link" [routerLink]="['/profile/friends', friend.username]">
-              <img src="pfp-no-bg.png" alt="" class="person-avatar" width="44" height="44" />
+              <img src="pfp-no-bg.webp" alt="" class="person-avatar" width="44" height="44" />
               <span class="person-text">
                 <span class="person-name">{{ friend.username }}</span>
                 @if (friend.since) {
@@ -115,7 +115,7 @@
         <ul class="people-list">
           @for (request of overview.outgoing; track request.id) {
             <li class="person">
-              <img src="pfp-no-bg.png" alt="" class="person-avatar" width="44" height="44" />
+              <img src="pfp-no-bg.webp" alt="" class="person-avatar" width="44" height="44" />
               <span class="person-text">
                 <span class="person-name">{{ request.username }}</span>
                 <span class="person-meta">In attesa di risposta</span>

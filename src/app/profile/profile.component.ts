@@ -23,7 +23,7 @@ import { FriendsPanelComponent } from './friends-panel/friends-panel.component';
   standalone: true
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-  profileImage: string = 'pfp-no-bg.png';
+  profileImage: string = 'pfp-no-bg.webp';
   username: string = '';
   totalAnimeCount: number = 0;
   watchedAnimeCount: number = 0;
@@ -159,7 +159,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     // Se c'era un'anteprima non salvata, ripristina l'immagine effettivamente persistita
     if (this.pendingProfileImage) {
       const currentUserData = this.authService.getCurrentUserData();
-      this.profileImage = currentUserData?.profileImage || 'pfp-no-bg.png';
+      this.profileImage = currentUserData?.profileImage || 'pfp-no-bg.webp';
     }
     this.pendingProfileImage = null;
 
