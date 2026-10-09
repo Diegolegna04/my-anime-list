@@ -169,13 +169,6 @@ export class WatchedAnimeComponent implements OnInit {
     this.isLoading = false;
     this.applyFilter();
 
-    // Lista dell'amico: una sola richiesta. Gli anime senza riassunto non si
-    // chiedono uno per uno (il limite di richieste è per visitatore): restano nascosti
-    if (this.isFriendView) {
-      this.pendingDetails = 0;
-      return;
-    }
-
     const missing = this.watchedAnime
       .filter(anime => !anime.details)
       .sort((a, b) => Number(b.state === this.filter) - Number(a.state === this.filter));

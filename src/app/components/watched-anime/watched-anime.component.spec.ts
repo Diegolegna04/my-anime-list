@@ -79,14 +79,15 @@ describe('WatchedAnimeComponent', () => {
     http.expectOne('/api/friends/Sara/stats').flush({ watchedCount: 4, watchingCount: 1, planToWatchCount: 2, droppedCount: 0, onHoldCount: 0, favoritesCount: 1 });
     http.expectOne('/api/friends/Sara/library').flush([
       { animeId: 1, status: 'watching', episodesWatched: 3, anime: summary(1, 'Beta') },
-      // Riassunto non recuperato dal backend: la voce resta nascosta, nessuna richiesta a parte
+      // Riassunto non recuperato dal backend: i dettagli si chiedono a parte, come per la propria lista
       { animeId: 2, status: 'watching', episodesWatched: 1, anime: null }
     ]);
-    http.expectNone(req => req.url.startsWith('/api/anime-proxy/anime/'));
+    expect(component.pendingDetails).toBe(1);
+    http.expectOne("/api/anime-proxy/anime/2").flush({ data: summary(2, "Alfa") });
 
     expect(component.pendingDetails).toBe(0);
     expect(component.friendStats?.watchedCount).toBe(4);
-    expect(component.filteredAnime.map(a => a.details.data.title)).toEqual(['Beta']);
+    expect(component.filteredAnime.map(a => a.details.data.title)).toEqual(["Alfa", "Beta"]);
     expect(fixture.nativeElement.querySelector('.page-hero-title').textContent).toContain('La lista di Sara');
   });
 
