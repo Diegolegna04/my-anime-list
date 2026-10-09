@@ -62,6 +62,8 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   /** Su telefono la sinossi parte chiusa a 6 righe */
   synopsisExpanded = false;
   private destroy$ = new Subject<void>();
+  /** Emette a ogni cambio di id e alla distruzione: annulla le richieste dell'anime precedente */
+  private reload$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -86,6 +88,8 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.reload$.next();
+    this.reload$.complete();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -107,6 +111,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   }
 
   private loadAllData(): void {
+    this.reload$.next();
     this.isLoadingAnimeData = true;
     this.synopsisExpanded = false;
     this.isLoadingUserData = true;
@@ -119,10 +124,12 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   }
 
   private loadAnimeDetails(): void {
-    this.animeService.getAnimeDetails(this.animeId)
+    const id = this.animeId;
+    this.animeService.getAnimeDetails(id)
       .pipe(
-        takeUntil(this.destroy$),
+        takeUntil(this.reload$),
         finalize(() => {
+          if (id !== this.animeId) return;
           this.isLoadingAnimeData = false;
           this.cdr.markForCheck();
         })
@@ -146,7 +153,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   loadRecommendedAnime(): void {
     this.recommendedStatus = 'loading';
     this.animeService.getRecommendations(this.animeId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.reload$))
       .subscribe({
         next: (response) => {
           this.recommendedAnime = (response.data || []).map((rec) => rec.entry);
@@ -165,7 +172,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   private loadStreaming(): void {
     this.streamingStatus = 'loading';
     this.animeService.getStreaming(this.animeId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.reload$))
       .subscribe({
         next: (response) => {
           this.animeStreaming = Array.isArray(response.data) ? response.data : [];
@@ -183,7 +190,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   private loadAnimeNews(): void {
     this.animeService.getNews(this.animeId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.reload$))
       .subscribe({
         next: (response) => {
           this.news = response.data || [];
@@ -198,10 +205,12 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   private loadUserAnimeData(): void {
     this.isLoadingUserData = true;
 
-    this.userAnimeService.getAnimeStatus(this.animeId)
+    const id = this.animeId;
+    this.userAnimeService.getAnimeStatus(id)
       .pipe(
-        takeUntil(this.destroy$),
+        takeUntil(this.reload$),
         finalize(() => {
+          if (id !== this.animeId) return;
           this.isLoadingUserData = false;
           this.cdr.markForCheck();
         })
@@ -363,7 +372,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
               this.syncCompletedEpisodes(this.animeDetails.episodes);
             } else {
               this.animeService.getAnimeDetails(this.animeId)
-                .pipe(takeUntil(this.destroy$))
+                .pipe(takeUntil(this.reload$))
                 .subscribe({
                   next: (res) => {
                     const totalEpisodes = res.data?.episodes || 0;
