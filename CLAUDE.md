@@ -26,6 +26,7 @@ Non c'è lint configurato: la verifica minima è `npm run build`.
 - Tutte le chiamate al backend usano path relativi `/api/...`. In produzione Vercel le riscrive verso Railway (`vercel.json`); in locale lo fa `proxy.conf.json`. Non introdurre URL assoluti.
 - `middleware.ts` (Vercel Routing Middleware, fuori da `src/`) aggiunge `X-Proxy-Secret` alle chiamate `/api` con una rewrite verso Railway. Se `BACKEND_PROXY_SECRET` non è impostata su Vercel non fa nulla e vale la rewrite di `vercel.json`.
 - `BACKEND_PROXY_SECRET` (Vercel) deve essere uguale a `APP_PROXY_SECRET` (Railway). Ordine di deploy: prima env + deploy su Railway, poi env + deploy su Vercel.
+- L'URL di Railway è in due posti, da cambiare insieme: `vercel.json` e `middleware.ts` (default di `BACKEND_URL`, override opzionale via env Vercel).
 - Prima di toccare l'interfaccia leggi `DESIGN.md` e rispettalo: solo token `var(--…)`, solo icone Font Awesome, un solo spinner globale, tema scuro tramite token.
 - Per lavoro estetico (analisi, restyling, rifinitura, animazioni) usa la skill `/styling`.
 - Testi dell'interfaccia solo in italiano, scritti nei template (niente i18n).

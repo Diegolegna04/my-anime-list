@@ -4,7 +4,7 @@ import { next, rewrite } from '@vercel/functions';
 // Aggiunge l'header segreto alle chiamate /api verso Railway, così il backend si fida
 // dell'IP in X-Forwarded-For solo se la richiesta arriva da qui.
 // Senza BACKEND_PROXY_SECRET non fa nulla e vale la rewrite di vercel.json.
-const BACKEND_URL = process.env['BACKEND_URL'] ?? 'https://backend-production-d0d99.up.railway.app';
+const BACKEND_URL = process.env['BACKEND_URL'] || 'https://backend-production-d0d99.up.railway.app';
 
 export const config = { matcher: '/api/:path*' };
 
@@ -19,6 +19,10 @@ export default function middleware(request: Request): Response {
   // di quelli originali (cookie di sessione compresi) e si imposta il segreto, sovrascrivendo
   // un eventuale valore inviato dal client.
   const headers = new Headers(request.headers);
+  // Host e X-Forwarded-Host sono quelli dell'app Vercel: se restassero nell'override, Railway (che
+  // instrada in base a Host) risponderebbe 404. Tolti, il proxy ricava Host dall'URL di destinazione.
+  headers.delete('host');
+  headers.delete('x-forwarded-host');
   headers.set('X-Proxy-Secret', secret);
   return rewrite(destination, { request: { headers } });
 }
