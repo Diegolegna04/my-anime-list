@@ -37,5 +37,4 @@ Non c'è lint configurato: la verifica minima è `npm run build`.
 
 ## Trappole note
 
-- `src/environments/*` contengono `apiUrl` obsoleti (IP LAN, Netlify) che nessun servizio usa più per le chiamate.
 - La sessione è un cookie httpOnly del backend (`withCredentials: true`); `localStorage` contiene solo uno stato "specchio" per la UI.
