@@ -207,6 +207,75 @@ describe('AnimeService', () => {
       tick(700);
     }));
 
+    it('getAnimeDetails non usa ne scrive la cache', fakeAsync(() => {
+      localStorage.setItem('animeCache:11', JSON.stringify({ data: { stale: true }, timestamp: Date.now() }));
+
+      let result: any;
+      service.getAnimeDetails(11).subscribe((r) => (result = r));
+      http.expectOne(`${API}/anime/11`).flush({ data: { fresh: true } });
+      tick(700);
+
+      expect(result).toEqual({ data: { fresh: true } });
+      expect(JSON.parse(localStorage.getItem('animeCache:11')!).data).toEqual({ stale: true });
+
+      service.getAnimeDetails(11).subscribe();
+      http.expectOne(`${API}/anime/11`).flush({ data: {} });
+      tick(700);
+    }));
+
+    it('getAnimeDetails riprova su 429 ma non su 503', fakeAsync(() => {
+      let error: any;
+      service.getAnimeDetails(12).subscribe({ error: (e) => (error = e) });
+      http.expectOne(`${API}/anime/12`).flush('', TOO_MANY);
+      http.expectOne(`${API}/anime/12`).flush('', { status: 503, statusText: 'Service Unavailable' });
+
+      expect(error?.status).toBe(503);
+      tick(2500);
+    }));
+
+    it('un 503 su getRecommendations fallisce subito e non rallenta la coda', fakeAsync(() => {
+      let error: any;
+      service.getRecommendations(1).subscribe({ error: (e) => (error = e) });
+      http.expectOne(`${API}/anime/1/recommendations`).flush('', { status: 503, statusText: 'Service Unavailable' });
+
+      expect(error?.status).toBe(503);
+      http.expectNone(`${API}/anime/1/recommendations`);
+      tick(700);
+
+      // Intervallo ancora a 700 ms: due richieste partono subito, la terza dopo 700 ms
+      service.getTopAnime(1).subscribe();
+      service.getTopAnime(2).subscribe();
+      service.getTopAnime(3).subscribe();
+      http.expectOne(`${API}/top/anime?page=1`).flush({ data: [] });
+      http.expectOne(`${API}/top/anime?page=2`).flush({ data: [] });
+      tick(699);
+      http.expectNone(`${API}/top/anime?page=3`);
+      tick(1);
+      http.expectOne(`${API}/top/anime?page=3`).flush({ data: [] });
+      tick(700);
+    }));
+
+    it('annullando prima che parta, la richiesta in coda non viene fatta', fakeAsync(() => {
+      service.getTopAnime(1).subscribe();
+      service.getTopAnime(2).subscribe();
+      const sub = service.getNews(5).subscribe();
+      sub.unsubscribe();
+
+      http.expectOne(`${API}/top/anime?page=1`).flush({ data: [] });
+      http.expectOne(`${API}/top/anime?page=2`).flush({ data: [] });
+      tick(1500);
+      http.expectNone(`${API}/anime/5/news`);
+    }));
+
+    it('annullando una richiesta in volo la richiesta HTTP viene annullata', fakeAsync(() => {
+      const sub = service.getStreaming(6).subscribe();
+      const req = http.expectOne(`${API}/anime/6/streaming`);
+      sub.unsubscribe();
+
+      expect(req.cancelled).toBeTrue();
+      tick(700);
+    }));
+
     it('getRandomAnime non e in cache: ogni chiamata fa una richiesta', () => {
       service.getRandomAnime().subscribe();
       http.expectOne(`${API}/random/anime`).flush({ data: { mal_id: 1 } });

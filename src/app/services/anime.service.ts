@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, of, timer } from 'rxjs';
+import { Observable, Subscription, throwError, of, timer } from 'rxjs';
 import { shareReplay, catchError, mergeMap, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import {
@@ -89,6 +89,11 @@ export class AnimeService {
     return this.withRetry(this.http.get<JikanItemResponse<AnimeData>>(`${this.apiUrl}/random/anime`), 1);
   }
 
+  /** Dettaglio di un anime sempre fresco (senza cache): per la pagina di dettaglio */
+  getAnimeDetails(id: number): Observable<JikanItemResponse<AnimeData>> {
+    return this.queuedGet(`/anime/${id}`);
+  }
+
   getRecommendations(id: number): Observable<JikanListResponse<AnimeRecommendation>> {
     return this.queuedGet(`/anime/${id}/recommendations`);
   }
@@ -140,7 +145,7 @@ export class AnimeService {
       return cached$;
     }
 
-    const request$ = this.queuedGet<any>(`/anime/${id}`).pipe(
+    const request$ = this.queuedGet<any>(`/anime/${id}`, true).pipe(
       tap((res) => this.writeToLocalStorage(id, res)),
       shareReplay({ bufferSize: 1, refCount: false }),
       catchError((err) => {
@@ -154,22 +159,30 @@ export class AnimeService {
   }
 
   /**
-   * GET sul proxy passando dalla coda (rispetta il rate limit di Jikan), con
-   * nuovi tentativi e rallentamento su 429/502/503/504. Freddo: ogni
-   * sottoscrizione fa una richiesta.
+   * GET sul proxy passando dalla coda (rispetta il rate limit di Jikan).
+   * Su 429 ritenta e rallenta la coda; con `retryServerErrors` lo stesso vale
+   * per 502/503/504 (solo per i dettagli in cache: gli altri endpoint non hanno
+   * fallback e, con Jikan giu', devono fallire subito senza intasare la coda).
+   * Freddo: ogni sottoscrizione fa una richiesta; annullando la sottoscrizione
+   * la richiesta in coda viene tolta e quella in volo annullata.
    */
-  private queuedGet<T>(path: string): Observable<T> {
+  private queuedGet<T>(path: string, retryServerErrors = false): Observable<T> {
     return new Observable<T>((observer) => {
+      let pending: (() => void) | null = null;
+      let inFlight: Subscription | null = null;
+
       const attempt = (retryCount: number = 0) => {
-        this.enqueue(() => {
-          this.http.get<T>(`${this.apiUrl}${path}`).subscribe({
+        const job = () => {
+          pending = null;
+          inFlight = this.http.get<T>(`${this.apiUrl}${path}`).subscribe({
             next: (res) => {
               this.onRequestSuccess();
               observer.next(res);
               observer.complete();
             },
             error: (err: HttpErrorResponse) => {
-              if ((err.status === 429 || [502, 503, 504].includes(err.status)) && retryCount < 4) {
+              const retryable = err.status === 429 || (retryServerErrors && [502, 503, 504].includes(err.status));
+              if (retryable && retryCount < 4) {
                 this.onRateLimitHit();
                 attempt(retryCount + 1);
               } else {
@@ -177,10 +190,21 @@ export class AnimeService {
               }
             }
           });
-        });
+        };
+        pending = job;
+        this.enqueue(job);
       };
 
       attempt();
+
+      return () => {
+        if (pending) {
+          const i = this.requestQueue.indexOf(pending);
+          if (i >= 0) this.requestQueue.splice(i, 1);
+          pending = null;
+        }
+        inFlight?.unsubscribe();
+      };
     });
   }
 

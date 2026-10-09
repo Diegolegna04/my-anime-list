@@ -119,7 +119,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   }
 
   private loadAnimeDetails(): void {
-    this.animeService.getAnimeById(String(this.animeId))
+    this.animeService.getAnimeDetails(this.animeId)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
@@ -362,7 +362,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
             if (this.animeDetails?.episodes > 0) {
               this.syncCompletedEpisodes(this.animeDetails.episodes);
             } else {
-              this.animeService.getAnimeById(String(this.animeId))
+              this.animeService.getAnimeDetails(this.animeId)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe({
                   next: (res) => {

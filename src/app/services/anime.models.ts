@@ -21,16 +21,16 @@ export interface AnimeData {
   images: {
     jpg: {
       image_url: string;
-      large_image_url: string;
+      large_image_url?: string;
     };
   };
   synopsis?: string;
   score?: number;
   members?: number;
   episodes?: number;
-  status: string;
+  status?: string;
   year?: number;
-  genres: Array<{ name: string }>;
+  genres?: Array<{ name: string }>;
 }
 
 /** Elemento di /anime/{id}/recommendations: l'anime consigliato sta in `entry` */
