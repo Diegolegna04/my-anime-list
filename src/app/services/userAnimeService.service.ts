@@ -14,6 +14,17 @@ export interface UserAnime {
   episodesWatched: number;
 }
 
+/** Riassunto dell'anime incluso nella libreria (forma di Jikan, solo i campi usati dalle pagine) */
+export interface LibraryAnimeSummary {
+  mal_id: number;
+  title?: string;
+  title_english?: string | null;
+  episodes?: number | null;
+  type?: string;
+  status?: string;
+  images?: { jpg?: { image_url?: string | null; large_image_url?: string | null } };
+}
+
 export interface LibraryEntry {
   animeId: number;
   status: UserAnime['status'];
@@ -21,7 +32,8 @@ export interface LibraryEntry {
   rating: number;
   isFavorite: boolean;
   inEvidenza: boolean;
-  anime: any | null;
+  /** null se il backend non è riuscito a recuperarlo */
+  anime: LibraryAnimeSummary | null;
 }
 
 @Injectable({
