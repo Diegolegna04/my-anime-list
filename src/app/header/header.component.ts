@@ -7,7 +7,7 @@ import { AuthService } from '../services/auth.service';
 import { Theme, ThemeService } from '../services/theme.service';
 import { Subject, Subscription, of } from 'rxjs';
 import { catchError, debounceTime, filter, map, switchMap } from 'rxjs/operators';
-import { LIST_STATUS_META, UserListService } from '../services/user-list.service';
+import { SearchSuggestComponent } from './search-suggest/search-suggest.component';
 
 /** Battute minime prima di chiedere l'anteprima, e attesa dopo l'ultima */
 const SUGGEST_MIN_CHARS = 3;
@@ -22,7 +22,8 @@ const SCROLL_DELTA = 8;
     ReactiveFormsModule,
     FormsModule,
     CommonModule,
-    RouterLink
+    RouterLink,
+    SearchSuggestComponent
   ],
   templateUrl: './header.component.html',
   standalone: true,
@@ -73,7 +74,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private themeService: ThemeService,
     private elementRef: ElementRef<HTMLElement>,
-    private userList: UserListService,
     private zone: NgZone
   ) {}
 
@@ -194,22 +194,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.suggestOpen = false;
     this.suggestLoading = false;
     this.activeIndex = -1;
-  }
-
-  /** Titolo nella lingua scelta dall'utente nelle liste */
-  suggestionTitle(anime: any): string {
-    const english = localStorage.getItem('titleLanguage') === 'english';
-    return (english ? anime.title_english : null) || anime.title || anime.title_english || '';
-  }
-
-  suggestionMeta(anime: any): string {
-    const parts = [anime.type, anime.year || anime.aired?.prop?.from?.year].filter(Boolean);
-    return parts.join(' · ');
-  }
-
-  suggestionBadge(anime: any) {
-    const status = this.userList.statusOf(anime?.mal_id);
-    return status ? LIST_STATUS_META[status] : null;
   }
 
   private resetSearch(): void {
