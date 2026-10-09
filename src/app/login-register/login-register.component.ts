@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgClass, NgIf } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ToastService } from '../services/toast.service';
@@ -19,7 +18,6 @@ import { ToastService } from '../services/toast.service';
   styleUrl: './login-register.component.css'
 })
 export class LoginRegisterComponent implements OnInit {
-  private apiUrl = '/api/auth';
   isRegistering: boolean = false;
   accessoEffettuato: boolean = false;
   isLoading: boolean = false;
@@ -30,7 +28,6 @@ export class LoginRegisterComponent implements OnInit {
   isResending: boolean = false;
 
   constructor(
-    private http: HttpClient,
     private route: Router,
     private authService: AuthService,
     private toastService: ToastService
@@ -65,28 +62,16 @@ export class LoginRegisterComponent implements OnInit {
     this.isLoading = true;
     this.showResendVerification = false;
 
-    const requestBody = {
-      email: this.loginData.email,
-      password: this.loginData.password,
-      rememberMe: this.loginData.rememberMe
-    };
-
-    this.http.post(`${this.apiUrl}/login`, requestBody, {
-      headers: { 'Content-Type': 'application/json' },
-      withCredentials: true
-    })
-    .subscribe({
+    this.authService
+      .login(this.loginData.email, this.loginData.password, this.loginData.rememberMe)
+      .subscribe({
       next: async (response: any) => {
         this.isLoading = false;
 
         if (response) {
-          if (response.username) localStorage.setItem('username', response.username);
-          if (response.email) localStorage.setItem('email', response.email);
-
           this.toastService.show('Accesso effettuato con successo! Benvenuto.', 'success');
 
           this.accessoEffettuato = true;
-          this.authService.notifyLogin();
 
           setTimeout(async () => {
             await this.route.navigate(['/']);
@@ -141,24 +126,14 @@ export class LoginRegisterComponent implements OnInit {
     }
     this.isLoading = true;
 
-    const requestBody = {
-      username: this.registerData.username,
-      email: this.registerData.email,
-      password: this.registerData.password
-    };
-
-    this.http
-      .post(`${this.apiUrl}/register`, requestBody, {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true,
-      })
+    this.authService
+      .register(this.registerData.username, this.registerData.email, this.registerData.password)
       .subscribe({
         next: async (response: any) => {
           this.isLoading = false;
 
           if (response) {
             this.toastService.show('Registrazione completata! Controlla la tua email per verificare l\'account.', 'success');
-            localStorage.setItem('username', this.registerData.username);
 
             setTimeout(() => {
               this.isRegistering = false;

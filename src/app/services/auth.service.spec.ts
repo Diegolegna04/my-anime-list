@@ -51,6 +51,82 @@ describe('AuthService - logout', () => {
   });
 });
 
+describe('AuthService - login e registrazione', () => {
+  let service: AuthService;
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
+    });
+    service = TestBed.inject(AuthService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+    localStorage.clear();
+  });
+
+  it('login invia email, password e rememberMe con i cookie e aggiorna lo stato locale', async () => {
+    let result: any;
+    service.login('mario@example.com', 'segreta', true).subscribe(r => (result = r));
+
+    const req = httpMock.expectOne('/api/auth/login');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ email: 'mario@example.com', password: 'segreta', rememberMe: true });
+    expect(req.request.withCredentials).toBeTrue();
+    req.flush({ username: 'mario', email: 'mario@example.com' });
+
+    expect(result).toEqual({ username: 'mario', email: 'mario@example.com' });
+    expect(localStorage.getItem('username')).toBe('mario');
+    expect(localStorage.getItem('email')).toBe('mario@example.com');
+    expect(localStorage.getItem('accessoEffettuato')).toBe('true');
+    expect(await firstValueFrom(service.accessoEffettuato$)).toBeTrue();
+
+    // notifyLogin() recupera il profilo
+    const profile = httpMock.expectOne('/api/auth/profile');
+    profile.flush({ username: 'mario', profileImage: 'img.png' });
+    expect(localStorage.getItem('profileImage')).toBe('img.png');
+    expect(service.getCurrentUserData().username).toBe('mario');
+  });
+
+  it('login non scrive nulla e non notifica se il backend risponde con un errore', async () => {
+    let status = 0;
+    service.login('mario@example.com', 'sbagliata', false).subscribe({ error: e => (status = e.status) });
+    httpMock.expectOne('/api/auth/login').flush({ error: 'no' }, { status: 401, statusText: 'Unauthorized' });
+
+    expect(status).toBe(401);
+    expect(localStorage.length).toBe(0);
+    expect(await firstValueFrom(service.accessoEffettuato$)).toBeFalse();
+    httpMock.expectNone('/api/auth/profile');
+  });
+
+  it('register invia username, email e password con i cookie e salva lo username', () => {
+    let result: any;
+    service.register('mario', 'mario@example.com', 'segreta').subscribe(r => (result = r));
+
+    const req = httpMock.expectOne('/api/auth/register');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ username: 'mario', email: 'mario@example.com', password: 'segreta' });
+    expect(req.request.withCredentials).toBeTrue();
+    req.flush({ message: 'ok' });
+
+    expect(result).toEqual({ message: 'ok' });
+    expect(localStorage.getItem('username')).toBe('mario');
+  });
+
+  it('register non scrive nulla se il backend risponde con un errore', () => {
+    let status = 0;
+    service.register('mario', 'mario@example.com', 'segreta').subscribe({ error: e => (status = e.status) });
+    httpMock.expectOne('/api/auth/register').flush({ error: 'dup' }, { status: 409, statusText: 'Conflict' });
+
+    expect(status).toBe(409);
+    expect(localStorage.getItem('username')).toBeNull();
+  });
+});
+
 describe('Route del profilo', () => {
   it('tutte le pagine del profilo richiedono il login', () => {
     const profileRoutes = routes.filter(r => r.path?.startsWith('profile'));

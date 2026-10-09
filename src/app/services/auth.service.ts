@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { LoginRequest} from '../loginrequest';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { LoginRequest, RegisterRequest } from '../loginrequest';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -28,14 +28,35 @@ export class AuthService {
     return userData ? JSON.parse(userData) : null;
   }
 
-  register(username: string, password: string, email: string): Observable<any> {
-    const user = { username, password, email };
-    return this.http.post(`${this.apiUrl}/register`, user, { withCredentials: true });
+  register(username: string, email: string, password: string): Observable<any> {
+    const body: RegisterRequest = { username, email, password };
+    return this.http
+      .post(`${this.apiUrl}/register`, body, {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      })
+      .pipe(
+        tap((response) => {
+          if (response) localStorage.setItem('username', username);
+        })
+      );
   }
 
-  login(username: string, password: string): Observable<any> {
-    const loginRequest: LoginRequest = { username, password };
-    return this.http.post(`${this.apiUrl}/login`, loginRequest, { withCredentials: true });
+  login(email: string, password: string, rememberMe: boolean): Observable<any> {
+    const body: LoginRequest = { email, password, rememberMe };
+    return this.http
+      .post<any>(`${this.apiUrl}/login`, body, {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      })
+      .pipe(
+        tap((response) => {
+          if (!response) return;
+          if (response.username) localStorage.setItem('username', response.username);
+          if (response.email) localStorage.setItem('email', response.email);
+          this.notifyLogin();
+        })
+      );
   }
 
   getUserProfile(): Observable<any> {
