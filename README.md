@@ -2,7 +2,7 @@
 
 ![Angular](https://img.shields.io/badge/Angular-20-DD0031?style=flat-square&logo=angular)
 ![Quarkus](https://img.shields.io/badge/Quarkus-3.x-4695EB?style=flat-square&logo=quarkus)
-![MongoDB](https://img.shields.io/badge/MongoDB-8-47A248?style=flat-square&logo=mongodb)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb)
 ![Vercel](https://img.shields.io/badge/Vercel-deployed-000000?style=flat-square&logo=vercel)
 ![Status](https://img.shields.io/badge/Status-WIP-orange?style=flat-square)
 
@@ -46,7 +46,7 @@ MyAnimeList is great for data, but the UI feels dated and the experience is clun
 |---|---|
 | Frontend | Angular 20 — standalone components, signals, RxJS |
 | Backend | Java 21 · Quarkus 3 · Maven · Panache |
-| Database | MongoDB 8 |
+| Database | MongoDB |
 | Hosting | Vercel (frontend) · Railway (backend + MongoDB) |
 | Anime data | Jikan API v4, with AniList as fallback (handled by the backend) |
 
@@ -169,6 +169,7 @@ The app is live.
 
 ## Roadmap
 
+- [ ] Mobile responsive improvements
 - [ ] Backend repository made public
 - [ ] Multi-language UI support
 - [ ] Anime recommendations based on watch history
