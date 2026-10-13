@@ -1,4 +1,4 @@
-import { provideRouter, Routes } from '@angular/router';
+import { provideRouter, Routes, withInMemoryScrolling } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { AnimeDetailsComponent } from './components/anime-details/anime-details.component';
 import { AnimeSearchComponent } from './components/anime-search/anime-search.component';
@@ -35,5 +35,6 @@ export const routes: Routes = [
 ];
 
 export const appRouterProviders = [
-  provideRouter(routes),
+  // Ogni nuova pagina parte dall'alto; con "indietro" si ritrova il punto in cui si era
+  provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })),
 ];

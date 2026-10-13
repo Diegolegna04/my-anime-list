@@ -202,6 +202,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.closeSuggestions();
     this.query$.next('');
     this.closeMobileMenu();
+    // Altrimenti il campo resta attivo e su telefono la tastiera copre i risultati
+    (document.activeElement as HTMLElement | null)?.blur();
   }
 
   // Metodo fallback per caricare dal localStorage

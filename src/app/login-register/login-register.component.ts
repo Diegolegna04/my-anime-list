@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgClass, NgIf } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Location, NgClass, NgIf } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ToastService } from '../services/toast.service';
+
+// Pagine da cui, dopo il login, non ha senso tornare
+const AUTH_PAGES = ['/register-login', '/verify-email', '/forgot-password', '/reset-password'];
 
 @Component({
   selector: 'app-login-register',
@@ -17,7 +20,7 @@ import { ToastService } from '../services/toast.service';
   standalone: true,
   styleUrl: './login-register.component.css'
 })
-export class LoginRegisterComponent implements OnInit {
+export class LoginRegisterComponent implements OnInit, OnDestroy {
   isRegistering: boolean = false;
   accessoEffettuato: boolean = false;
   isLoading: boolean = false;
@@ -27,14 +30,27 @@ export class LoginRegisterComponent implements OnInit {
   showResendVerification: boolean = false;
   isResending: boolean = false;
 
+  // Pagina dell'app aperta prima del login (null se si è arrivati qui direttamente)
+  private readonly previousUrl: string | null;
+  private redirectTimer?: ReturnType<typeof setTimeout>;
+
   constructor(
     private route: Router,
+    private activatedRoute: ActivatedRoute,
+    private location: Location,
     private authService: AuthService,
     private toastService: ToastService
-  ) {}
+  ) {
+    // Letto nel costruttore: la navigazione verso questa pagina è ancora in corso
+    this.previousUrl = this.route.getCurrentNavigation()?.previousNavigation?.finalUrl?.toString() ?? null;
+  }
 
   ngOnInit(): void {
     this.accessoEffettuato = JSON.parse(localStorage.getItem('accessoEffettuato') || 'false');
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.redirectTimer);
   }
 
   loginData = {
@@ -73,9 +89,7 @@ export class LoginRegisterComponent implements OnInit {
 
           this.accessoEffettuato = true;
 
-          setTimeout(async () => {
-            await this.route.navigate(['/']);
-          }, 1500);
+          this.redirectTimer = setTimeout(() => this.leaveAfterLogin(), 1500);
         }
       },
       error: (error: any) => {
@@ -94,6 +108,24 @@ export class LoginRegisterComponent implements OnInit {
         }
       }
     });
+  }
+
+  /**
+   * Dopo il login si torna indietro invece di aprire una pagina nuova, così il tasto
+   * "indietro" non riporta al form. Se il guard aveva bloccato una pagina si va a quella;
+   * se non c'è una pagina utile da cui tornare si va alla home. Negli ultimi due casi
+   * il login viene sostituito nella cronologia.
+   */
+  private leaveAfterLogin(): void {
+    const returnUrl = this.activatedRoute.snapshot.queryParamMap.get('returnUrl');
+    const previousUrl = this.previousUrl;
+    if (returnUrl?.startsWith('/')) {
+      this.route.navigateByUrl(returnUrl, { replaceUrl: true });
+    } else if (previousUrl && !AUTH_PAGES.some(page => previousUrl.startsWith(page))) {
+      this.location.back();
+    } else {
+      this.route.navigate(['/'], { replaceUrl: true });
+    }
   }
 
   /** Il backend risponde con {"error": "..."}: il suo messaggio è già pensato per l'utente */
