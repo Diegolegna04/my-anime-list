@@ -5,13 +5,12 @@
   position: sticky;
   top: 0;
   z-index: 999;
-  transition: transform var(--dur) var(--ease-out);
 }
 
-/* Scorrendo in giù esce verso l'alto. Il transform c'è solo da nascosto: un
-   transform sempre attivo confinerebbe il menu mobile (position: fixed) nell'header */
-:host(.header-hidden) {
-  transform: translateY(-100%);
+/* Lo spostamento (transform inline) segue lo scroll senza transizione; questa
+   serve solo all'aggancio finale, a tutto aperto o tutto chiuso */
+:host(.header-settling) {
+  transition: transform var(--dur) var(--ease-out);
 }
 
 .app-header {

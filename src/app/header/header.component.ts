@@ -13,8 +13,8 @@ import { SearchSuggestComponent } from './search-suggest/search-suggest.componen
 const SUGGEST_MIN_CHARS = 3;
 const SUGGEST_DEBOUNCE_MS = 350;
 
-/** Pixel di scroll nella stessa direzione prima di nascondere o mostrare l'header (evita lo sfarfallio) */
-const SCROLL_DELTA = 8;
+/** Pausa nello scroll dopo la quale l'header a metà si aggancia aperto o chiuso */
+const SCROLL_IDLE_MS = 120;
 
 @Component({
   selector: 'app-header',
@@ -29,7 +29,6 @@ const SCROLL_DELTA = 8;
   standalone: true,
   styleUrls: ['./header.component.css'],
   host: {
-    '[class.header-hidden]': 'isHidden',
     // Con il Tab si può entrare nell'header anche quando è nascosto: ricompare
     '(focusin)': 'reveal()'
   }
@@ -55,17 +54,32 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private authStatusSubscription!: Subscription;
   private userDataSubscription!: Subscription;
 
-  /** Nascosto scorrendo verso il basso, ricompare scorrendo verso l'alto */
-  isHidden = false;
+  /**
+   * Pixel di header spinti fuori dallo schermo (0 = tutto visibile). Seguono lo
+   * scroll uno a uno, come la barra del browser sul telefono: niente scatti a soglia.
+   */
+  private offset = 0;
   private lastScrollY = 0;
+  private lastDirection = 0;
   private scrollFrame = 0;
+  private idleTimer = 0;
+  private touching = false;
   private readonly onScroll = () => {
-    // Un solo controllo per frame, e fuori da Angular: si rientra solo se lo stato cambia
-    if (this.scrollFrame) return;
-    this.scrollFrame = requestAnimationFrame(() => {
-      this.scrollFrame = 0;
-      this.updateVisibility();
-    });
+    // Un solo aggiornamento per frame, fuori da Angular: si scrive solo lo stile dell'host
+    if (!this.scrollFrame) {
+      this.scrollFrame = requestAnimationFrame(() => {
+        this.scrollFrame = 0;
+        this.followScroll();
+      });
+    }
+    clearTimeout(this.idleTimer);
+    this.idleTimer = window.setTimeout(() => this.settle(), SCROLL_IDLE_MS);
+  };
+  private readonly onTouchStart = () => (this.touching = true);
+  private readonly onTouchEnd = () => {
+    this.touching = false;
+    clearTimeout(this.idleTimer);
+    this.idleTimer = window.setTimeout(() => this.settle(), SCROLL_IDLE_MS);
   };
 
   constructor(
@@ -81,7 +95,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.currentTheme = this.themeService.getCurrentTheme();
     this.setupSuggestions();
     this.lastScrollY = window.scrollY;
-    this.zone.runOutsideAngular(() => window.addEventListener('scroll', this.onScroll, { passive: true }));
+    this.zone.runOutsideAngular(() => {
+      window.addEventListener('scroll', this.onScroll, { passive: true });
+      window.addEventListener('touchstart', this.onTouchStart, { passive: true });
+      window.addEventListener('touchend', this.onTouchEnd, { passive: true });
+      window.addEventListener('touchcancel', this.onTouchEnd, { passive: true });
+    });
     // Cambiando pagina l'anteprima si chiude
     this.navigationSubscription = this.router.events
       .pipe(filter((event) => event instanceof NavigationStart))
@@ -117,7 +136,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('touchstart', this.onTouchStart);
+    window.removeEventListener('touchend', this.onTouchEnd);
+    window.removeEventListener('touchcancel', this.onTouchEnd);
     if (this.scrollFrame) cancelAnimationFrame(this.scrollFrame);
+    clearTimeout(this.idleTimer);
     // Disiscriviti da entrambe le subscription
     if (this.authStatusSubscription) {
       this.authStatusSubscription.unsubscribe();
@@ -236,26 +259,49 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * In cima alla pagina l'header si vede sempre; più giù si nasconde scendendo e
-   * ricompare salendo. Resta fermo se c'è qualcosa di aperto o il focus è dentro.
+   * Scendendo l'header esce verso l'alto di quanto si è scrollato, salendo rientra
+   * allo stesso modo. Resta fermo se c'è qualcosa di aperto o il focus è dentro.
    */
-  private updateVisibility(): void {
-    const y = Math.max(0, window.scrollY);
+  private followScroll(): void {
+    // Il rimbalzo di iOS oltre la cima o il fondo non conta come scroll
+    const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const y = Math.min(Math.max(0, window.scrollY), maxY);
     const delta = y - this.lastScrollY;
-    const headerHeight = this.elementRef.nativeElement.offsetHeight;
-    let hidden = this.isHidden;
+    this.lastScrollY = y;
+    if (delta) this.lastDirection = Math.sign(delta);
 
-    if (y <= headerHeight || this.mustStayVisible()) {
-      hidden = false;
-      this.lastScrollY = y;
-    } else if (Math.abs(delta) >= SCROLL_DELTA) {
-      hidden = delta > 0;
-      this.lastScrollY = y;
+    if (this.mustStayVisible()) {
+      this.setOffset(0, true);
+      return;
     }
+    const height = this.elementRef.nativeElement.offsetHeight;
+    // Vicino alla cima non si nasconde più di quanto la pagina è scesa: esce insieme al contenuto
+    this.setOffset(Math.min(Math.max(this.offset + delta, 0), height, y), false);
+  }
 
-    if (hidden !== this.isHidden) {
-      this.zone.run(() => (this.isHidden = hidden));
-    }
+  /** A scroll fermo (e dito alzato) un header a metà si chiude o si riapre del tutto */
+  private settle(): void {
+    if (this.touching) return;
+    const height = this.elementRef.nativeElement.offsetHeight;
+    if (this.offset === 0 || this.offset >= height) return;
+    // Vince la direzione dell'ultimo movimento: chi risale lo vuole vedere, chi scende no.
+    // Un quarto di header fa da margine contro i pochi pixel di un dito appoggiato
+    const threshold = this.lastDirection > 0 ? height / 4 : (height * 3) / 4;
+    const hide = this.offset > threshold && this.lastScrollY >= height && !this.mustStayVisible();
+    this.setOffset(hide ? height : 0, true);
+  }
+
+  /**
+   * Scrive lo spostamento direttamente sull'host, senza change detection. Il transform
+   * c'è solo da spostato: uno sempre attivo confinerebbe il menu mobile (position: fixed)
+   * nell'header. La transizione serve solo all'aggancio finale, non mentre si segue il dito.
+   */
+  private setOffset(value: number, animate: boolean): void {
+    const host = this.elementRef.nativeElement;
+    host.classList.toggle('header-settling', animate);
+    if (value === this.offset) return;
+    this.offset = value;
+    host.style.transform = value ? `translate3d(0, ${-value}px, 0)` : '';
   }
 
   private mustStayVisible(): boolean {
@@ -267,8 +313,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return this.showMobileMenu || this.showDropdown || this.suggestOpen || keyboardFocusInside;
   }
 
-  reveal(): void {
-    this.isHidden = false;
+  reveal(animate = true): void {
+    this.setOffset(0, animate);
   }
 
   /** Esc chiude menu del profilo e menu mobile */
@@ -294,7 +340,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // Mobile menu methods
   toggleMobileMenu(): void {
     this.showMobileMenu = !this.showMobileMenu;
-    this.reveal();
+    // Subito, senza transizione: durante l'animazione il transform confinerebbe l'overlay del menu
+    this.reveal(false);
 
     // Prevent body scrolling when menu is open
     if (this.showMobileMenu) {
