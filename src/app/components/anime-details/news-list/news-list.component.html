@@ -1,4 +1,4 @@
-@if (news.length > 0) {
+@if (status === 'ready' && news.length > 0) {
   <section class="news-section">
     <div class="news-header">
       <h2 class="section-title">News</h2>
@@ -46,10 +46,31 @@
     }
   </section>
 } @else {
-  <div class="news-section empty">
-    <div class="state">
-      <span class="state-icon" aria-hidden="true"><i class="fas fa-newspaper"></i></span>
-      <p class="state-text">Nessuna news disponibile per questo anime.</p>
-    </div>
+  <div class="news-section empty" [attr.aria-busy]="status === 'loading'">
+    @switch (status) {
+      @case ('loading') {
+        <p class="news-loading" role="status">
+          <span class="spinner spinner-sm" aria-hidden="true"></span>
+          Cerco le news...
+        </p>
+      }
+      @case ('error') {
+        <div class="state state-error" role="status">
+          <span class="state-icon" aria-hidden="true"><i class="fas fa-exclamation-triangle"></i></span>
+          <!-- AniList non ha news: quando Jikan non risponde non c'è un'alternativa -->
+          <p class="state-text">Le news arrivano da MyAnimeList, che in questo momento non risponde.</p>
+          <button type="button" class="btn btn-secondary btn-sm" (click)="retry.emit()">
+            <i class="fas fa-redo" aria-hidden="true"></i>
+            Riprova
+          </button>
+        </div>
+      }
+      @default {
+        <div class="state">
+          <span class="state-icon" aria-hidden="true"><i class="fas fa-newspaper"></i></span>
+          <p class="state-text">Nessuna news disponibile per questo anime.</p>
+        </div>
+      }
+    }
   </div>
 }

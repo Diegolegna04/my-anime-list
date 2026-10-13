@@ -102,6 +102,13 @@
   padding: 1rem;
 }
 
+.streaming-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
 .streaming-loading {
   display: flex;
   align-items: center;

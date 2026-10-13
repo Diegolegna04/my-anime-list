@@ -105,7 +105,9 @@
 
         <!-- News Section -->
         <app-news-list
-          [news]="news">
+          [news]="news"
+          [status]="newsStatus"
+          (retry)="loadAnimeNews()">
         </app-news-list>
       </div>
 

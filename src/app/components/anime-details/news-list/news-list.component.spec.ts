@@ -20,4 +20,24 @@ describe('NewsListComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('durante il caricamento non dice che le news non ci sono', () => {
+    fixture.componentRef.setInput('status', 'loading');
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain('Cerco le news...');
+    expect(text).not.toContain('Nessuna news disponibile');
+  });
+
+  it('con il servizio giù lo dice e permette di riprovare', () => {
+    const retry = jasmine.createSpy('retry');
+    component.retry.subscribe(retry);
+    fixture.componentRef.setInput('status', 'error');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('MyAnimeList, che in questo momento non risponde');
+    (fixture.nativeElement.querySelector('.state-error button') as HTMLButtonElement).click();
+    expect(retry).toHaveBeenCalled();
+  });
 });

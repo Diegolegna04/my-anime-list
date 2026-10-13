@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AnimeNews } from '../../../services/anime.models';
 
@@ -13,6 +13,9 @@ export type { AnimeNews };
 })
 export class NewsListComponent implements OnChanges {
   @Input() news: AnimeNews[] = [];
+  /** Prima "Nessuna news" compariva anche durante il caricamento e quando il servizio era giù */
+  @Input() status: 'loading' | 'ready' | 'error' = 'ready';
+  @Output() retry = new EventEmitter<void>();
 
   displayedNews: AnimeNews[] = [];
   isExpanded: boolean = false;

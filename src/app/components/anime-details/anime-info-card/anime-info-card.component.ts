@@ -13,6 +13,19 @@ export interface StreamingService {
   url: string;
 }
 
+/**
+ * Servizi che dall'Italia non si possono usare: attivi solo negli USA (Hulu, Tubi, Hoopla,
+ * Adult Swim), canali YouTube bloccati fuori dall'Asia (Muse Asia, Ani-One) o chiusi
+ * (Funimation, VRV). Né Jikan né AniList dicono in quali paesi vale un link: è una lista
+ * di servizi noti, non un controllo del catalogo italiano.
+ */
+const NOT_IN_ITALY = ['hulu', 'tubi', 'hoopla', 'adult swim', 'funimation', 'vrv', 'muse asia', 'ani-one'];
+
+export function isAvailableInItaly(service: StreamingService): boolean {
+  const name = service.name.toLowerCase();
+  return !NOT_IN_ITALY.some((blocked) => name.includes(blocked));
+}
+
 export interface AnimeInfo {
   episodes: number | null;
   score: number | null;
@@ -115,6 +128,19 @@ export class AnimeInfoCardComponent {
     return this.streamingServices && this.streamingServices.length > 0;
   }
 
+  /** Link utilizzabili dall'Italia, mostrati come pulsanti */
+  get italianServices(): StreamingService[] {
+    return (this.streamingServices || []).filter(isAvailableInItaly);
+  }
+
+  /** Nomi dei servizi esteri, citati in una riga senza link */
+  get foreignServiceNames(): string {
+    const names = (this.streamingServices || [])
+      .filter((service) => !isAvailableInItaly(service))
+      .map((service) => service.name);
+    return [...new Set(names)].join(', ');
+  }
+
   /**
    * Ottiene l'icona Font Awesome per il voto
    */
@@ -156,10 +182,11 @@ export class AnimeInfoCardComponent {
   }
 
   /**
-   * Traccia i generi per ngFor optimization
+   * Traccia i generi per nome: quelli del ripiego AniList non hanno mal_id,
+   * e con l'id la chiave risultava vuota e ripetuta (avviso NG0955)
    */
-  trackByGenreId(index: number, genre: Genre): number {
-    return genre.mal_id;
+  trackByGenreName(index: number, genre: Genre): string {
+    return genre.name;
   }
 
   /**

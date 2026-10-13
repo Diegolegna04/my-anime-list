@@ -47,6 +47,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   streamingStatus: LoadStatus = 'loading';
   isLoggedIn = false;
   news: any[] = [];
+  newsStatus: LoadStatus = 'loading';
   userAnimeData: UserAnime | null = null;
   animeState: AnimeState = 'non visto';
   voto: number = 0;
@@ -188,16 +189,21 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
       });
   }
 
-  private loadAnimeNews(): void {
+  loadAnimeNews(): void {
+    this.newsStatus = 'loading';
     this.animeService.getNews(this.animeId)
       .pipe(takeUntil(this.reload$))
       .subscribe({
         next: (response) => {
           this.news = response.data || [];
+          this.newsStatus = 'ready';
+          this.cdr.markForCheck();
         },
         error: (error) => {
           console.error('Errore caricamento news:', error);
           this.news = [];
+          this.newsStatus = 'error';
+          this.cdr.markForCheck();
         }
       });
   }
