@@ -12,9 +12,8 @@ describe('SeasonalAnimePageComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SeasonalAnimePageComponent],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
-    })
-    .compileComponents();
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SeasonalAnimePageComponent);
     component = fixture.componentInstance;

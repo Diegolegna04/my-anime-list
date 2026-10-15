@@ -21,10 +21,18 @@ interface GenreItem extends Genre {
 
 // Ordine delle sezioni: prima ciò che si esplora di più, gli espliciti in fondo
 const CATEGORIES: CategoryMeta[] = [
-  { id: 'genres', label: 'Generi', intro: 'Il tipo di storia: cosa racconta e che emozioni cerca.' },
+  {
+    id: 'genres',
+    label: 'Generi',
+    intro: 'Il tipo di storia: cosa racconta e che emozioni cerca.',
+  },
   { id: 'themes', label: 'Temi', intro: 'Ambientazioni, argomenti e motivi ricorrenti.' },
-  { id: 'demographics', label: 'Demografie', intro: 'Il pubblico a cui l\'opera è rivolta.' },
-  { id: 'explicit_genres', label: 'Espliciti', intro: 'Contenuti a sfondo sessuale, per un pubblico adulto.' }
+  { id: 'demographics', label: 'Demografie', intro: "Il pubblico a cui l'opera è rivolta." },
+  {
+    id: 'explicit_genres',
+    label: 'Espliciti',
+    intro: 'Contenuti a sfondo sessuale, per un pubblico adulto.',
+  },
 ];
 
 // Minuscolo e senza accenti, così "comedia" o "citta" trovano comunque il testo
@@ -37,7 +45,7 @@ function normalize(text: string): string {
   standalone: true,
   templateUrl: './genres.component.html',
   styleUrls: ['./genres.component.css'],
-  imports: [RouterLink]
+  imports: [RouterLink],
 })
 export class GenresComponent implements OnInit {
   private genreService = inject(GenreService);
@@ -56,7 +64,7 @@ export class GenresComponent implements OnInit {
   private readonly matching = computed(() => {
     const q = normalize(this.query().trim());
     const all = this.genres();
-    return q ? all.filter(g => g.searchText.includes(q)) : all;
+    return q ? all.filter((g) => g.searchText.includes(q)) : all;
   });
 
   readonly totalCount = computed(() => this.genres().length);
@@ -64,7 +72,12 @@ export class GenresComponent implements OnInit {
 
   /** Quanti risultati ha ogni categoria con la ricerca attuale (per i filtri) */
   readonly countByCategory = computed(() => {
-    const counts: Record<GenreCategory, number> = { genres: 0, themes: 0, demographics: 0, explicit_genres: 0 };
+    const counts: Record<GenreCategory, number> = {
+      genres: 0,
+      themes: 0,
+      demographics: 0,
+      explicit_genres: 0,
+    };
     for (const g of this.matching()) counts[g.category]++;
     return counts;
   });
@@ -72,15 +85,14 @@ export class GenresComponent implements OnInit {
   readonly sections = computed(() => {
     const active = this.activeCategory();
     const byCount = this.sortOrder() === 'count';
-    return CATEGORIES
-      .filter(c => active === 'all' || c.id === active)
-      .map(c => ({
+    return CATEGORIES.filter((c) => active === 'all' || c.id === active)
+      .map((c) => ({
         ...c,
         items: this.matching()
-          .filter(g => g.category === c.id)
-          .sort((a, b) => byCount ? b.count - a.count : a.name.localeCompare(b.name, 'en'))
+          .filter((g) => g.category === c.id)
+          .sort((a, b) => (byCount ? b.count - a.count : a.name.localeCompare(b.name, 'en'))),
       }))
-      .filter(s => s.items.length > 0);
+      .filter((s) => s.items.length > 0);
   });
 
   ngOnInit(): void {
@@ -90,17 +102,24 @@ export class GenresComponent implements OnInit {
   loadGenres(): void {
     this.status.set('loading');
     this.genreService.getAllGenres().subscribe({
-      next: genres => {
-        this.genres.set(genres.map(g => {
-          const description = getGenreShortDescription(g.id) ?? '';
-          return { ...g, description, icon: getGenreIcon(g.id), searchText: normalize(`${g.name} ${description}`) };
-        }));
+      next: (genres) => {
+        this.genres.set(
+          genres.map((g) => {
+            const description = getGenreShortDescription(g.id) ?? '';
+            return {
+              ...g,
+              description,
+              icon: getGenreIcon(g.id),
+              searchText: normalize(`${g.name} ${description}`),
+            };
+          }),
+        );
         this.status.set('ready');
       },
-      error: error => {
+      error: (error) => {
         console.error('Errore nel caricamento dei generi:', error);
         this.status.set('error');
-      }
+      },
     });
   }
 

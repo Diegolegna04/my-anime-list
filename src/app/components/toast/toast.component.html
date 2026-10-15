@@ -1,10 +1,12 @@
-<div class="toast-container"
-     role="status"
-     aria-live="polite"
-     [class.show]="toastService.toast().show"
-     [class.success]="toastService.toast().type === 'success'"
-     [class.error]="toastService.toast().type === 'error'"
-     [class.info]="toastService.toast().type === 'info'">
+<div
+  class="toast-container"
+  role="status"
+  aria-live="polite"
+  [class.show]="toastService.toast().show"
+  [class.success]="toastService.toast().type === 'success'"
+  [class.error]="toastService.toast().type === 'error'"
+  [class.info]="toastService.toast().type === 'info'"
+>
   <div class="toast-content">
     <div class="toast-icon" aria-hidden="true">
       @if (toastService.toast().type === 'success') {
@@ -18,7 +20,12 @@
       }
     </div>
     <div class="toast-message">{{ toastService.toast().message }}</div>
-    <button type="button" class="toast-close" (click)="toastService.close()" aria-label="Chiudi notifica">
+    <button
+      type="button"
+      class="toast-close"
+      (click)="toastService.close()"
+      aria-label="Chiudi notifica"
+    >
       <i class="fas fa-times" aria-hidden="true"></i>
     </button>
   </div>

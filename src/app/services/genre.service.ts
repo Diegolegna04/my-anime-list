@@ -36,13 +36,18 @@ export class GenreService {
   constructor(private http: HttpClient) {
     // Una sola richiesta (prima erano 4 in parallelo, che facevano scattare anche il 429)
     this.genres$ = this.http.get<any>(this.genresUrl).pipe(
-      map(response => (response.data || []).map((g: any) => ({
-        id: g.mal_id,
-        name: g.name,
-        category: categoryOf(g.mal_id),
-        count: g.count ?? 0
-      } as Genre))),
-      shareReplay(1)
+      map((response) =>
+        (response.data || []).map(
+          (g: any) =>
+            ({
+              id: g.mal_id,
+              name: g.name,
+              category: categoryOf(g.mal_id),
+              count: g.count ?? 0,
+            }) as Genre,
+        ),
+      ),
+      shareReplay(1),
     );
   }
 
@@ -51,12 +56,12 @@ export class GenreService {
   }
 
   getGenresByCategory(category: GenreCategory): Observable<Genre[]> {
-    return this.genres$.pipe(map(genres => genres.filter(g => g.category === category)));
+    return this.genres$.pipe(map((genres) => genres.filter((g) => g.category === category)));
   }
 
   getGenreName(id: number): Observable<string> {
     return this.genres$.pipe(
-      map(genres => genres.find(g => g.id === id)?.name || 'Sconosciuto')
+      map((genres) => genres.find((g) => g.id === id)?.name || 'Sconosciuto'),
     );
   }
 }

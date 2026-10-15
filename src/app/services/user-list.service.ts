@@ -10,7 +10,7 @@ export const LIST_STATUS_META: Record<ListStatus, { label: string; icon: string;
   completed: { label: 'Completato', icon: 'fa-check', tone: 'var(--status-completed)' },
   plan_to_watch: { label: 'Da vedere', icon: 'fa-bookmark', tone: 'var(--status-plan)' },
   on_hold: { label: 'In pausa', icon: 'fa-pause', tone: 'var(--status-on-hold)' },
-  dropped: { label: 'Droppato', icon: 'fa-times', tone: 'var(--status-dropped)' }
+  dropped: { label: 'Droppato', icon: 'fa-times', tone: 'var(--status-dropped)' },
 };
 
 /**
@@ -22,7 +22,10 @@ export const LIST_STATUS_META: Record<ListStatus, { label: string; icon: string;
 export class UserListService {
   private readonly statuses = signal<ReadonlyMap<number, ListStatus>>(new Map());
 
-  constructor(private http: HttpClient, authService: AuthService) {
+  constructor(
+    private http: HttpClient,
+    authService: AuthService,
+  ) {
     authService.accessoEffettuato$.subscribe((loggedIn) => {
       if (loggedIn) {
         this.load();
@@ -50,7 +53,10 @@ export class UserListService {
   }
 
   private load(): void {
-    this.http.get<{ animeId: number; status: ListStatus }[]>('/api/user-anime/statuses', { withCredentials: true })
+    this.http
+      .get<{ animeId: number; status: ListStatus }[]>('/api/user-anime/statuses', {
+        withCredentials: true,
+      })
       .subscribe({
         next: (entries) => {
           const map = new Map<number, ListStatus>();
@@ -60,7 +66,7 @@ export class UserListService {
           this.statuses.set(map);
         },
         // Senza segnalini il sito funziona lo stesso: nessun messaggio all'utente
-        error: () => this.statuses.set(new Map())
+        error: () => this.statuses.set(new Map()),
       });
   }
 }

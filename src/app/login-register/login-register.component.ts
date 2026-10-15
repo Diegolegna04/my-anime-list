@@ -10,15 +10,10 @@ const AUTH_PAGES = ['/register-login', '/verify-email', '/forgot-password', '/re
 
 @Component({
   selector: 'app-login-register',
-  imports: [
-    FormsModule,
-    NgClass,
-    NgIf,
-    RouterLink,
-  ],
+  imports: [FormsModule, NgClass, NgIf, RouterLink],
   templateUrl: './login-register.component.html',
   standalone: true,
-  styleUrl: './login-register.component.css'
+  styleUrl: './login-register.component.css',
 })
 export class LoginRegisterComponent implements OnInit, OnDestroy {
   isRegistering = false;
@@ -39,10 +34,11 @@ export class LoginRegisterComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private location: Location,
     private authService: AuthService,
-    private toastService: ToastService
+    private toastService: ToastService,
   ) {
     // Letto nel costruttore: la navigazione verso questa pagina è ancora in corso
-    this.previousUrl = this.route.getCurrentNavigation()?.previousNavigation?.finalUrl?.toString() ?? null;
+    this.previousUrl =
+      this.route.getCurrentNavigation()?.previousNavigation?.finalUrl?.toString() ?? null;
   }
 
   ngOnInit(): void {
@@ -81,33 +77,36 @@ export class LoginRegisterComponent implements OnInit, OnDestroy {
     this.authService
       .login(this.loginData.email, this.loginData.password, this.loginData.rememberMe)
       .subscribe({
-      next: async (response: any) => {
-        this.isLoading = false;
+        next: async (response: any) => {
+          this.isLoading = false;
 
-        if (response) {
-          this.toastService.show('Accesso effettuato con successo! Benvenuto.', 'success');
+          if (response) {
+            this.toastService.show('Accesso effettuato con successo! Benvenuto.', 'success');
 
-          this.accessoEffettuato = true;
+            this.accessoEffettuato = true;
 
-          this.redirectTimer = setTimeout(() => this.leaveAfterLogin(), 1500);
-        }
-      },
-      error: (error: any) => {
-        this.isLoading = false;
-        if (error.status === 401) {
-          this.toastService.show('Credenziali non valide. Controlla email e password.', 'error');
-        } else if (error.status === 403 && error?.error?.code === 'EMAIL_NOT_VERIFIED') {
-          this.toastService.show('Devi verificare la tua email prima di accedere.', 'error');
-          this.showResendVerification = true;
-        } else if (error.status === 400 || error.status === 429) {
-          this.toastService.show(this.serverMessage(error, 'Controlla i dati inseriti.'), 'error');
-        } else if (error.status === 500) {
-          this.toastService.show('Errore del server. Riprova più tardi.', 'error');
-        } else {
-          this.toastService.show('Si è verificato un errore. Riprova.', 'error');
-        }
-      }
-    });
+            this.redirectTimer = setTimeout(() => this.leaveAfterLogin(), 1500);
+          }
+        },
+        error: (error: any) => {
+          this.isLoading = false;
+          if (error.status === 401) {
+            this.toastService.show('Credenziali non valide. Controlla email e password.', 'error');
+          } else if (error.status === 403 && error?.error?.code === 'EMAIL_NOT_VERIFIED') {
+            this.toastService.show('Devi verificare la tua email prima di accedere.', 'error');
+            this.showResendVerification = true;
+          } else if (error.status === 400 || error.status === 429) {
+            this.toastService.show(
+              this.serverMessage(error, 'Controlla i dati inseriti.'),
+              'error',
+            );
+          } else if (error.status === 500) {
+            this.toastService.show('Errore del server. Riprova più tardi.', 'error');
+          } else {
+            this.toastService.show('Si è verificato un errore. Riprova.', 'error');
+          }
+        },
+      });
   }
 
   /**
@@ -121,7 +120,7 @@ export class LoginRegisterComponent implements OnInit, OnDestroy {
     const previousUrl = this.previousUrl;
     if (returnUrl?.startsWith('/')) {
       this.route.navigateByUrl(returnUrl, { replaceUrl: true });
-    } else if (previousUrl && !AUTH_PAGES.some(page => previousUrl.startsWith(page))) {
+    } else if (previousUrl && !AUTH_PAGES.some((page) => previousUrl.startsWith(page))) {
       this.location.back();
     } else {
       this.route.navigate(['/'], { replaceUrl: true });
@@ -140,13 +139,19 @@ export class LoginRegisterComponent implements OnInit, OnDestroy {
     this.authService.resendVerification(this.loginData.email).subscribe({
       next: () => {
         this.isResending = false;
-        this.toastService.show('Se l\'indirizzo non è ancora verificato, riceverai una nuova email a breve.', 'success');
+        this.toastService.show(
+          "Se l'indirizzo non è ancora verificato, riceverai una nuova email a breve.",
+          'success',
+        );
       },
       error: (error: any) => {
         this.isResending = false;
-        const fallback = 'Impossibile inviare l\'email in questo momento. Riprova più tardi.';
-        this.toastService.show(error.status === 429 ? this.serverMessage(error, fallback) : fallback, 'error');
-      }
+        const fallback = "Impossibile inviare l'email in questo momento. Riprova più tardi.";
+        this.toastService.show(
+          error.status === 429 ? this.serverMessage(error, fallback) : fallback,
+          'error',
+        );
+      },
     });
   }
 
@@ -165,7 +170,10 @@ export class LoginRegisterComponent implements OnInit, OnDestroy {
           this.isLoading = false;
 
           if (response) {
-            this.toastService.show('Registrazione completata! Controlla la tua email per verificare l\'account.', 'success');
+            this.toastService.show(
+              "Registrazione completata! Controlla la tua email per verificare l'account.",
+              'success',
+            );
 
             setTimeout(() => {
               this.isRegistering = false;
@@ -177,15 +185,21 @@ export class LoginRegisterComponent implements OnInit, OnDestroy {
           this.isLoading = false;
           if (error.status === 409) {
             // "Email già registrata" oppure "Nome utente già in uso"
-            this.toastService.show(this.serverMessage(error, 'Email già registrata. Prova con un\'altra email.'), 'error');
+            this.toastService.show(
+              this.serverMessage(error, "Email già registrata. Prova con un'altra email."),
+              'error',
+            );
           } else if (error.status === 400 || error.status === 429) {
-            this.toastService.show(this.serverMessage(error, 'Controlla i dati inseriti.'), 'error');
+            this.toastService.show(
+              this.serverMessage(error, 'Controlla i dati inseriti.'),
+              'error',
+            );
           } else if (error.status === 500) {
             this.toastService.show('Errore del server. Riprova più tardi.', 'error');
           } else {
             this.toastService.show('Si è verificato un errore. Riprova.', 'error');
           }
-        }
+        },
       });
   }
 

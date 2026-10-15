@@ -8,9 +8,8 @@ describe('RecommendedAnimeSidebarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RecommendedAnimeSidebarComponent]
-    })
-    .compileComponents();
+      imports: [RecommendedAnimeSidebarComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(RecommendedAnimeSidebarComponent);
     component = fixture.componentInstance;

@@ -1,4 +1,14 @@
-import { ChangeDetectorRef, Component, ElementRef, HostListener, Injector, OnInit, OnDestroy, ViewChild, afterNextRender } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  Injector,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  afterNextRender,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
@@ -16,14 +26,15 @@ import { FriendsPanelComponent } from './friends-panel/friends-panel.component';
   selector: 'app-user-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
-  imports: [TitleLanguageToggleComponent, 
+  imports: [
+    TitleLanguageToggleComponent,
     RouterLink,
     DragDropModule,
     FormsModule,
     FriendsPanelComponent,
-    CdkTrapFocus
+    CdkTrapFocus,
   ],
-  standalone: true
+  standalone: true,
 })
 export class ProfileComponent implements OnInit, OnDestroy {
   profileImage: string = DEFAULT_PROFILE_IMAGE;
@@ -60,7 +71,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     email: '',
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   };
 
   private userDataSubscription!: Subscription;
@@ -71,13 +82,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private userAnimeService: UserAnimeService,
     private authService: AuthService,
     private toastService: ToastService,
-    private injector: Injector
+    private injector: Injector,
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
+    this.titleLanguage =
+      (localStorage.getItem('titleLanguage') as 'english' | 'original') || 'original';
 
-    this.userDataSubscription = this.authService.userData$.subscribe(userData => {
+    this.userDataSubscription = this.authService.userData$.subscribe((userData) => {
       if (userData) {
         this.username = userData.username || '';
         this.email = userData.email || '';
@@ -104,20 +116,22 @@ export class ProfileComponent implements OnInit, OnDestroy {
     try {
       const [statsData, evidenzaData] = await Promise.all([
         this.loadUserStats(),
-        this.loadInEvidenza()
+        this.loadInEvidenza(),
       ]);
 
       // "Tutti gli anime" = quelli iniziati (visti, in visione, in pausa, droppati):
       // i "Da vedere" hanno il loro riquadro e non si contano qui
-      this.totalAnimeCount = (statsData.watchedCount || 0) + (statsData.watchingCount || 0)
-        + (statsData.onHoldCount || 0) + (statsData.droppedCount || 0);
+      this.totalAnimeCount =
+        (statsData.watchedCount || 0) +
+        (statsData.watchingCount || 0) +
+        (statsData.onHoldCount || 0) +
+        (statsData.droppedCount || 0);
       this.planToWatchCount = statsData.planToWatchCount || 0;
       this.watchedAnimeCount = statsData.watchedCount || 0;
       this.watchingAnimeCount = statsData.watchingCount || 0;
       this.animePreferiti = statsData.favoritesCount || 0;
 
       this.inEvidenza = evidenzaData;
-
     } catch (error) {
       console.error('Errore nel caricamento dei dati del profilo:', error);
     } finally {
@@ -146,16 +160,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
       evidenzaData.sort((a: any, b: any) => a.evidenzaOrder - b.evidenzaOrder);
 
       const animeDetailsPromises = evidenzaData.map((userAnime: any) =>
-        firstValueFrom(this.animeService.getAnimeById(userAnime.animeId))
+        firstValueFrom(this.animeService.getAnimeById(userAnime.animeId)),
       );
 
       const responses = await Promise.all(animeDetailsPromises);
 
       return responses.map((res, index) => ({
         ...res.data,
-        animeId: evidenzaData[index].animeId
+        animeId: evidenzaData[index].animeId,
       }));
-
     } catch (error) {
       console.error('Errore nel caricamento anime in evidenza:', error);
       return [];
@@ -195,10 +208,16 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   get hasUnsavedChanges(): boolean {
-    return !!this.pendingProfileImage
-      || this.settingsData.username.trim() !== this.username
-      || this.emailChanged
-      || !!(this.settingsData.newPassword || this.settingsData.confirmPassword || this.settingsData.currentPassword);
+    return (
+      !!this.pendingProfileImage ||
+      this.settingsData.username.trim() !== this.username ||
+      this.emailChanged ||
+      !!(
+        this.settingsData.newPassword ||
+        this.settingsData.confirmPassword ||
+        this.settingsData.currentPassword
+      )
+    );
   }
 
   /** Esc, clic fuori e "Chiudi": con modifiche non salvate chiede prima conferma */
@@ -210,7 +229,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.focusBeforeConfirm = document.activeElement as HTMLElement | null;
     this.confirmDiscard = true;
     // Il focus va su "Continua a modificare" appena la conferma è nel DOM
-    afterNextRender(() => this.keepEditingButton?.nativeElement.focus(), { injector: this.injector });
+    afterNextRender(() => this.keepEditingButton?.nativeElement.focus(), {
+      injector: this.injector,
+    });
   }
 
   /** Chiude la conferma e riporta il focus dove era (per esempio nel campo che si stava modificando) */
@@ -288,7 +309,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           resolve(canvas.toDataURL('image/jpeg', quality));
         };
 
-        img.onerror = () => reject(new Error('Impossibile caricare l\'immagine selezionata'));
+        img.onerror = () => reject(new Error("Impossibile caricare l'immagine selezionata"));
         img.src = e.target?.result as string;
       };
 
@@ -308,7 +329,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     } catch (error) {
       console.error('Errore nella compressione immagine:', error);
-      this.toastService.show('Errore durante l\'elaborazione dell\'immagine.', 'error');
+      this.toastService.show("Errore durante l'elaborazione dell'immagine.", 'error');
     }
   }
 
@@ -372,7 +393,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       } else if (error.status === 401) {
         this.toastService.show('Sessione scaduta, effettua di nuovo il login.', 'error');
       } else {
-        this.toastService.show('Errore durante l\'eliminazione. Riprova.', 'error');
+        this.toastService.show("Errore durante l'eliminazione. Riprova.", 'error');
       }
     } finally {
       this.isDeleting = false;
@@ -387,7 +408,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     try {
       const response = await firstValueFrom(
-        this.authService.updateProfile({ profileImage: this.pendingProfileImage })
+        this.authService.updateProfile({ profileImage: this.pendingProfileImage }),
       );
 
       this.authService.updateLocalUserData(response);
@@ -396,7 +417,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
       this.toastService.show('Immagine profilo aggiornata!', 'success');
     } catch {
-      this.toastService.show('Errore durante il salvataggio dell\'immagine. Riprova.', 'error');
+      this.toastService.show("Errore durante il salvataggio dell'immagine. Riprova.", 'error');
     } finally {
       this.isSaving = false;
       this.cdr.detectChanges();
@@ -460,9 +481,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.profileImage = response.profileImage || this.profileImage;
       this.pendingProfileImage = null;
 
-      this.toastService.show(emailChanged
-        ? 'Impostazioni aggiornate. Ti abbiamo mandato un link per confermare la nuova email.'
-        : 'Impostazioni aggiornate con successo!', 'success');
+      this.toastService.show(
+        emailChanged
+          ? 'Impostazioni aggiornate. Ti abbiamo mandato un link per confermare la nuova email.'
+          : 'Impostazioni aggiornate con successo!',
+        'success',
+      );
       this.closeOverlay();
     } catch (error: any) {
       if (error.status === 409) {
@@ -508,10 +532,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
     moveItemInArray(this.inEvidenza, event.previousIndex, event.currentIndex);
 
     try {
-      const updatedOrder = this.inEvidenza.map(anime => anime.animeId);
+      const updatedOrder = this.inEvidenza.map((anime) => anime.animeId);
       await firstValueFrom(this.userAnimeService.updateEvidenzaOrder(updatedOrder));
     } catch (error) {
-      console.error('Errore nell\'aggiornamento ordine:', error);
+      console.error("Errore nell'aggiornamento ordine:", error);
       moveItemInArray(this.inEvidenza, event.currentIndex, event.previousIndex);
     }
 

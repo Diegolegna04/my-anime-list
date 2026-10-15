@@ -12,14 +12,18 @@ describe('LoginRegisterComponent', () => {
   let toast: jasmine.SpyObj<ToastService>;
 
   beforeEach(() => {
-    auth = jasmine.createSpyObj<AuthService>('AuthService', ['login', 'register', 'resendVerification']);
+    auth = jasmine.createSpyObj<AuthService>('AuthService', [
+      'login',
+      'register',
+      'resendVerification',
+    ]);
     toast = jasmine.createSpyObj<ToastService>('ToastService', ['show']);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
         { provide: AuthService, useValue: auth },
         { provide: ToastService, useValue: toast },
-      ]
+      ],
     });
     component = TestBed.createComponent(LoginRegisterComponent).componentInstance;
     spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
@@ -32,7 +36,10 @@ describe('LoginRegisterComponent', () => {
     component.onLogin();
 
     expect(auth.login).toHaveBeenCalledOnceWith('mario@example.com', 'segreta', true);
-    expect(toast.show).toHaveBeenCalledWith('Accesso effettuato con successo! Benvenuto.', 'success');
+    expect(toast.show).toHaveBeenCalledWith(
+      'Accesso effettuato con successo! Benvenuto.',
+      'success',
+    );
     expect(component.accessoEffettuato).toBeTrue();
     expect(component.isLoading).toBeFalse();
   });
@@ -42,13 +49,18 @@ describe('LoginRegisterComponent', () => {
 
     component.onLogin();
 
-    expect(toast.show).toHaveBeenCalledWith('Credenziali non valide. Controlla email e password.', 'error');
+    expect(toast.show).toHaveBeenCalledWith(
+      'Credenziali non valide. Controlla email e password.',
+      'error',
+    );
     expect(component.isLoading).toBeFalse();
     expect(component.accessoEffettuato).toBeFalse();
   });
 
   it('il login fallito mostra il messaggio del server per 429', () => {
-    auth.login.and.returnValue(throwError(() => ({ status: 429, error: { error: 'Troppi tentativi' } })));
+    auth.login.and.returnValue(
+      throwError(() => ({ status: 429, error: { error: 'Troppi tentativi' } })),
+    );
 
     component.onLogin();
 
@@ -56,7 +68,9 @@ describe('LoginRegisterComponent', () => {
   });
 
   it('email non verificata propone il reinvio', () => {
-    auth.login.and.returnValue(throwError(() => ({ status: 403, error: { code: 'EMAIL_NOT_VERIFIED' } })));
+    auth.login.and.returnValue(
+      throwError(() => ({ status: 403, error: { code: 'EMAIL_NOT_VERIFIED' } })),
+    );
 
     component.onLogin();
 
@@ -71,11 +85,15 @@ describe('LoginRegisterComponent', () => {
 
     expect(auth.register).toHaveBeenCalledOnceWith('mario', 'mario@example.com', 'segreta');
     expect(toast.show).toHaveBeenCalledWith(
-      "Registrazione completata! Controlla la tua email per verificare l'account.", 'success');
+      "Registrazione completata! Controlla la tua email per verificare l'account.",
+      'success',
+    );
   });
 
   it('la registrazione fallita mostra il messaggio del server', () => {
-    auth.register.and.returnValue(throwError(() => ({ status: 409, error: { error: 'Nome utente già in uso' } })));
+    auth.register.and.returnValue(
+      throwError(() => ({ status: 409, error: { error: 'Nome utente già in uso' } })),
+    );
     component.registerData = { username: 'mario', email: 'mario@example.com', password: 'segreta' };
 
     component.onRegister();

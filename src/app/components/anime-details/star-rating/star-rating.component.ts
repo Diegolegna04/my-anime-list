@@ -10,7 +10,7 @@ export type RatingColor = 'default' | 'gold' | 'red' | 'blue' | 'purple';
   imports: [CommonModule],
   templateUrl: './star-rating.component.html',
   styleUrls: ['./star-rating.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StarRatingComponent {
   @Input() rating = 0;
@@ -23,7 +23,7 @@ export class StarRatingComponent {
   @Input() showHalfStars = false;
   @Input() allowClear = true;
   @Input() customLabels: string[] = [];
-  
+
   @Output() ratingChanged = new EventEmitter<number>();
   @Output() ratingHovered = new EventEmitter<number>();
 
@@ -49,15 +49,15 @@ export class StarRatingComponent {
    */
   getStarState(starNumber: number): 'empty' | 'half' | 'full' {
     const rating = this.displayRating;
-    
+
     if (starNumber <= rating) {
       return 'full';
     }
-    
+
     if (this.showHalfStars && starNumber - 0.5 === rating) {
       return 'half';
     }
-    
+
     return 'empty';
   }
 
@@ -110,11 +110,11 @@ export class StarRatingComponent {
   getStarClass(starNumber: number): string {
     const state = this.getStarState(starNumber);
     const classes = ['rating-star', `star-${state}`, `size-${this.size}`, `color-${this.color}`];
-    
+
     if (this.readonly) {
       classes.push('readonly');
     }
-    
+
     if (this.disabled) {
       classes.push('disabled');
     }
@@ -122,7 +122,7 @@ export class StarRatingComponent {
     if (this.hoveredRating > 0 && starNumber <= this.hoveredRating) {
       classes.push('hovered');
     }
-    
+
     return classes.join(' ');
   }
 
@@ -131,7 +131,7 @@ export class StarRatingComponent {
    */
   get ratingLabel(): string {
     const rating = this.displayRating;
-    
+
     // Usa custom labels se forniti
     if (this.customLabels.length > 0 && rating > 0 && rating <= this.customLabels.length) {
       return this.customLabels[rating - 1];
@@ -148,7 +148,7 @@ export class StarRatingComponent {
       7: 'Discreto',
       8: 'Buono',
       9: 'Ottimo',
-      10: 'Capolavoro'
+      10: 'Capolavoro',
     };
 
     return defaultLabels[rating] || 'Non valutato';
@@ -159,12 +159,12 @@ export class StarRatingComponent {
    */
   get labelClass(): string {
     const rating = this.displayRating;
-    
+
     if (rating >= 8) return 'label-excellent';
     if (rating >= 6) return 'label-good';
     if (rating >= 4) return 'label-average';
     if (rating > 0) return 'label-poor';
-    
+
     return 'label-none';
   }
 

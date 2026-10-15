@@ -15,7 +15,7 @@ import { ToastService } from '../../services/toast.service';
   imports: [FormsModule, RouterLink],
   templateUrl: './friends-panel.component.html',
   styleUrls: ['./friends-panel.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FriendsPanelComponent implements OnInit {
   overview: FriendsOverview = { friends: [], incoming: [], outgoing: [] };
@@ -34,7 +34,7 @@ export class FriendsPanelComponent implements OnInit {
   constructor(
     private friendService: FriendService,
     private toastService: ToastService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -44,7 +44,9 @@ export class FriendsPanelComponent implements OnInit {
   /** "2 ottobre 2026": Intl evita di registrare i dati del locale italiano solo per questo */
   formatDate(iso: string): string {
     const date = new Date(iso);
-    return isNaN(date.getTime()) ? '' : date.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+    return isNaN(date.getTime())
+      ? ''
+      : date.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   get isEmpty(): boolean {
@@ -65,7 +67,7 @@ export class FriendsPanelComponent implements OnInit {
         this.isLoading = false;
         this.loadError = true;
         this.cdr.markForCheck();
-      }
+      },
     });
   }
 
@@ -87,22 +89,40 @@ export class FriendsPanelComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.isSending = false;
-        this.sendError = friendErrorMessage(error, 'Non sono riuscito a inviare la richiesta. Riprova.');
+        this.sendError = friendErrorMessage(
+          error,
+          'Non sono riuscito a inviare la richiesta. Riprova.',
+        );
         this.cdr.markForCheck();
-      }
+      },
     });
   }
 
   accept(id: string, username: string): void {
-    this.runAction(id, this.friendService.accept(id), `Ora tu e ${username} siete amici`, 'Non sono riuscito ad accettare la richiesta.');
+    this.runAction(
+      id,
+      this.friendService.accept(id),
+      `Ora tu e ${username} siete amici`,
+      'Non sono riuscito ad accettare la richiesta.',
+    );
   }
 
   decline(id: string): void {
-    this.runAction(id, this.friendService.remove(id), 'Richiesta rifiutata', 'Non sono riuscito a rifiutare la richiesta.');
+    this.runAction(
+      id,
+      this.friendService.remove(id),
+      'Richiesta rifiutata',
+      'Non sono riuscito a rifiutare la richiesta.',
+    );
   }
 
   cancel(id: string): void {
-    this.runAction(id, this.friendService.remove(id), 'Richiesta annullata', 'Non sono riuscito ad annullare la richiesta.');
+    this.runAction(
+      id,
+      this.friendService.remove(id),
+      'Richiesta annullata',
+      'Non sono riuscito ad annullare la richiesta.',
+    );
   }
 
   askRemove(id: string): void {
@@ -115,10 +135,20 @@ export class FriendsPanelComponent implements OnInit {
 
   remove(id: string, username: string): void {
     this.confirmRemoveId = null;
-    this.runAction(id, this.friendService.remove(id), `${username} non è più tra i tuoi amici`, 'Non sono riuscito a rimuovere l\'amico.');
+    this.runAction(
+      id,
+      this.friendService.remove(id),
+      `${username} non è più tra i tuoi amici`,
+      "Non sono riuscito a rimuovere l'amico.",
+    );
   }
 
-  private runAction(id: string, action: ReturnType<FriendService['remove']>, success: string, failure: string): void {
+  private runAction(
+    id: string,
+    action: ReturnType<FriendService['remove']>,
+    success: string,
+    failure: string,
+  ): void {
     this.busyId = id;
     action.subscribe({
       next: () => {
@@ -130,7 +160,7 @@ export class FriendsPanelComponent implements OnInit {
         this.busyId = null;
         this.toastService.show(friendErrorMessage(error, failure + ' Riprova.'), 'error');
         this.load();
-      }
+      },
     });
   }
 }

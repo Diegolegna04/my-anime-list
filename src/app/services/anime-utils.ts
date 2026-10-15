@@ -6,7 +6,7 @@
  */
 export function uniqueByMalId<T extends { mal_id: number }>(list: T[]): T[] {
   const seen = new Set<number>();
-  return list.filter(anime => {
+  return list.filter((anime) => {
     if (seen.has(anime.mal_id)) return false;
     seen.add(anime.mal_id);
     return true;
@@ -81,7 +81,7 @@ const SEASON_NAMES_IT: Record<string, string> = {
   winter: 'Inverno',
   spring: 'Primavera',
   summer: 'Estate',
-  fall: 'Autunno'
+  fall: 'Autunno',
 };
 
 /** Etichetta mostrata in home, es. "Autunno 2026" */
@@ -150,13 +150,11 @@ export function fallbackSeasonStarted(today: Date): boolean {
  * ordinata per popolarità.
  */
 export function isSeasonStarted(list: any[], today: Date): boolean {
-  const series = uniqueByMalId(list.filter(a => a?.type === 'TV' || a?.type === 'ONA'));
-  const top = series
-    .sort((a, b) => (b.members || 0) - (a.members || 0))
-    .slice(0, STARTED_TOP_N);
+  const series = uniqueByMalId(list.filter((a) => a?.type === 'TV' || a?.type === 'ONA'));
+  const top = series.sort((a, b) => (b.members || 0) - (a.members || 0)).slice(0, STARTED_TOP_N);
   if (top.length === 0) return false;
 
-  const hasMembers = top.every(a => a.members > 0);
+  const hasMembers = top.every((a) => a.members > 0);
   const todayIso = toIsoDate(today);
   let total = 0;
   let started = 0;
@@ -197,7 +195,7 @@ export const MIN_ANNOUNCED_TITLES = 5;
 
 /** true se per la stagione ci sono abbastanza titoli annunciati da mostrarla */
 export function hasAnnouncedTitles(list: any[]): boolean {
-  return uniqueByMalId(list.filter(a => a?.mal_id)).length >= MIN_ANNOUNCED_TITLES;
+  return uniqueByMalId(list.filter((a) => a?.mal_id)).length >= MIN_ANNOUNCED_TITLES;
 }
 
 /** Quanti dei titoli più popolari servono con un voto per ordinare per voto */
@@ -208,13 +206,15 @@ const SCORE_SORT_TOP_N = 20;
  * un voto: allora si ordina per popolarità; quando almeno metà dei più
  * popolari ha un voto si ordina per voto, con in coda i titoli senza voto.
  */
-export function sortSeasonalForHome<T extends { mal_id: number; score?: number | null; members?: number }>(list: T[]): T[] {
+export function sortSeasonalForHome<
+  T extends { mal_id: number; score?: number | null; members?: number },
+>(list: T[]): T[] {
   const byPopularity = uniqueByMalId(list).sort((a, b) => (b.members || 0) - (a.members || 0));
   const top = byPopularity.slice(0, SCORE_SORT_TOP_N);
-  const scoredInTop = top.filter(a => (a.score || 0) > 0).length;
+  const scoredInTop = top.filter((a) => (a.score || 0) > 0).length;
   if (scoredInTop < top.length / 2) return byPopularity;
 
-  const scored = byPopularity.filter(a => (a.score || 0) > 0).sort((a, b) => b.score! - a.score!);
-  const unscored = byPopularity.filter(a => !((a.score || 0) > 0));
+  const scored = byPopularity.filter((a) => (a.score || 0) > 0).sort((a, b) => b.score! - a.score!);
+  const unscored = byPopularity.filter((a) => !((a.score || 0) > 0));
   return [...scored, ...unscored];
 }

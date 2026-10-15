@@ -14,7 +14,7 @@ describe('ForgotPasswordComponent', () => {
     authService = jasmine.createSpyObj<AuthService>('AuthService', ['forgotPassword']);
     await TestBed.configureTestingModule({
       imports: [ForgotPasswordComponent],
-      providers: [provideRouter([]), { provide: AuthService, useValue: authService }]
+      providers: [provideRouter([]), { provide: AuthService, useValue: authService }],
     }).compileComponents();
     fixture = TestBed.createComponent(ForgotPasswordComponent);
     component = fixture.componentInstance;
@@ -22,9 +22,12 @@ describe('ForgotPasswordComponent', () => {
   });
 
   it('con troppi tentativi mostra il messaggio del server e resta sul form', () => {
-    authService.forgotPassword.and.returnValue(throwError(() => ({
-      status: 429, error: { error: 'Troppi tentativi. Riprova tra 60 minuti.' }
-    })));
+    authService.forgotPassword.and.returnValue(
+      throwError(() => ({
+        status: 429,
+        error: { error: 'Troppi tentativi. Riprova tra 60 minuti.' },
+      })),
+    );
 
     component.onSubmit();
     fixture.detectChanges();
@@ -33,7 +36,7 @@ describe('ForgotPasswordComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Troppi tentativi. Riprova tra 60 minuti.');
   });
 
-  it('con altri errori mostra la conferma generica (non rivela se l\'email esiste)', () => {
+  it("con altri errori mostra la conferma generica (non rivela se l'email esiste)", () => {
     authService.forgotPassword.and.returnValue(throwError(() => ({ status: 500 })));
 
     component.onSubmit();

@@ -52,10 +52,14 @@ export class AutoHideScrollbarService {
     // Fuori da Angular: scroll e movimenti del puntatore arrivano di continuo
     // e non cambiano nulla nei componenti
     this.zone.runOutsideAngular(() => {
-      window.addEventListener('scroll', () => {
-        this.scheduleUpdate();
-        this.show();
-      }, { passive: true });
+      window.addEventListener(
+        'scroll',
+        () => {
+          this.scheduleUpdate();
+          this.show();
+        },
+        { passive: true },
+      );
       window.addEventListener('resize', () => this.scheduleUpdate());
       // Il contenuto cambia altezza a ogni navigazione e caricamento
       new ResizeObserver(() => this.scheduleUpdate()).observe(document.body);
@@ -99,7 +103,7 @@ export class AutoHideScrollbarService {
     const railHeight = viewHeight - AutoHideScrollbarService.RAIL_INSET_PX * 2;
     this.thumbHeight = Math.max(
       AutoHideScrollbarService.MIN_THUMB_PX,
-      railHeight * (viewHeight / scrollHeight)
+      railHeight * (viewHeight / scrollHeight),
     );
     const progress = window.scrollY / (scrollHeight - viewHeight);
     const offset = Math.min(1, Math.max(0, progress)) * (railHeight - this.thumbHeight);
@@ -125,7 +129,10 @@ export class AutoHideScrollbarService {
     const thumbRect = this.thumb.getBoundingClientRect();
     if (event.clientY < thumbRect.top || event.clientY > thumbRect.bottom) {
       const shift = event.clientY - (thumbRect.top + thumbRect.height / 2);
-      window.scrollTo({ top: window.scrollY + shift * this.scrollPerTrackPixel(), behavior: 'instant' });
+      window.scrollTo({
+        top: window.scrollY + shift * this.scrollPerTrackPixel(),
+        behavior: 'instant',
+      });
       this.update();
     }
 
@@ -146,7 +153,8 @@ export class AutoHideScrollbarService {
   private endDrag(event: PointerEvent): void {
     if (!this.dragging) return;
     this.dragging = false;
-    if (this.rail.hasPointerCapture(event.pointerId)) this.rail.releasePointerCapture(event.pointerId);
+    if (this.rail.hasPointerCapture(event.pointerId))
+      this.rail.releasePointerCapture(event.pointerId);
     document.documentElement.classList.remove('scrollbar-dragging');
     this.scheduleHide();
   }

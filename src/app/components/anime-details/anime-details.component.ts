@@ -7,8 +7,15 @@ import { AnimeService } from '../../services/anime.service';
 import { withCleanSynopsis } from '../../services/anime-utils';
 import { UserAnime, UserAnimeService } from '../../services/userAnimeService.service';
 import { AnimeInfoCardComponent } from './anime-info-card/anime-info-card.component';
-import { AnimeStateManagerComponent, AnimeState, STATE_LABELS } from './anime-state-manager/anime-state-manager.component';
-import { EpisodesTrackerComponent, EpisodesSaveStatus } from './episodes-tracker/episodes-tracker.component';
+import {
+  AnimeStateManagerComponent,
+  AnimeState,
+  STATE_LABELS,
+} from './anime-state-manager/anime-state-manager.component';
+import {
+  EpisodesTrackerComponent,
+  EpisodesSaveStatus,
+} from './episodes-tracker/episodes-tracker.component';
 import { StarRatingComponent } from './star-rating/star-rating.component';
 import { FavoriteToggleComponent } from './favorite-toggle/favorite-toggle.component';
 import { NewsListComponent } from './news-list/news-list.component';
@@ -32,13 +39,11 @@ export type LoadStatus = 'loading' | 'ready' | 'error';
     StarRatingComponent,
     FavoriteToggleComponent,
     NewsListComponent,
-    RecommendedAnimeSidebarComponent
+    RecommendedAnimeSidebarComponent,
   ],
   standalone: true,
 })
-
 export class AnimeDetailsComponent implements OnInit, OnDestroy {
-  
   animeId = 0;
   animeDetails: any = null;
   recommendedAnime: any[] = [];
@@ -74,17 +79,15 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
     private authService: AuthService,
-    private userList: UserListService
+    private userList: UserListService,
   ) {}
 
   ngOnInit(): void {
     this.initializeTitleLanguage();
-    this.authService.accessoEffettuato$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((loggedIn) => {
-        this.isLoggedIn = loggedIn;
-        this.cdr.markForCheck();
-      });
+    this.authService.accessoEffettuato$.pipe(takeUntil(this.destroy$)).subscribe((loggedIn) => {
+      this.isLoggedIn = loggedIn;
+      this.cdr.markForCheck();
+    });
     this.subscribeToRouteChanges();
   }
 
@@ -96,19 +99,18 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   }
 
   private initializeTitleLanguage(): void {
-    this.titleLanguage = (localStorage.getItem('titleLanguage') as 'english' | 'original') || 'original';
+    this.titleLanguage =
+      (localStorage.getItem('titleLanguage') as 'english' | 'original') || 'original';
   }
 
   private subscribeToRouteChanges(): void {
-    this.route.paramMap
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((params) => {
-        const id = Number(params.get('id'));
-        if (id && id !== this.animeId) {
-          this.animeId = id;
-          this.loadAllData();
-        }
-      });
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const id = Number(params.get('id'));
+      if (id && id !== this.animeId) {
+        this.animeId = id;
+        this.loadAllData();
+      }
+    });
   }
 
   private loadAllData(): void {
@@ -126,14 +128,15 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   private loadAnimeDetails(): void {
     const id = this.animeId;
-    this.animeService.getAnimeDetails(id)
+    this.animeService
+      .getAnimeDetails(id)
       .pipe(
         takeUntil(this.reload$),
         finalize(() => {
           if (id !== this.animeId) return;
           this.isLoadingAnimeData = false;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe({
         next: (response) => {
@@ -142,7 +145,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Errore caricamento anime:', error);
           this.animeDetails = null;
-        }
+        },
       });
   }
 
@@ -153,7 +156,8 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   loadRecommendedAnime(): void {
     this.recommendedStatus = 'loading';
-    this.animeService.getRecommendations(this.animeId)
+    this.animeService
+      .getRecommendations(this.animeId)
       .pipe(takeUntil(this.reload$))
       .subscribe({
         next: (response) => {
@@ -166,13 +170,14 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
           this.recommendedAnime = [];
           this.recommendedStatus = 'error';
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
   private loadStreaming(): void {
     this.streamingStatus = 'loading';
-    this.animeService.getStreaming(this.animeId)
+    this.animeService
+      .getStreaming(this.animeId)
       .pipe(takeUntil(this.reload$))
       .subscribe({
         next: (response) => {
@@ -185,13 +190,14 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
           this.animeStreaming = [];
           this.streamingStatus = 'error';
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
   loadAnimeNews(): void {
     this.newsStatus = 'loading';
-    this.animeService.getNews(this.animeId)
+    this.animeService
+      .getNews(this.animeId)
       .pipe(takeUntil(this.reload$))
       .subscribe({
         next: (response) => {
@@ -204,7 +210,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
           this.news = [];
           this.newsStatus = 'error';
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -212,14 +218,15 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
     this.isLoadingUserData = true;
 
     const id = this.animeId;
-    this.userAnimeService.getAnimeStatus(id)
+    this.userAnimeService
+      .getAnimeStatus(id)
       .pipe(
         takeUntil(this.reload$),
         finalize(() => {
           if (id !== this.animeId) return;
           this.isLoadingUserData = false;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe({
         next: (userData) => {
@@ -227,7 +234,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
         },
         error: () => {
           this.initializeDefaultState();
-        }
+        },
       });
   }
 
@@ -238,11 +245,11 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
     }
 
     const statusMap: Record<string, AnimeState> = {
-      'watching': 'in visione',
-      'completed': 'completato',
-      'plan_to_watch': 'da vedere',
-      'dropped': 'droppato',
-      'on_hold': 'in pausa'
+      watching: 'in visione',
+      completed: 'completato',
+      plan_to_watch: 'da vedere',
+      dropped: 'droppato',
+      on_hold: 'in pausa',
     };
 
     this.userAnimeData = userData;
@@ -295,7 +302,8 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
       parts.forEach((part, index) => {
         const params = { q: part, langpair: 'en|it' };
 
-        this.http.get<any>(apiUrl, { params })
+        this.http
+          .get<any>(apiUrl, { params })
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (response) => {
@@ -309,7 +317,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
               console.error('Errore nella traduzione:', error);
               this.isTranslating = false;
               this.cdr.markForCheck();
-            }
+            },
           });
       });
     };
@@ -337,11 +345,11 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   onStateChanged(newState: AnimeState): void {
     const backendStatusMap: Record<AnimeState, string> = {
       'in visione': 'watching',
-      'completato': 'completed',
+      completato: 'completed',
       'da vedere': 'plan_to_watch',
-      'droppato': 'dropped',
+      droppato: 'dropped',
       'in pausa': 'on_hold',
-      'non visto': 'plan_to_watch'
+      'non visto': 'plan_to_watch',
     };
 
     const backendStatus = backendStatusMap[newState];
@@ -358,7 +366,8 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
       this.episodesSaveStatus = 'idle';
     }
 
-    this.userAnimeService.updateAnimeStatus(this.animeId, backendStatus)
+    this.userAnimeService
+      .updateAnimeStatus(this.animeId, backendStatus)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -368,7 +377,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
             previousState === 'non visto'
               ? `Aggiunto alla tua lista: ${STATE_LABELS[newState]}`
               : `Stato aggiornato: ${STATE_LABELS[newState]}`,
-            'success'
+            'success',
           );
 
           if (newState === 'completato') {
@@ -377,7 +386,8 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
             if (this.animeDetails?.episodes > 0) {
               this.syncCompletedEpisodes(this.animeDetails.episodes);
             } else {
-              this.animeService.getAnimeDetails(this.animeId)
+              this.animeService
+                .getAnimeDetails(this.animeId)
                 .pipe(takeUntil(this.reload$))
                 .subscribe({
                   next: (res) => {
@@ -389,7 +399,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
                   },
                   error: () => {
                     console.error('Impossibile recuperare il numero di episodi');
-                  }
+                  },
                 });
             }
           }
@@ -401,14 +411,15 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
           this.animeState = previousState;
           this.toastService.show('Non sono riuscito a salvare lo stato. Riprova.', 'error');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
   // Aggiorna episodi sia in memoria che nel DB
   private syncCompletedEpisodes(totalEpisodes: number): void {
     this.episodiVisti = totalEpisodes;
-    this.userAnimeService.updateEpisodesWatched(this.animeId, totalEpisodes)
+    this.userAnimeService
+      .updateEpisodesWatched(this.animeId, totalEpisodes)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (updatedAnime) => {
@@ -419,12 +430,13 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
           console.error('Errore aggiornamento episodi al completamento:', error);
           this.toastService.show('Stato salvato, ma non il numero di episodi. Riprova.', 'error');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
   private removeAnimeFromDatabase(previousState: AnimeState): void {
-    this.userAnimeService.removeAnime(this.animeId)
+    this.userAnimeService
+      .removeAnime(this.animeId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -438,7 +450,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
           this.animeState = previousState;
           this.toastService.show('Non sono riuscito a rimuoverlo dalla lista. Riprova.', 'error');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -461,7 +473,8 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
     }
 
     this.episodesSaveStatus = 'saving';
-    this.userAnimeService.updateEpisodesWatched(this.animeId, episodes)
+    this.userAnimeService
+      .updateEpisodesWatched(this.animeId, episodes)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -475,7 +488,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
           this.toastService.show('Non sono riuscito a salvare gli episodi. Riprova.', 'error');
           // Ricarica il valore salvato davvero, così il campo non mostra un numero falso
           this.loadUserAnimeData();
-        }
+        },
       });
   }
 
@@ -486,12 +499,16 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
     const previousRating = this.voto;
     this.voto = rating;
 
-    this.userAnimeService.updateRating(this.animeId, rating)
+    this.userAnimeService
+      .updateRating(this.animeId, rating)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.userAnimeData = response;
-          this.toastService.show(rating > 0 ? `Voto salvato: ${rating}/10` : 'Voto rimosso', 'success');
+          this.toastService.show(
+            rating > 0 ? `Voto salvato: ${rating}/10` : 'Voto rimosso',
+            'success',
+          );
           this.cdr.markForCheck();
         },
         error: (error) => {
@@ -499,12 +516,13 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
           this.voto = previousRating;
           this.toastService.show('Non sono riuscito a salvare il voto. Riprova.', 'error');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
   onFavoriteToggled(): void {
-    this.userAnimeService.toggleFavorite(this.animeId)
+    this.userAnimeService
+      .toggleFavorite(this.animeId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -512,14 +530,14 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
           this.userAnimeData = response;
           this.toastService.show(
             response.isFavorite ? 'Aggiunto ai preferiti' : 'Rimosso dai preferiti',
-            'success'
+            'success',
           );
           this.cdr.markForCheck();
         },
         error: () => {
-          this.toastService.show('Errore durante l\'aggiornamento dei preferiti', 'error');
+          this.toastService.show("Errore durante l'aggiornamento dei preferiti", 'error');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -530,24 +548,25 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
 
   onInEvidenzaToggled(value: boolean): void {
     this.inEvidenza = value;
-  
-    this.userAnimeService.toggleInEvidenza(this.animeId)
+
+    this.userAnimeService
+      .toggleInEvidenza(this.animeId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.inEvidenza = response.inEvidenza;
           this.userAnimeData = response;
           this.toastService.show(
-            response.inEvidenza ? 'Aggiunto in evidenza' : 'Rimosso dall\'evidenza',
-            'success'
+            response.inEvidenza ? 'Aggiunto in evidenza' : "Rimosso dall'evidenza",
+            'success',
           );
           this.cdr.markForCheck();
         },
         error: () => {
-          this.toastService.show('Errore durante l\'aggiornamento dell\'evidenza', 'error');
+          this.toastService.show("Errore durante l'aggiornamento dell'evidenza", 'error');
           this.inEvidenza = !value;
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 

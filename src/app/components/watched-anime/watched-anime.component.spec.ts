@@ -27,9 +27,12 @@ describe('WatchedAnimeComponent', () => {
         // Pagina aperta dal profilo con il filtro già scelto
         {
           provide: ActivatedRoute,
-          useValue: { queryParams: of({ filter: 'in visione' }), paramMap: of(convertToParamMap(routeParams)) }
-        }
-      ]
+          useValue: {
+            queryParams: of({ filter: 'in visione' }),
+            paramMap: of(convertToParamMap(routeParams)),
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(WatchedAnimeComponent);
@@ -47,15 +50,19 @@ describe('WatchedAnimeComponent', () => {
       { animeId: 2, status: 'completed', episodesWatched: 12, anime: summary(2, 'Gamma') },
       { animeId: 3, status: 'watching', episodesWatched: 1, anime: summary(3, 'Alfa') },
       // Senza riassunto: i dettagli si chiedono a parte, la pagina non li aspetta
-      { animeId: 4, status: 'watching', episodesWatched: 0, anime: null }
+      { animeId: 4, status: 'watching', episodesWatched: 0, anime: null },
     ]);
 
     expect(component.isLoading).toBeFalse();
-    expect(component.filteredAnime.map(a => a.details.data.title)).toEqual(['Alfa', 'Beta']);
+    expect(component.filteredAnime.map((a) => a.details.data.title)).toEqual(['Alfa', 'Beta']);
     expect(component.pendingDetails).toBe(1);
 
     http.expectOne('/api/anime-proxy/anime/4').flush({ data: summary(4, 'Delta') });
-    expect(component.filteredAnime.map(a => a.details.data.title)).toEqual(['Alfa', 'Beta', 'Delta']);
+    expect(component.filteredAnime.map((a) => a.details.data.title)).toEqual([
+      'Alfa',
+      'Beta',
+      'Delta',
+    ]);
     expect(component.pendingDetails).toBe(0);
   });
 
@@ -64,38 +71,53 @@ describe('WatchedAnimeComponent', () => {
     http.expectOne('/api/user-anime/library').flush({}, { status: 404, statusText: 'Not Found' });
 
     for (const status of ['completed', 'watching', 'plan_to_watch', 'on_hold', 'dropped']) {
-      http.expectOne(`/api/user-anime/status/${status}`).flush(status === 'watching' ? [{ animeId: 7, episodesWatched: 2 }] : []);
+      http
+        .expectOne(`/api/user-anime/status/${status}`)
+        .flush(status === 'watching' ? [{ animeId: 7, episodesWatched: 2 }] : []);
     }
 
     expect(component.isLoading).toBeFalse();
     http.expectOne('/api/anime-proxy/anime/7').flush({ data: summary(7, 'Solo') });
-    expect(component.filteredAnime.map(a => a.details.data.title)).toEqual(['Solo']);
+    expect(component.filteredAnime.map((a) => a.details.data.title)).toEqual(['Solo']);
   });
 
-  it("sulla rotta di un amico mostra la sua lista e le sue statistiche", async () => {
+  it('sulla rotta di un amico mostra la sua lista e le sue statistiche', async () => {
     await setup({ username: 'Sara' });
     expect(component.isFriendView).toBeTrue();
 
-    http.expectOne('/api/friends/Sara/stats').flush({ watchedCount: 4, watchingCount: 1, planToWatchCount: 2, droppedCount: 0, onHoldCount: 0, favoritesCount: 1 });
+    http.expectOne('/api/friends/Sara/stats').flush({
+      watchedCount: 4,
+      watchingCount: 1,
+      planToWatchCount: 2,
+      droppedCount: 0,
+      onHoldCount: 0,
+      favoritesCount: 1,
+    });
     http.expectOne('/api/friends/Sara/library').flush([
       { animeId: 1, status: 'watching', episodesWatched: 3, anime: summary(1, 'Beta') },
       // Riassunto non recuperato dal backend: i dettagli si chiedono a parte, come per la propria lista
-      { animeId: 2, status: 'watching', episodesWatched: 1, anime: null }
+      { animeId: 2, status: 'watching', episodesWatched: 1, anime: null },
     ]);
     expect(component.pendingDetails).toBe(1);
-    http.expectOne("/api/anime-proxy/anime/2").flush({ data: summary(2, "Alfa") });
+    http.expectOne('/api/anime-proxy/anime/2').flush({ data: summary(2, 'Alfa') });
 
     expect(component.pendingDetails).toBe(0);
     expect(component.friendStats?.watchedCount).toBe(4);
-    expect(component.filteredAnime.map(a => a.details.data.title)).toEqual(["Alfa", "Beta"]);
-    expect(fixture.nativeElement.querySelector('.page-hero-title').textContent).toContain('La lista di Sara');
+    expect(component.filteredAnime.map((a) => a.details.data.title)).toEqual(['Alfa', 'Beta']);
+    expect(fixture.nativeElement.querySelector('.page-hero-title').textContent).toContain(
+      'La lista di Sara',
+    );
   });
 
-  it("se non è tra gli amici lo dice, senza ripiegare sulla propria libreria", async () => {
+  it('se non è tra gli amici lo dice, senza ripiegare sulla propria libreria', async () => {
     await setup({ username: 'Luca' });
 
-    http.expectOne('/api/friends/Luca/stats').flush({ error: 'Non risulta tra i tuoi amici' }, { status: 404, statusText: 'Not Found' });
-    http.expectOne('/api/friends/Luca/library').flush({ error: 'Non risulta tra i tuoi amici' }, { status: 404, statusText: 'Not Found' });
+    http
+      .expectOne('/api/friends/Luca/stats')
+      .flush({ error: 'Non risulta tra i tuoi amici' }, { status: 404, statusText: 'Not Found' });
+    http
+      .expectOne('/api/friends/Luca/library')
+      .flush({ error: 'Non risulta tra i tuoi amici' }, { status: 404, statusText: 'Not Found' });
     fixture.detectChanges();
 
     expect(component.friendNotFound).toBeTrue();

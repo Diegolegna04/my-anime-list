@@ -8,9 +8,8 @@ describe('EpisodesTrackerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EpisodesTrackerComponent]
-    })
-    .compileComponents();
+      imports: [EpisodesTrackerComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EpisodesTrackerComponent);
     component = fixture.componentInstance;

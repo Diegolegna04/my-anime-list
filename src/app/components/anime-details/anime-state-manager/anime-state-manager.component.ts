@@ -2,16 +2,17 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
-export type AnimeState = 'non visto' | 'in visione' | 'completato' | 'da vedere' | 'droppato' | 'in pausa';
+export type AnimeState =
+  'non visto' | 'in visione' | 'completato' | 'da vedere' | 'droppato' | 'in pausa';
 
 /** Etichette mostrate all'utente (pulsanti e conferme); i valori interni restano invariati */
 export const STATE_LABELS: Record<AnimeState, string> = {
   'non visto': 'Non in lista',
   'in visione': 'In visione',
-  'completato': 'Completato',
+  completato: 'Completato',
   'da vedere': 'Da vedere',
-  'droppato': 'Droppato',
-  'in pausa': 'In pausa'
+  droppato: 'Droppato',
+  'in pausa': 'In pausa',
 };
 
 export interface StateOption {
@@ -30,7 +31,7 @@ export interface StateOption {
   imports: [CommonModule, RouterLink],
   templateUrl: './anime-state-manager.component.html',
   styleUrls: ['./anime-state-manager.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AnimeStateManagerComponent {
   @Input() currentState: AnimeState = 'non visto';
@@ -38,7 +39,7 @@ export class AnimeStateManagerComponent {
   @Input() disabled = false;
   /** Da sloggati i pulsanti sono spenti e un avviso invita ad accedere */
   @Input() loggedIn = true;
-  
+
   @Output() stateChanged = new EventEmitter<AnimeState>();
 
   /**
@@ -50,22 +51,22 @@ export class AnimeStateManagerComponent {
       label: STATE_LABELS['non visto'],
       icon: 'fa-eye-slash',
       color: 'neutral',
-      description: 'Rimuovi dalla tua lista'
+      description: 'Rimuovi dalla tua lista',
     },
     {
       value: 'in visione',
       label: STATE_LABELS['in visione'],
       icon: 'fa-play-circle',
       color: 'watching',
-      description: 'Stai guardando questo anime'
+      description: 'Stai guardando questo anime',
     },
     {
       value: 'completato',
       label: STATE_LABELS['completato'],
       icon: 'fa-check-circle',
       color: 'completed',
-      description: 'Hai completato questo anime'
-    }
+      description: 'Hai completato questo anime',
+    },
   ];
 
   /**
@@ -77,22 +78,22 @@ export class AnimeStateManagerComponent {
       label: STATE_LABELS['da vedere'],
       icon: 'fa-bookmark',
       color: 'plan',
-      description: 'Pianificato per il futuro'
+      description: 'Pianificato per il futuro',
     },
     {
       value: 'droppato',
       label: STATE_LABELS['droppato'],
       icon: 'fa-times-circle',
       color: 'dropped',
-      description: 'Hai abbandonato questo anime'
+      description: 'Hai abbandonato questo anime',
     },
     {
       value: 'in pausa',
       label: STATE_LABELS['in pausa'],
       icon: 'fa-pause-circle',
       color: 'on-hold',
-      description: 'Temporaneamente sospeso'
-    }
+      description: 'Temporaneamente sospeso',
+    },
   ];
 
   /** Tutti gli stati, mostrati insieme (prima 3 erano nascosti sotto "Altri stati") */
@@ -129,15 +130,15 @@ export class AnimeStateManagerComponent {
   getButtonClass(state: AnimeState): string {
     const option = this.getStateOption(state);
     const classes = ['state-btn', `state-${option.color}`];
-    
+
     if (this.isActive(state)) {
       classes.push('active');
     }
-    
+
     if (this.isDisabled(state)) {
       classes.push('disabled');
     }
-    
+
     return classes.join(' ');
   }
 
@@ -146,7 +147,7 @@ export class AnimeStateManagerComponent {
    */
   private getStateOption(state: AnimeState): StateOption {
     const allStates = [...this.stateOptions, ...this.extendedStates];
-    return allStates.find(s => s.value === state) || this.stateOptions[0];
+    return allStates.find((s) => s.value === state) || this.stateOptions[0];
   }
 
   /**
@@ -163,7 +164,7 @@ export class AnimeStateManagerComponent {
     if (this.isActive(state)) {
       return 'Stato attuale';
     }
-    
+
     const option = this.getStateOption(state);
     return option.description;
   }

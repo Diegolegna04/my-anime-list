@@ -27,8 +27,8 @@
         [attr.aria-label]="option.label"
         [attr.aria-pressed]="isActive(option.value)"
         [title]="getTooltip(option.value)"
-        (click)="onStateClick(option.value)">
-
+        (click)="onStateClick(option.value)"
+      >
         <i class="fas button-icon" [ngClass]="option.icon" aria-hidden="true"></i>
 
         <span class="button-label">
@@ -43,5 +43,4 @@
       </button>
     }
   </div>
-
 </section>

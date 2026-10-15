@@ -12,7 +12,8 @@
     [class.active]="isFavorite"
     [attr.aria-pressed]="isFavorite"
     [disabled]="!canFavorite"
-    (click)="onToggle()">
+    (click)="onToggle()"
+  >
     <i class="fas fa-heart star-icon" aria-hidden="true"></i>
     {{ isFavorite ? 'Rimuovi dai Preferiti' : 'Aggiungi ai Preferiti' }}
   </button>

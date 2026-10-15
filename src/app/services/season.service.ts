@@ -11,7 +11,7 @@ import {
   sameSeason,
   seasonOfList,
   seasonTransition,
-  toIsoDate
+  toIsoDate,
 } from './anime-utils';
 
 export interface SeasonPage {
@@ -42,17 +42,23 @@ export class SeasonService {
    * sono davvero i dati e, se non è quella chiesta, si passa a
    * seasons/{anno}/{stagione} (che nel backend ha il fallback AniList).
    */
-  getSeasonPage(target: SeasonRef, page = 1, viaNow?: boolean, today: Date = new Date()): Observable<SeasonPage> {
+  getSeasonPage(
+    target: SeasonRef,
+    page = 1,
+    viaNow?: boolean,
+    today: Date = new Date(),
+  ): Observable<SeasonPage> {
     const explicit$ = this.http
       .get<any>(`${this.baseUrl}/${target.year}/${target.season}?page=${page}`)
-      .pipe(map(res => this.toPage(res, false)));
+      .pipe(map((res) => this.toPage(res, false)));
 
     const calendar = currentSeason(today);
-    const tryNow = viaNow ?? (sameSeason(target, calendar) || sameSeason(target, previousSeason(calendar)));
+    const tryNow =
+      viaNow ?? (sameSeason(target, calendar) || sameSeason(target, previousSeason(calendar)));
     if (!tryNow) return explicit$;
 
     return this.http.get<any>(`${this.baseUrl}/now?page=${page}`).pipe(
-      switchMap(res => {
+      switchMap((res) => {
         if (viaNow) return of(this.toPage(res, true));
         const listSeason = seasonOfList(res?.data || []);
         // Senza season/year nei dati (vecchio fallback AniList del backend) la
@@ -60,7 +66,7 @@ export class SeasonService {
         const matches = listSeason ? sameSeason(listSeason, target) : sameSeason(target, calendar);
         return matches ? of(this.toPage(res, true)) : explicit$;
       }),
-      catchError(() => explicit$)
+      catchError(() => explicit$),
     );
   }
 
@@ -85,20 +91,24 @@ export class SeasonService {
 
     const { incoming, outgoing } = transition;
     return this.getSeasonPage(incoming, 1, undefined, today).pipe(
-      map(page => ({ ok: true as const, page })),
+      map((page) => ({ ok: true as const, page })),
       catchError(() => of({ ok: false as const })),
-      switchMap(result => {
-        const started = result.ok ? isSeasonStarted(result.page.data, today) : fallbackSeasonStarted(today);
+      switchMap((result) => {
+        const started = result.ok
+          ? isSeasonStarted(result.page.data, today)
+          : fallbackSeasonStarted(today);
         if (!started) return this.firstPage(outgoing, today);
-        return result.ok ? of({ season: incoming, list: result.page.data }) : this.firstPage(incoming, today);
-      })
+        return result.ok
+          ? of({ season: incoming, list: result.page.data })
+          : this.firstPage(incoming, today);
+      }),
     );
   }
 
   private firstPage(season: SeasonRef, today: Date): Observable<ActiveSeason> {
     return this.getSeasonPage(season, 1, undefined, today).pipe(
-      map(page => ({ season, list: page.data })),
-      catchError(() => of({ season, list: [] }))
+      map((page) => ({ season, list: page.data })),
+      catchError(() => of({ season, list: [] })),
     );
   }
 
@@ -106,7 +116,7 @@ export class SeasonService {
     return {
       data: Array.isArray(res?.data) ? res.data : [],
       hasNextPage: res?.pagination?.has_next_page || false,
-      viaNow
+      viaNow,
     };
   }
 }

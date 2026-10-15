@@ -9,7 +9,7 @@ import { AuthService } from '../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.css'
+  styleUrl: './forgot-password.component.css',
 })
 export class ForgotPasswordComponent {
   email = '';
@@ -39,7 +39,7 @@ export class ForgotPasswordComponent {
         // Negli altri casi lo stesso messaggio generico del successo:
         // non vogliamo rivelare se l'email esiste o meno nel sistema.
         this.submitted = true;
-      }
+      },
     });
   }
 }

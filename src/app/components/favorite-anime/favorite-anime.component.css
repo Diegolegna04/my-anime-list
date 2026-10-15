@@ -8,7 +8,9 @@
   background-color: var(--card-bg);
   box-shadow: var(--card-shadow);
   cursor: pointer;
-  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .anime-card:hover {
@@ -79,11 +81,15 @@
 }
 
 @media (max-width: 768px) {
-  .img-wrapper { height: 200px; }
+  .img-wrapper {
+    height: 200px;
+  }
 }
 
 @media (max-width: 480px) {
-  .img-wrapper { height: 170px; }
+  .img-wrapper {
+    height: 170px;
+  }
 }
 
 /* Avviso mentre arrivano i dettagli degli anime rimasti senza copertina */

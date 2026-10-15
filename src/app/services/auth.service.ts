@@ -19,7 +19,10 @@ export class AuthService {
   private userDataSubject = new BehaviorSubject<any>(this.getUserDataFromStorage());
   userData$ = this.userDataSubject.asObservable();
 
-  constructor(private http: HttpClient, private route: Router) {}
+  constructor(
+    private http: HttpClient,
+    private route: Router,
+  ) {}
 
   private checkInitialAuthState(): boolean {
     const storedState = localStorage.getItem('accessoEffettuato');
@@ -41,7 +44,7 @@ export class AuthService {
       .pipe(
         tap((response) => {
           if (response) localStorage.setItem('username', username);
-        })
+        }),
       );
   }
 
@@ -58,7 +61,7 @@ export class AuthService {
           if (response.username) localStorage.setItem('username', response.username);
           if (response.email) localStorage.setItem('email', response.email);
           this.notifyLogin();
-        })
+        }),
       );
   }
 
@@ -105,7 +108,7 @@ export class AuthService {
       },
       error: (error) => {
         console.error('Errore nel recupero dati utente:', error);
-      }
+      },
     });
   }
 
@@ -125,7 +128,7 @@ export class AuthService {
         localStorage.removeItem('profileImage');
         this.accessoEffettuatoSubject.next(false);
         this.userDataSubject.next(null);
-      }
+      },
     });
   }
 

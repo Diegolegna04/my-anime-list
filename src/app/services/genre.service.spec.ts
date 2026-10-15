@@ -19,13 +19,13 @@ describe('GenreService', () => {
       { mal_id: 62, name: 'Isekai' },
       { mal_id: 83, name: 'Villainess' },
       { mal_id: 27, name: 'Shounen' },
-      { mal_id: 43, name: 'Josei' }
-    ]
+      { mal_id: 43, name: 'Josei' },
+    ],
   };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()]
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(GenreService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -64,8 +64,8 @@ describe('GenreService', () => {
     httpMock.expectOne('/api/anime-proxy/genres/anime').flush(jikanGenres);
 
     const list = await genres;
-    expect(list.find(g => g.name === 'Action')?.count).toBe(4901);
-    expect(list.find(g => g.name === 'Isekai')?.count).toBe(0);
+    expect(list.find((g) => g.name === 'Action')?.count).toBe(4901);
+    expect(list.find((g) => g.name === 'Isekai')?.count).toBe(0);
   });
 
   it('riusa la risposta per chi si iscrive dopo (una richiesta sola)', async () => {
@@ -79,7 +79,9 @@ describe('GenreService', () => {
 
   it('dopo un errore riprova alla successiva iscrizione', async () => {
     const failed = firstValueFrom(service.getAllGenres());
-    httpMock.expectOne('/api/anime-proxy/genres/anime').flush({}, { status: 504, statusText: 'Gateway Timeout' });
+    httpMock
+      .expectOne('/api/anime-proxy/genres/anime')
+      .flush({}, { status: 504, statusText: 'Gateway Timeout' });
     await expectAsync(failed).toBeRejected();
 
     const retry = firstValueFrom(service.getAllGenres());

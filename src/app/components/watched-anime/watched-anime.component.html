@@ -1,31 +1,54 @@
 <div class="page">
   @if (isFriendView) {
     <header class="page-hero">
-      <a routerLink="/profile" class="page-hero-back"><i class="fas fa-arrow-left" aria-hidden="true"></i> I tuoi amici</a>
+      <a routerLink="/profile" class="page-hero-back"
+        ><i class="fas fa-arrow-left" aria-hidden="true"></i> I tuoi amici</a
+      >
       <h1 class="page-hero-title">La lista di {{ friendUsername }}</h1>
-      <p class="page-hero-lead">Cosa ha visto, cosa sta guardando e cosa vuole ancora recuperare.</p>
+      <p class="page-hero-lead">
+        Cosa ha visto, cosa sta guardando e cosa vuole ancora recuperare.
+      </p>
       @if (friendStats) {
         <div class="page-hero-meta">
-          <span class="chip chip-glass"><i class="fas fa-tv" aria-hidden="true"></i> {{ friendStats.watchedCount }} visti</span>
-          <span class="chip chip-glass"><i class="fas fa-play" aria-hidden="true"></i> {{ friendStats.watchingCount }} in visione</span>
-          <span class="chip chip-glass"><i class="fas fa-bookmark" aria-hidden="true"></i> {{ friendStats.planToWatchCount }} da vedere</span>
-          <span class="chip chip-glass"><i class="fas fa-heart" aria-hidden="true"></i> {{ friendStats.favoritesCount }} preferiti</span>
+          <span class="chip chip-glass"
+            ><i class="fas fa-tv" aria-hidden="true"></i> {{ friendStats.watchedCount }} visti</span
+          >
+          <span class="chip chip-glass"
+            ><i class="fas fa-play" aria-hidden="true"></i> {{ friendStats.watchingCount }} in
+            visione</span
+          >
+          <span class="chip chip-glass"
+            ><i class="fas fa-bookmark" aria-hidden="true"></i>
+            {{ friendStats.planToWatchCount }} da vedere</span
+          >
+          <span class="chip chip-glass"
+            ><i class="fas fa-heart" aria-hidden="true"></i>
+            {{ friendStats.favoritesCount }} preferiti</span
+          >
         </div>
       }
       <div class="page-hero-actions">
-        <app-title-language-toggle [value]="titleLanguage" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
+        <app-title-language-toggle
+          [value]="titleLanguage"
+          (valueChange)="toggleTitleLanguage()"
+        ></app-title-language-toggle>
       </div>
     </header>
   } @else {
     <header class="page-hero">
       <h1 class="page-hero-title">La tua Libreria Anime</h1>
-      <p class="page-hero-lead">Tieni traccia di cosa hai visto, cosa stai guardando e cosa vuoi ancora recuperare.</p>
+      <p class="page-hero-lead">
+        Tieni traccia di cosa hai visto, cosa stai guardando e cosa vuoi ancora recuperare.
+      </p>
       <div class="page-hero-actions">
         <a routerLink="/profile/watched-anime/favourites" class="btn btn-light">
           <i class="fas fa-heart" aria-hidden="true"></i>
           <span>I tuoi preferiti</span>
         </a>
-        <app-title-language-toggle [value]="titleLanguage" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
+        <app-title-language-toggle
+          [value]="titleLanguage"
+          (valueChange)="toggleTitleLanguage()"
+        ></app-title-language-toggle>
       </div>
     </header>
   }
@@ -35,117 +58,170 @@
       <div class="state state-error">
         <span class="state-icon"><i class="fas fa-user-slash" aria-hidden="true"></i></span>
         <h2 class="state-title">{{ friendUsername }} non risulta tra i tuoi amici.</h2>
-        <p class="state-text">La lista si vede solo tra amici: controlla lo username o manda una richiesta dal profilo.</p>
+        <p class="state-text">
+          La lista si vede solo tra amici: controlla lo username o manda una richiesta dal profilo.
+        </p>
         <a routerLink="/profile" class="btn btn-secondary">
           <i class="fas fa-user-friends" aria-hidden="true"></i> Vai ai tuoi amici
         </a>
       </div>
     </section>
   } @else {
-  <section class="panel">
-    <div class="section-header">
-      <h2 class="section-title">
-        {{ isFriendView ? 'I suoi anime' : 'I tuoi anime' }}
-        @if (!isLoading) {
-          <span class="section-count">{{ filteredAnime.length }}</span>
-        }
-      </h2>
-      <div class="section-controls">
-        <div class="segmented" role="group" aria-label="Filtra per stato">
-          <button type="button" [class.active]="filter === 'all'" [attr.aria-pressed]="filter === 'all'" (click)="setFilter('all')">
-            Tutti
-          </button>
-          <button type="button" [class.active]="filter === 'completato'" [attr.aria-pressed]="filter === 'completato'" (click)="setFilter('completato')">
-            Completati
-          </button>
-          <button type="button" [class.active]="filter === 'in visione'" [attr.aria-pressed]="filter === 'in visione'" (click)="setFilter('in visione')">
-            In Visione
-          </button>
-          <button type="button" [class.active]="filter === 'da vedere'" [attr.aria-pressed]="filter === 'da vedere'" (click)="setFilter('da vedere')">
-            Da Vedere
-          </button>
-          <button type="button" [class.active]="filter === 'in pausa'" [attr.aria-pressed]="filter === 'in pausa'" (click)="setFilter('in pausa')">
-            In Pausa
-          </button>
-          <button type="button" [class.active]="filter === 'droppato'" [attr.aria-pressed]="filter === 'droppato'" (click)="setFilter('droppato')">
-            Droppati
-          </button>
+    <section class="panel">
+      <div class="section-header">
+        <h2 class="section-title">
+          {{ isFriendView ? 'I suoi anime' : 'I tuoi anime' }}
+          @if (!isLoading) {
+            <span class="section-count">{{ filteredAnime.length }}</span>
+          }
+        </h2>
+        <div class="section-controls">
+          <div class="segmented" role="group" aria-label="Filtra per stato">
+            <button
+              type="button"
+              [class.active]="filter === 'all'"
+              [attr.aria-pressed]="filter === 'all'"
+              (click)="setFilter('all')"
+            >
+              Tutti
+            </button>
+            <button
+              type="button"
+              [class.active]="filter === 'completato'"
+              [attr.aria-pressed]="filter === 'completato'"
+              (click)="setFilter('completato')"
+            >
+              Completati
+            </button>
+            <button
+              type="button"
+              [class.active]="filter === 'in visione'"
+              [attr.aria-pressed]="filter === 'in visione'"
+              (click)="setFilter('in visione')"
+            >
+              In Visione
+            </button>
+            <button
+              type="button"
+              [class.active]="filter === 'da vedere'"
+              [attr.aria-pressed]="filter === 'da vedere'"
+              (click)="setFilter('da vedere')"
+            >
+              Da Vedere
+            </button>
+            <button
+              type="button"
+              [class.active]="filter === 'in pausa'"
+              [attr.aria-pressed]="filter === 'in pausa'"
+              (click)="setFilter('in pausa')"
+            >
+              In Pausa
+            </button>
+            <button
+              type="button"
+              [class.active]="filter === 'droppato'"
+              [attr.aria-pressed]="filter === 'droppato'"
+              (click)="setFilter('droppato')"
+            >
+              Droppati
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    @if (isLoading) {
-      <div class="loading-state" role="status">
-        <span class="spinner" aria-hidden="true"></span>
-        <p>{{ isFriendView ? 'Caricamento della sua lista...' : 'Caricamento dei tuoi anime...' }}</p>
-      </div>
-    }
+      @if (isLoading) {
+        <div class="loading-state" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          <p>
+            {{ isFriendView ? 'Caricamento della sua lista...' : 'Caricamento dei tuoi anime...' }}
+          </p>
+        </div>
+      }
 
-    @if (!isLoading && pendingDetails > 0) {
-      <p class="pending-note" role="status">
-        <span class="spinner spinner-sm" aria-hidden="true"></span>
-        Caricamento di altri {{ pendingDetails }} anime...
-      </p>
-    }
+      @if (!isLoading && pendingDetails > 0) {
+        <p class="pending-note" role="status">
+          <span class="spinner spinner-sm" aria-hidden="true"></span>
+          Caricamento di altri {{ pendingDetails }} anime...
+        </p>
+      }
 
-    @if (!isLoading && filteredAnime.length > 0) {
-      <div class="anime-grid">
-        @for (anime of filteredAnime; track anime.id) {
-          <div
-            class="anime-card"
-            role="link"
-            tabindex="0"
-            (click)="goToDetails(anime.details?.data?.mal_id)"
-            (keydown.enter)="goToDetails(anime.details?.data?.mal_id)">
-            <div class="img-wrapper">
-              @if (anime.details?.data?.images?.jpg?.large_image_url) {
-                <img
-                  [src]="anime.details.data.images.jpg.large_image_url"
-                  alt="{{ getTitle(anime.details?.data) }}"
-                  class="anime-image"
-                  loading="lazy"
-                  decoding="async"
-                />
-              } @else {
-                <div class="anime-image-placeholder">
-                  <i class="fas fa-image" aria-hidden="true"></i>
-                  <p>Immagine non disponibile</p>
-                </div>
-              }
-            </div>
-            <div class="card-info">
-              <h3 class="card-title" title="{{ getTitle(anime.details?.data) }}">
-                {{ getTitle(anime.details?.data) || 'Titolo non disponibile' }}
-              </h3>
-              <p class="badge card-status"
+      @if (!isLoading && filteredAnime.length > 0) {
+        <div class="anime-grid">
+          @for (anime of filteredAnime; track anime.id) {
+            <div
+              class="anime-card"
+              role="link"
+              tabindex="0"
+              (click)="goToDetails(anime.details?.data?.mal_id)"
+              (keydown.enter)="goToDetails(anime.details?.data?.mal_id)"
+            >
+              <div class="img-wrapper">
+                @if (anime.details?.data?.images?.jpg?.large_image_url) {
+                  <img
+                    [src]="anime.details.data.images.jpg.large_image_url"
+                    alt="{{ getTitle(anime.details?.data) }}"
+                    class="anime-image"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                } @else {
+                  <div class="anime-image-placeholder">
+                    <i class="fas fa-image" aria-hidden="true"></i>
+                    <p>Immagine non disponibile</p>
+                  </div>
+                }
+              </div>
+              <div class="card-info">
+                <h3 class="card-title" title="{{ getTitle(anime.details?.data) }}">
+                  {{ getTitle(anime.details?.data) || 'Titolo non disponibile' }}
+                </h3>
+                <p
+                  class="badge card-status"
                   [class.status-completato]="anime.state === 'completato'"
                   [class.status-in-visione]="anime.state === 'in visione'"
                   [class.status-da-vedere]="anime.state === 'da vedere'"
                   [class.status-in-pausa]="anime.state === 'in pausa'"
-                  [class.status-droppato]="anime.state === 'droppato'">
-                Stato: {{ anime.state | titlecase }} </p>
-              @if (anime.state === 'in visione' && anime.episodiVisti && anime.details?.data?.episodes) {
-                 <div class="progress-bar-container">
-                   <div class="progress-bar" [style.width.%]="(anime.episodiVisti / anime.details.data.episodes) * 100"></div>
-                 </div>
-                 <p class="progress-text">{{ anime.episodiVisti }} / {{ anime.details.data.episodes }} episodi</p>
-              }
+                  [class.status-droppato]="anime.state === 'droppato'"
+                >
+                  Stato: {{ anime.state | titlecase }}
+                </p>
+                @if (
+                  anime.state === 'in visione' &&
+                  anime.episodiVisti &&
+                  anime.details?.data?.episodes
+                ) {
+                  <div class="progress-bar-container">
+                    <div
+                      class="progress-bar"
+                      [style.width.%]="(anime.episodiVisti / anime.details.data.episodes) * 100"
+                    ></div>
+                  </div>
+                  <p class="progress-text">
+                    {{ anime.episodiVisti }} / {{ anime.details.data.episodes }} episodi
+                  </p>
+                }
+              </div>
             </div>
-          </div>
-        }
-      </div>
-    } @else if (!isLoading && filteredAnime.length === 0 && pendingDetails === 0) {
-      <div class="state">
-        <span class="state-icon"><i class="fas fa-box-open" aria-hidden="true"></i></span>
-        <h3 class="state-title">Nessun anime trovato per questa categoria.</h3>
-        <p class="state-text">{{ isFriendView ? 'Qui non ha ancora aggiunto niente.' : 'Inizia ad aggiungere anime alla tua lista!' }}</p>
-        @if (filter !== 'all') {
-          <button type="button" class="btn btn-secondary" (click)="setFilter('all')">
-            Mostra tutti
-          </button>
-        }
-      </div>
-    }
-  </section>
+          }
+        </div>
+      } @else if (!isLoading && filteredAnime.length === 0 && pendingDetails === 0) {
+        <div class="state">
+          <span class="state-icon"><i class="fas fa-box-open" aria-hidden="true"></i></span>
+          <h3 class="state-title">Nessun anime trovato per questa categoria.</h3>
+          <p class="state-text">
+            {{
+              isFriendView
+                ? 'Qui non ha ancora aggiunto niente.'
+                : 'Inizia ad aggiungere anime alla tua lista!'
+            }}
+          </p>
+          @if (filter !== 'all') {
+            <button type="button" class="btn btn-secondary" (click)="setFilter('all')">
+              Mostra tutti
+            </button>
+          }
+        </div>
+      }
+    </section>
   }
 </div>

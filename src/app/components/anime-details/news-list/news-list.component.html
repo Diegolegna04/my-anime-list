@@ -4,12 +4,22 @@
       <h2 class="section-title">News</h2>
       <div class="news-actions">
         @if (!isExpanded) {
-          <button type="button" class="btn btn-primary btn-sm expand-btn" (click)="toggleExpand()" aria-expanded="false">
+          <button
+            type="button"
+            class="btn btn-primary btn-sm expand-btn"
+            (click)="toggleExpand()"
+            aria-expanded="false"
+          >
             <i class="fas fa-newspaper" aria-hidden="true"></i>
             Mostra News ({{ news.length }})
           </button>
         } @else {
-          <button type="button" class="btn btn-secondary btn-sm collapse-header-btn" (click)="collapse()" aria-expanded="true">
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm collapse-header-btn"
+            (click)="collapse()"
+            aria-expanded="true"
+          >
             <i class="fas fa-chevron-up" aria-hidden="true"></i>
             Nascondi News
           </button>
@@ -22,10 +32,7 @@
         @for (item of displayedNews; track item.mal_id) {
           <article class="news-card">
             <h3>
-              <a
-                [href]="item.url"
-                target="_blank"
-                rel="noopener noreferrer">
+              <a [href]="item.url" target="_blank" rel="noopener noreferrer">
                 {{ item.title }}
               </a>
             </h3>
@@ -56,9 +63,13 @@
       }
       @case ('error') {
         <div class="state state-error" role="status">
-          <span class="state-icon" aria-hidden="true"><i class="fas fa-exclamation-triangle"></i></span>
+          <span class="state-icon" aria-hidden="true"
+            ><i class="fas fa-exclamation-triangle"></i
+          ></span>
           <!-- AniList non ha news: quando Jikan non risponde non c'è un'alternativa -->
-          <p class="state-text">Le news arrivano da MyAnimeList, che in questo momento non risponde.</p>
+          <p class="state-text">
+            Le news arrivano da MyAnimeList, che in questo momento non risponde.
+          </p>
           <button type="button" class="btn btn-secondary btn-sm" (click)="retry.emit()">
             <i class="fas fa-redo" aria-hidden="true"></i>
             Riprova

@@ -49,7 +49,10 @@ describe('AnimeService', () => {
     }));
 
     it("usa localStorage senza richiesta se la voce e' fresca", () => {
-      localStorage.setItem('animeCache:3', JSON.stringify({ data: { data: { mal_id: 3 } }, timestamp: Date.now() }));
+      localStorage.setItem(
+        'animeCache:3',
+        JSON.stringify({ data: { data: { mal_id: 3 } }, timestamp: Date.now() }),
+      );
 
       let result: any;
       service.getAnimeById('3').subscribe((r) => (result = r));
@@ -60,7 +63,10 @@ describe('AnimeService', () => {
 
     it('ignora la voce di localStorage scaduta e rifa la richiesta', fakeAsync(() => {
       const old = Date.now() - 25 * 60 * 60 * 1000;
-      localStorage.setItem('animeCache:4', JSON.stringify({ data: { stale: true }, timestamp: old }));
+      localStorage.setItem(
+        'animeCache:4',
+        JSON.stringify({ data: { stale: true }, timestamp: old }),
+      );
 
       let result: any;
       service.getAnimeById('4').subscribe((r) => (result = r));
@@ -130,14 +136,18 @@ describe('AnimeService', () => {
   describe('searchAnime', () => {
     it('codifica la query e passa la pagina', () => {
       service.searchAnime('one piece & co', 2).subscribe();
-      http.expectOne(`${API}/anime?q=${encodeURIComponent('one piece & co')}&page=2`).flush({ data: [] });
+      http
+        .expectOne(`${API}/anime?q=${encodeURIComponent('one piece & co')}&page=2`)
+        .flush({ data: [] });
     });
 
     it('riprova una volta su 503', fakeAsync(() => {
       let result: any;
       service.searchAnime('naruto').subscribe((r) => (result = r));
 
-      http.expectOne(`${API}/anime?q=naruto&page=1`).flush('', { status: 503, statusText: 'Service Unavailable' });
+      http
+        .expectOne(`${API}/anime?q=naruto&page=1`)
+        .flush('', { status: 503, statusText: 'Service Unavailable' });
       tick(600);
       http.expectOne(`${API}/anime?q=naruto&page=1`).flush({ data: [1] });
 
@@ -190,7 +200,9 @@ describe('AnimeService', () => {
     it('getAnimeByGenre costruisce la query con nome codificato', fakeAsync(() => {
       service.getAnimeByGenre(22, 'Slice of Life', 2).subscribe();
       http
-        .expectOne(`${API}/anime?genres=22&genreName=Slice%20of%20Life&page=2&order_by=score&sort=desc&limit=25`)
+        .expectOne(
+          `${API}/anime?genres=22&genreName=Slice%20of%20Life&page=2&order_by=score&sort=desc&limit=25`,
+        )
         .flush({ data: [] });
       tick(700);
     }));
@@ -208,7 +220,10 @@ describe('AnimeService', () => {
     }));
 
     it('getAnimeDetails non usa ne scrive la cache', fakeAsync(() => {
-      localStorage.setItem('animeCache:11', JSON.stringify({ data: { stale: true }, timestamp: Date.now() }));
+      localStorage.setItem(
+        'animeCache:11',
+        JSON.stringify({ data: { stale: true }, timestamp: Date.now() }),
+      );
 
       let result: any;
       service.getAnimeDetails(11).subscribe((r) => (result = r));
@@ -227,7 +242,9 @@ describe('AnimeService', () => {
       let error: any;
       service.getAnimeDetails(12).subscribe({ error: (e) => (error = e) });
       http.expectOne(`${API}/anime/12`).flush('', TOO_MANY);
-      http.expectOne(`${API}/anime/12`).flush('', { status: 503, statusText: 'Service Unavailable' });
+      http
+        .expectOne(`${API}/anime/12`)
+        .flush('', { status: 503, statusText: 'Service Unavailable' });
 
       expect(error?.status).toBe(503);
       tick(2500);
@@ -236,7 +253,9 @@ describe('AnimeService', () => {
     it('un 503 su getRecommendations fallisce subito e non rallenta la coda', fakeAsync(() => {
       let error: any;
       service.getRecommendations(1).subscribe({ error: (e) => (error = e) });
-      http.expectOne(`${API}/anime/1/recommendations`).flush('', { status: 503, statusText: 'Service Unavailable' });
+      http
+        .expectOne(`${API}/anime/1/recommendations`)
+        .flush('', { status: 503, statusText: 'Service Unavailable' });
 
       expect(error?.status).toBe(503);
       http.expectNone(`${API}/anime/1/recommendations`);

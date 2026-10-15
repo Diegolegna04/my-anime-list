@@ -13,12 +13,26 @@ export type TitleLanguage = 'english' | 'original';
   standalone: true,
   template: `
     <div class="segmented" role="group" aria-label="Lingua dei titoli">
-      <button type="button" [class.active]="value === 'original'" [attr.aria-pressed]="value === 'original'"
-              [disabled]="disabled" (click)="select('original')">Originale</button>
-      <button type="button" [class.active]="value === 'english'" [attr.aria-pressed]="value === 'english'"
-              [disabled]="disabled" (click)="select('english')">Inglese</button>
+      <button
+        type="button"
+        [class.active]="value === 'original'"
+        [attr.aria-pressed]="value === 'original'"
+        [disabled]="disabled"
+        (click)="select('original')"
+      >
+        Originale
+      </button>
+      <button
+        type="button"
+        [class.active]="value === 'english'"
+        [attr.aria-pressed]="value === 'english'"
+        [disabled]="disabled"
+        (click)="select('english')"
+      >
+        Inglese
+      </button>
     </div>
-  `
+  `,
 })
 export class TitleLanguageToggleComponent {
   @Input() value: TitleLanguage = 'original';

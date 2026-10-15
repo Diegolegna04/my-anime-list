@@ -21,10 +21,9 @@ describe('ProfileComponent - saveSettings', () => {
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: ToastService, useValue: toast }
-      ]
-    })
-    .compileComponents();
+        { provide: ToastService, useValue: toast },
+      ],
+    }).compileComponents();
 
     // Niente detectChanges: ngOnInit non parte, testiamo solo saveSettings
     fixture = TestBed.createComponent(ProfileComponent);
@@ -58,7 +57,10 @@ describe('ProfileComponent - saveSettings', () => {
     await component.saveSettings();
 
     httpMock.expectNone('/api/user/update');
-    expect(toast.show).toHaveBeenCalledWith('Inserisci la password attuale per confermare.', 'error');
+    expect(toast.show).toHaveBeenCalledWith(
+      'Inserisci la password attuale per confermare.',
+      'error',
+    );
   });
 
   it('mostra un errore chiaro se la password attuale è sbagliata (403)', async () => {
@@ -67,10 +69,9 @@ describe('ProfileComponent - saveSettings', () => {
     component.settingsData.confirmPassword = 'nuova-password';
 
     const saving = component.saveSettings();
-    httpMock.expectOne('/api/user/update').flush(
-      { error: 'Password attuale errata' },
-      { status: 403, statusText: 'Forbidden' }
-    );
+    httpMock
+      .expectOne('/api/user/update')
+      .flush({ error: 'Password attuale errata' }, { status: 403, statusText: 'Forbidden' });
     await saving;
 
     expect(toast.show).toHaveBeenCalledWith('Password attuale errata.', 'error');
@@ -95,14 +96,19 @@ describe('ProfileComponent - saveSettings', () => {
       await saving;
       expect(component.email).toBe('nuova@example.com');
       expect(toast.show).toHaveBeenCalledWith(
-        'Impostazioni aggiornate. Ti abbiamo mandato un link per confermare la nuova email.', 'success');
+        'Impostazioni aggiornate. Ti abbiamo mandato un link per confermare la nuova email.',
+        'success',
+      );
     });
 
     it('non chiama il backend senza la password attuale', async () => {
       await component.saveSettings();
 
       httpMock.expectNone('/api/user/update');
-      expect(toast.show).toHaveBeenCalledWith('Inserisci la password attuale per confermare.', 'error');
+      expect(toast.show).toHaveBeenCalledWith(
+        'Inserisci la password attuale per confermare.',
+        'error',
+      );
     });
 
     it("l'email uguale a quella attuale non viene mandata", async () => {
@@ -229,7 +235,10 @@ describe('ProfileComponent - saveSettings', () => {
     it('senza password non chiama il backend', async () => {
       await component.deleteAccount();
       httpMock.expectNone('/api/user/delete');
-      expect(toast.show).toHaveBeenCalledWith('Inserisci la password attuale per confermare.', 'error');
+      expect(toast.show).toHaveBeenCalledWith(
+        'Inserisci la password attuale per confermare.',
+        'error',
+      );
     });
 
     it('con la password elimina e avvisa', async () => {
@@ -240,15 +249,19 @@ describe('ProfileComponent - saveSettings', () => {
       req.flush({ message: 'Account eliminato' });
       await deleting;
 
-      expect(toast.show).toHaveBeenCalledWith('Account eliminato. Ci dispiace vederti andare via.', 'success');
+      expect(toast.show).toHaveBeenCalledWith(
+        'Account eliminato. Ci dispiace vederti andare via.',
+        'success',
+      );
       expect(component.showOverlay).toBeFalse();
     });
 
     it('con la password sbagliata resta aperto e lo dice', async () => {
       component.deletePassword = 'sbagliata';
       const deleting = component.deleteAccount();
-      httpMock.expectOne('/api/user/delete').flush(
-        { error: 'Password attuale errata' }, { status: 403, statusText: 'Forbidden' });
+      httpMock
+        .expectOne('/api/user/delete')
+        .flush({ error: 'Password attuale errata' }, { status: 403, statusText: 'Forbidden' });
       await deleting;
 
       expect(toast.show).toHaveBeenCalledWith('Password attuale errata.', 'error');
@@ -280,6 +293,8 @@ describe('ProfileComponent - saveSettings', () => {
     await new Promise((resolve) => setTimeout(resolve));
 
     expect(document.activeElement?.id).toBe('settings-username');
-    httpMock.match('/api/friends').forEach((req) => req.flush({ friends: [], incoming: [], outgoing: [] }));
+    httpMock
+      .match('/api/friends')
+      .forEach((req) => req.flush({ friends: [], incoming: [], outgoing: [] }));
   });
 });

@@ -132,7 +132,12 @@
 .progress-shimmer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 25%, color-mix(in srgb, var(--text-on-accent) 30%, transparent) 50%, transparent 75%);
+  background: linear-gradient(
+    90deg,
+    transparent 25%,
+    color-mix(in srgb, var(--text-on-accent) 30%, transparent) 50%,
+    transparent 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 2s linear infinite;
 }
@@ -177,15 +182,15 @@
   color: var(--text-secondary);
 }
 
-.save-status[data-status="saved"] .save-icon {
+.save-status[data-status='saved'] .save-icon {
   color: var(--success-color);
 }
 
-.save-status[data-status="error"] {
+.save-status[data-status='error'] {
   color: var(--text-primary);
 }
 
-.save-status[data-status="error"] .save-icon {
+.save-status[data-status='error'] .save-icon {
   color: var(--error-color);
 }
 

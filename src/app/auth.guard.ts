@@ -8,10 +8,12 @@ export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   return authService.accessoEffettuato$.pipe(
-    map(accessoEffettuato => {
+    map((accessoEffettuato) => {
       // Dopo il login si arriva alla pagina chiesta
-      return accessoEffettuato
-        || router.createUrlTree(['/register-login'], { queryParams: { returnUrl: state.url } });
-    })
-  )
+      return (
+        accessoEffettuato ||
+        router.createUrlTree(['/register-login'], { queryParams: { returnUrl: state.url } })
+      );
+    }),
+  );
 };

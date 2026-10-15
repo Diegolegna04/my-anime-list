@@ -5,11 +5,11 @@ import { AnimeService } from '../services/anime.service';
 import { SeasonRef, seasonSlug, sortSeasonalForHome } from '../services/anime-utils';
 import { SeasonService } from '../services/season.service';
 import { ToastService } from '../services/toast.service';
-import { RandomAnimeComponent } from "../components/random-anime/random-anime.component";
+import { RandomAnimeComponent } from '../components/random-anime/random-anime.component';
 import { HeroSectionComponent } from './hero-section/hero-section.component';
 import { TopAnimeComponent } from './top-anime/top-anime.component';
 import { SeasonalAnimeComponent } from './seasonal-anime/seasonal-anime.component';
-import { GenresHomeComponent } from "./genres-home/genres-home.component";
+import { GenresHomeComponent } from './genres-home/genres-home.component';
 
 @Component({
   selector: 'app-home',
@@ -21,8 +21,8 @@ import { GenresHomeComponent } from "./genres-home/genres-home.component";
     HeroSectionComponent,
     TopAnimeComponent,
     SeasonalAnimeComponent,
-    GenresHomeComponent
-],
+    GenresHomeComponent,
+  ],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   animeList: any[] = [];
@@ -33,18 +33,16 @@ export class HomeComponent implements OnInit, OnDestroy {
   /** Prima pagina dei top anime fallita: la sezione mostra "Riprova" */
   topAnimeError = false;
   currentView: 'list' | 'search' = 'list';
-  
+
   currentPage = 1;
 
   constructor(
     private router: Router,
     private animeService: AnimeService,
     private seasonService: SeasonService,
-    private toastService: ToastService
+    private toastService: ToastService,
   ) {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe(() => {
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       const currentUrl = this.router.url;
       if (currentUrl === '/') {
         localStorage.setItem('homeScrollPos', window.scrollY.toString());
@@ -74,7 +72,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.currentPage--;
           this.toastService.show('Impossibile caricare altri anime, riprova tra poco', 'error');
         }
-      }
+      },
     });
   }
 
@@ -82,7 +80,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.currentPage++;
     this.loadTopAnime();
   }
-  
+
   loadSeasonalAnime(): void {
     this.seasonService.resolveActiveSeason().subscribe(({ season, list }) => {
       this.activeSeason = season;

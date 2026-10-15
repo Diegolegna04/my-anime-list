@@ -3,7 +3,10 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AnimeService } from '../../services/anime.service';
 import { GenreCategory, GenreService } from '../../services/genre.service';
 import { AnimeCardComponent } from '../../services/shared/anime-card.component';
-import { getGenreDescription, getGenreShortDescription } from '../../services/constants/anime-genre-descriptions';
+import {
+  getGenreDescription,
+  getGenreShortDescription,
+} from '../../services/constants/anime-genre-descriptions';
 import { getGenreIcon } from '../../services/constants/genre-icons';
 import { TitleLanguageToggleComponent } from '../../services/shared/title-language-toggle.component';
 
@@ -33,17 +36,18 @@ export class AnimeByGenreComponent implements OnInit {
     genres: 'Genere',
     themes: 'Tema',
     demographics: 'Demografia',
-    explicit_genres: 'Genere esplicito'
+    explicit_genres: 'Genere esplicito',
   };
 
   constructor(
     private route: ActivatedRoute,
     private animeService: AnimeService,
-    private genreService: GenreService
+    private genreService: GenreService,
   ) {}
 
   ngOnInit(): void {
-    this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
+    this.titleLanguage =
+      (localStorage.getItem('titleLanguage') as 'english' | 'original') || 'original';
 
     const savedSortCriteria = localStorage.getItem('genreSortCriteria');
     if (savedSortCriteria) {
@@ -59,12 +63,12 @@ export class AnimeByGenreComponent implements OnInit {
       this.loadGenreMeta(this.genreId);
     }
 
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       if (params['name']) {
         this.genreName = params['name'];
         this.loadAnimeByGenre();
       } else if (this.genreId) {
-        this.genreService.getGenreName(this.genreId).subscribe(name => {
+        this.genreService.getGenreName(this.genreId).subscribe((name) => {
           this.genreName = name;
           this.loadAnimeByGenre();
         });
@@ -75,21 +79,26 @@ export class AnimeByGenreComponent implements OnInit {
   loadAnimeByGenre(): void {
     this.isLoading = true;
     if (this.genreId) {
-      this.animeService.getAnimeByGenre(this.genreId, this.genreName || '', this.currentPage).subscribe({
-        next: (response) => {
-          const newAnime = response.data;
-          this.animeList = [...this.animeList, ...newAnime];
+      this.animeService
+        .getAnimeByGenre(this.genreId, this.genreName || '', this.currentPage)
+        .subscribe({
+          next: (response) => {
+            const newAnime = response.data;
+            this.animeList = [...this.animeList, ...newAnime];
 
-          if (this.currentSortCriteria !== 'score') {
-            this.animeList = this.animeService.sortAnime(this.animeList, this.currentSortCriteria);
-          }
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Errore nel caricamento degli anime per genere:', error);
-          this.isLoading = false;
-        }
-      });
+            if (this.currentSortCriteria !== 'score') {
+              this.animeList = this.animeService.sortAnime(
+                this.animeList,
+                this.currentSortCriteria,
+              );
+            }
+            this.isLoading = false;
+          },
+          error: (error) => {
+            console.error('Errore nel caricamento degli anime per genere:', error);
+            this.isLoading = false;
+          },
+        });
     }
   }
 
@@ -105,17 +114,19 @@ export class AnimeByGenreComponent implements OnInit {
   // in cache se si arriva dal catalogo; se la richiesta fallisce la riga non compare.
   private loadGenreMeta(genreId: number): void {
     this.genreService.getAllGenres().subscribe({
-      next: genres => {
-        const genre = genres.find(g => g.id === genreId);
+      next: (genres) => {
+        const genre = genres.find((g) => g.id === genreId);
         if (genre) {
           this.genreMeta = {
             category: genre.category,
             categoryLabel: AnimeByGenreComponent.CATEGORY_LABELS[genre.category],
-            count: genre.count ? new Intl.NumberFormat('it-IT').format(genre.count) : ''
+            count: genre.count ? new Intl.NumberFormat('it-IT').format(genre.count) : '',
           };
         }
       },
-      error: () => { this.genreMeta = null; }
+      error: () => {
+        this.genreMeta = null;
+      },
     });
   }
 

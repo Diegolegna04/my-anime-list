@@ -12,11 +12,12 @@ import { TitleLanguageToggleComponent } from '../../services/shared/title-langua
   selector: 'app-anime-search',
   templateUrl: './anime-search.component.html',
   styleUrls: ['./anime-search.component.css'],
-  imports: [TitleLanguageToggleComponent, 
+  imports: [
+    TitleLanguageToggleComponent,
     CommonModule,
     FormsModule,
     AnimeCardComponent,
-    RouterLink
+    RouterLink,
   ],
   standalone: true,
 })
@@ -33,14 +34,14 @@ export class AnimeSearchComponent implements OnInit, OnDestroy {
     { id: 10, label: 'Fantasy' },
     { id: 22, label: 'Romance' },
     { id: 24, label: 'Sci-Fi' },
-    { id: 36, label: 'Slice of Life' }
+    { id: 36, label: 'Slice of Life' },
   ];
   isGridView = true;
   selectedSortCriteria = 'score';
   titleLanguage: 'english' | 'original' = 'original';
   isLoading = false;
   loadingProgress = 0;
-  
+
   private itemsPerPage = 25;
   private currentDisplayPage = 1;
   private searchSubscription?: Subscription;
@@ -48,12 +49,13 @@ export class AnimeSearchComponent implements OnInit, OnDestroy {
   constructor(
     private animeService: AnimeService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
-    
+    this.titleLanguage =
+      (localStorage.getItem('titleLanguage') as 'english' | 'original') || 'original';
+
     this.route.queryParams.subscribe((params) => {
       this.query = (params['q'] || '').trim();
       if (this.query) {
@@ -76,47 +78,51 @@ export class AnimeSearchComponent implements OnInit, OnDestroy {
     this.searchSubscription?.unsubscribe();
 
     let maxPages = 1;
-    this.searchSubscription = this.animeService.searchAnime(query, 1).pipe(
-      switchMap((response: { data: any[]; pagination?: any }) => {
-        maxPages = Math.min(response.pagination?.last_visible_page || 1, 5);
-        this.searchResults = this.removeDuplicates(response.data || []);
-        this.loadingProgress = Math.round((1 / maxPages) * 100);
+    this.searchSubscription = this.animeService
+      .searchAnime(query, 1)
+      .pipe(
+        switchMap((response: { data: any[]; pagination?: any }) => {
+          maxPages = Math.min(response.pagination?.last_visible_page || 1, 5);
+          this.searchResults = this.removeDuplicates(response.data || []);
+          this.loadingProgress = Math.round((1 / maxPages) * 100);
 
-        if (maxPages === 1) return EMPTY;
+          if (maxPages === 1) return EMPTY;
 
-        // Le altre pagine due alla volta: in sequenza, con una pausa fissa tra
-        // l'una e l'altra, la ricerca completa durava diversi secondi
-        const pageNumbers = Array.from({ length: maxPages - 1 }, (_, i) => i + 2);
-        return from(pageNumbers).pipe(
-          mergeMap(page =>
-            this.animeService.searchAnime(query, page).pipe(
-              catchError(error => {
-                console.error(`Errore caricando la pagina ${page}:`, error);
-                return of({ data: [] });
-              })
+          // Le altre pagine due alla volta: in sequenza, con una pausa fissa tra
+          // l'una e l'altra, la ricerca completa durava diversi secondi
+          const pageNumbers = Array.from({ length: maxPages - 1 }, (_, i) => i + 2);
+          return from(pageNumbers).pipe(
+            mergeMap(
+              (page) =>
+                this.animeService.searchAnime(query, page).pipe(
+                  catchError((error) => {
+                    console.error(`Errore caricando la pagina ${page}:`, error);
+                    return of({ data: [] });
+                  }),
+                ),
+              2,
             ),
-            2
-          )
-        );
-      })
-    ).subscribe({
-      next: (pageResponse: any) => {
-        const pageData = Array.isArray(pageResponse) ? pageResponse : (pageResponse.data || []);
-        this.searchResults = [...this.searchResults, ...pageData];
-        this.loadingProgress = Math.min(100, this.loadingProgress + Math.round(100 / maxPages));
-      },
-      complete: () => {
-        this.searchResults = this.removeDuplicates(this.searchResults);
-        this.applySort();
-        this.updateDisplayedResults();
-        this.isLoading = false;
-        this.loadingProgress = 100;
-      },
-      error: (error) => {
-        console.error('Errore durante la ricerca:', error);
-        this.isLoading = false;
-      }
-    });
+          );
+        }),
+      )
+      .subscribe({
+        next: (pageResponse: any) => {
+          const pageData = Array.isArray(pageResponse) ? pageResponse : pageResponse.data || [];
+          this.searchResults = [...this.searchResults, ...pageData];
+          this.loadingProgress = Math.min(100, this.loadingProgress + Math.round(100 / maxPages));
+        },
+        complete: () => {
+          this.searchResults = this.removeDuplicates(this.searchResults);
+          this.applySort();
+          this.updateDisplayedResults();
+          this.isLoading = false;
+          this.loadingProgress = 100;
+        },
+        error: (error) => {
+          console.error('Errore durante la ricerca:', error);
+          this.isLoading = false;
+        },
+      });
   }
 
   ngOnDestroy(): void {
@@ -125,7 +131,7 @@ export class AnimeSearchComponent implements OnInit, OnDestroy {
 
   private removeDuplicates(animeList: any[]): any[] {
     const uniqueMap = new Map();
-    animeList.forEach(anime => {
+    animeList.forEach((anime) => {
       if (anime && anime.mal_id && !uniqueMap.has(anime.mal_id)) {
         uniqueMap.set(anime.mal_id, anime);
       }
@@ -202,7 +208,7 @@ export class AnimeSearchComponent implements OnInit, OnDestroy {
   onSortChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
     this.selectedSortCriteria = target.value;
-    
+
     this.applySort();
     this.currentDisplayPage = 1;
     this.updateDisplayedResults();

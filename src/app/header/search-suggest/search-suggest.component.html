@@ -10,10 +10,16 @@
       [routerLink]="['/anime', anime.mal_id]"
       (mousedown)="$event.preventDefault()"
       (mouseenter)="activeIndex.set(i)"
-      (click)="chosen.emit(anime); $event.preventDefault()">
+      (click)="chosen.emit(anime); $event.preventDefault()"
+    >
       <span class="suggest-poster">
         @if (anime.images?.jpg?.small_image_url || anime.images?.jpg?.image_url) {
-          <img [src]="anime.images.jpg.small_image_url || anime.images.jpg.image_url" alt="" loading="lazy" decoding="async" />
+          <img
+            [src]="anime.images.jpg.small_image_url || anime.images.jpg.image_url"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
         } @else {
           <i class="fas fa-image" aria-hidden="true"></i>
         }
@@ -25,7 +31,10 @@
             <span>{{ suggestionMeta(anime) }}</span>
           }
           @if (anime.score) {
-            <span class="suggest-score"><i class="fas fa-star" aria-hidden="true"></i> {{ anime.score | number:'1.1-2' }}</span>
+            <span class="suggest-score"
+              ><i class="fas fa-star" aria-hidden="true"></i>
+              {{ anime.score | number: '1.1-2' }}</span
+            >
           }
         </span>
       </span>

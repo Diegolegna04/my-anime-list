@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   templateUrl: './genres-home.component.html',
-  styleUrl: './genres-home.component.css'
+  styleUrl: './genres-home.component.css',
 })
 export class GenresHomeComponent {
   /** Id dei generi su MyAnimeList: portano alla pagina /genres/anime-by-genre/:id */
@@ -17,6 +17,6 @@ export class GenresHomeComponent {
     { id: 4, label: 'Commedia', icon: 'fa-laugh-beam' },
     { id: 24, label: 'Sci-Fi', icon: 'fa-rocket' },
     { id: 10, label: 'Fantasy', icon: 'fa-magic' },
-    { id: 36, label: 'Slice of Life', icon: 'fa-school' }
+    { id: 36, label: 'Slice of Life', icon: 'fa-school' },
   ];
 }

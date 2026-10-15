@@ -11,18 +11,12 @@ import { AutoHideScrollbarService } from './services/auto-hide-scrollbar.service
   standalone: true,
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  imports: [
-    RouterOutlet,
-    HeaderComponent,
-    FooterComponent,
-    ToastComponent
-  ],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, ToastComponent],
 })
 export class AppComponent implements OnInit {
-
   constructor(
     private authService: AuthService,
-    private autoHideScrollbar: AutoHideScrollbarService
+    private autoHideScrollbar: AutoHideScrollbarService,
   ) {
     if (localStorage.getItem('accessoEffettuato')) {
       this.authService.validateSession();

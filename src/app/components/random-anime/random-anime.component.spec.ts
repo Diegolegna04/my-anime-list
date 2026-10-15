@@ -12,9 +12,8 @@ describe('RandomAnimeComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RandomAnimeComponent],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
-    })
-    .compileComponents();
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(RandomAnimeComponent);
     component = fixture.componentInstance;

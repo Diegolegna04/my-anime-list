@@ -27,7 +27,10 @@
           I Tuoi Preferiti <span class="section-count">{{ favoriteAnime.length }}</span>
         </h2>
         <div class="section-controls">
-          <app-title-language-toggle [value]="titleLanguage" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
+          <app-title-language-toggle
+            [value]="titleLanguage"
+            (valueChange)="toggleTitleLanguage()"
+          ></app-title-language-toggle>
         </div>
       </div>
 
@@ -40,7 +43,8 @@
               role="link"
               tabindex="0"
               (click)="goToDetails(anime.details.data.mal_id)"
-              (keydown.enter)="goToDetails(anime.details.data.mal_id)">
+              (keydown.enter)="goToDetails(anime.details.data.mal_id)"
+            >
               <button
                 type="button"
                 class="favorite-badge"
@@ -53,7 +57,10 @@
               </button>
               <div class="img-wrapper">
                 <img
-                  [src]="anime.details.data.images?.jpg?.large_image_url || anime.details.data.images?.jpg?.image_url"
+                  [src]="
+                    anime.details.data.images?.jpg?.large_image_url ||
+                    anime.details.data.images?.jpg?.image_url
+                  "
                   [alt]="getTitle(anime.details.data)"
                   loading="lazy"
                   decoding="async"

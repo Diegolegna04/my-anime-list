@@ -14,7 +14,7 @@ describe('GenresComponent', () => {
     { id: 23, name: 'School', category: 'themes', count: 2400 },
     { id: 62, name: 'Isekai', category: 'themes', count: 1000 },
     { id: 27, name: 'Shounen', category: 'demographics', count: 2100 },
-    { id: 12, name: 'Hentai', category: 'explicit_genres', count: 1500 }
+    { id: 12, name: 'Hentai', category: 'explicit_genres', count: 1500 },
   ];
 
   let fixture: ComponentFixture<GenresComponent>;
@@ -27,7 +27,7 @@ describe('GenresComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [GenresComponent],
-      providers: [provideRouter([]), { provide: GenreService, useValue: genreService }]
+      providers: [provideRouter([]), { provide: GenreService, useValue: genreService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GenresComponent);
@@ -35,14 +35,16 @@ describe('GenresComponent', () => {
     fixture.detectChanges();
   });
 
-  const sectionIds = () => component.sections().map(s => s.id);
-  const names = () => component.sections().flatMap(s => s.items.map(g => g.name));
+  const sectionIds = () => component.sections().map((s) => s.id);
+  const names = () => component.sections().flatMap((s) => s.items.map((g) => g.name));
 
-  it('mostra le sezioni nell\'ordine generi, temi, demografie, espliciti', () => {
+  it("mostra le sezioni nell'ordine generi, temi, demografie, espliciti", () => {
     expect(component.status()).toBe('ready');
     expect(sectionIds()).toEqual(['genres', 'themes', 'demographics', 'explicit_genres']);
     expect(fixture.nativeElement.querySelectorAll('a.genre-card').length).toBe(6);
-    expect(fixture.nativeElement.querySelector('a.genre-card .genre-icon i').className).toContain('fa-fist-raised');
+    expect(fixture.nativeElement.querySelector('a.genre-card .genre-icon i').className).toContain(
+      'fa-fist-raised',
+    );
   });
 
   it('cerca anche nelle descrizioni in italiano, ignorando gli accenti', () => {
@@ -56,7 +58,12 @@ describe('GenresComponent', () => {
   it('filtra per categoria e conta i risultati di ogni categoria', () => {
     component.activeCategory.set('themes');
     expect(names()).toEqual(['Isekai', 'School']);
-    expect(component.countByCategory()).toEqual({ genres: 2, themes: 2, demographics: 1, explicit_genres: 1 });
+    expect(component.countByCategory()).toEqual({
+      genres: 2,
+      themes: 2,
+      demographics: 1,
+      explicit_genres: 1,
+    });
   });
 
   it('ordina per numero di anime', () => {
@@ -74,7 +81,7 @@ describe('GenresComponent', () => {
     expect(text).toContain('Cancella la ricerca');
   });
 
-  it('se il caricamento fallisce mostra l\'errore e permette di riprovare', () => {
+  it("se il caricamento fallisce mostra l'errore e permette di riprovare", () => {
     genreService.getAllGenres.and.returnValue(throwError(() => new Error('504')));
     component.loadGenres();
     fixture.detectChanges();
@@ -83,14 +90,16 @@ describe('GenresComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Riprova');
   });
 
-  it('ogni genere di MyAnimeList ha una descrizione breve e un\'icona', () => {
+  it("ogni genere di MyAnimeList ha una descrizione breve e un'icona", () => {
     // Tutti gli id della lista /genres/anime di Jikan (78)
-    const malIds = [1, 2, 5, 46, 28, 4, 8, 10, 26, 47, 14, 7, 22, 24, 36, 30, 37, 41, 9, 49, 12, 50, 51, 52,
-      53, 54, 81, 55, 39, 56, 57, 58, 35, 59, 13, 60, 61, 62, 63, 64, 65, 66, 17, 18, 67, 38, 19, 6, 68, 69,
-      20, 70, 71, 40, 3, 72, 73, 74, 21, 23, 75, 29, 11, 31, 76, 77, 78, 32, 79, 80, 48, 82, 83, 43, 15, 42,
-      25, 27];
+    const malIds = [
+      1, 2, 5, 46, 28, 4, 8, 10, 26, 47, 14, 7, 22, 24, 36, 30, 37, 41, 9, 49, 12, 50, 51, 52, 53,
+      54, 81, 55, 39, 56, 57, 58, 35, 59, 13, 60, 61, 62, 63, 64, 65, 66, 17, 18, 67, 38, 19, 6, 68,
+      69, 20, 70, 71, 40, 3, 72, 73, 74, 21, 23, 75, 29, 11, 31, 76, 77, 78, 32, 79, 80, 48, 82, 83,
+      43, 15, 42, 25, 27,
+    ];
     expect(malIds.length).toBe(78);
-    expect(malIds.filter(id => !GENRE_SHORT_DESCRIPTIONS[id])).toEqual([]);
-    expect(malIds.filter(id => !GENRE_ICONS[id])).toEqual([]);
+    expect(malIds.filter((id) => !GENRE_SHORT_DESCRIPTIONS[id])).toEqual([]);
+    expect(malIds.filter((id) => !GENRE_ICONS[id])).toEqual([]);
   });
 });

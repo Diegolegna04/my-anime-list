@@ -34,7 +34,10 @@ export class AnimeService {
   private readonly MAX_INTERVAL_MS = 2500;
   private successStreak = 0;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {}
 
   private withRetry<T>(source: Observable<T>, maxRetries = 2): Observable<T> {
     let attempts = 0;
@@ -48,7 +51,7 @@ export class AnimeService {
             return timer(600 * attempts).pipe(mergeMap(() => tryOnce(obs)));
           }
           return throwError(() => err);
-        })
+        }),
       );
 
     return tryOnce(source);
@@ -59,7 +62,9 @@ export class AnimeService {
   }
 
   searchAnime(query: string, page = 1): Observable<any> {
-    return this.withRetry(this.http.get(`${this.apiUrl}/anime?q=${encodeURIComponent(query)}&page=${page}`));
+    return this.withRetry(
+      this.http.get(`${this.apiUrl}/anime?q=${encodeURIComponent(query)}&page=${page}`),
+    );
   }
 
   /**
@@ -80,16 +85,23 @@ export class AnimeService {
   }
 
   /** Una pagina di anime di un genere, dai più votati */
-  getAnimeByGenre(genreId: number, genreName: string, page: number): Observable<JikanListResponse<AnimeData>> {
+  getAnimeByGenre(
+    genreId: number,
+    genreName: string,
+    page: number,
+  ): Observable<JikanListResponse<AnimeData>> {
     return this.queuedGet(
       `/anime?genres=${genreId}&genreName=${encodeURIComponent(genreName)}&page=${page}&order_by=score&sort=desc&limit=25`,
-      { priority: true }
+      { priority: true },
     );
   }
 
   /** Un anime a caso: mai in coda né in cache, ogni chiamata deve dare un risultato diverso */
   getRandomAnime(): Observable<JikanItemResponse<AnimeData>> {
-    return this.withRetry(this.http.get<JikanItemResponse<AnimeData>>(`${this.apiUrl}/random/anime`), 1);
+    return this.withRetry(
+      this.http.get<JikanItemResponse<AnimeData>>(`${this.apiUrl}/random/anime`),
+      1,
+    );
   }
 
   /** Dettaglio di un anime sempre fresco (senza cache): per la pagina di dettaglio */
@@ -162,7 +174,7 @@ export class AnimeService {
       catchError((err) => {
         this.animeCache.delete(id);
         return throwError(() => err);
-      })
+      }),
     );
 
     this.animeCache.set(id, request$);
@@ -181,7 +193,10 @@ export class AnimeService {
    */
   private queuedGet<T>(
     path: string,
-    { retryServerErrors = false, priority = false }: { retryServerErrors?: boolean; priority?: boolean } = {}
+    {
+      retryServerErrors = false,
+      priority = false,
+    }: { retryServerErrors?: boolean; priority?: boolean } = {},
   ): Observable<T> {
     return new Observable<T>((observer) => {
       let pending: (() => void) | null = null;
@@ -197,14 +212,15 @@ export class AnimeService {
               observer.complete();
             },
             error: (err: HttpErrorResponse) => {
-              const retryable = err.status === 429 || (retryServerErrors && [502, 503, 504].includes(err.status));
+              const retryable =
+                err.status === 429 || (retryServerErrors && [502, 503, 504].includes(err.status));
               if (retryable && retryCount < 4) {
                 this.onRateLimitHit();
                 attempt(retryCount + 1);
               } else {
                 observer.error(err);
               }
-            }
+            },
           });
         };
         pending = job;
@@ -244,10 +260,13 @@ export class AnimeService {
 
   private writeToLocalStorage(id: string, data: any): void {
     try {
-      localStorage.setItem(CACHE_PREFIX + id, JSON.stringify({
-        data,
-        timestamp: Date.now()
-      }));
+      localStorage.setItem(
+        CACHE_PREFIX + id,
+        JSON.stringify({
+          data,
+          timestamp: Date.now(),
+        }),
+      );
     } catch {
       // localStorage pieno o non disponibile: non blocchiamo per questo
     }
@@ -259,8 +278,10 @@ export class AnimeService {
   }
 
   private tryStartWorkers(): void {
-    while (this.activeWorkers < this.MAX_CONCURRENT_WORKERS
-      && this.priorityQueue.length + this.requestQueue.length > 0) {
+    while (
+      this.activeWorkers < this.MAX_CONCURRENT_WORKERS &&
+      this.priorityQueue.length + this.requestQueue.length > 0
+    ) {
       this.activeWorkers++;
       this.runWorker();
     }

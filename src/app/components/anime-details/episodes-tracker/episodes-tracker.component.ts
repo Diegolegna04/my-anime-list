@@ -1,4 +1,13 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
+  OnChanges,
+  OnDestroy,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -14,7 +23,7 @@ const AUTOSAVE_DELAY_MS = 800;
   imports: [CommonModule, FormsModule],
   templateUrl: './episodes-tracker.component.html',
   styleUrls: ['./episodes-tracker.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EpisodesTrackerComponent implements OnChanges, OnDestroy {
   @Input() currentEpisodes = 0;
@@ -53,7 +62,7 @@ export class EpisodesTrackerComponent implements OnChanges, OnDestroy {
     if (!this.totalEpisodes || this.totalEpisodes === 0) {
       return 0;
     }
-    
+
     const percentage = (this.currentEpisodes / this.totalEpisodes) * 100;
     return Math.min(Math.max(percentage, 0), 100);
   }
@@ -63,12 +72,12 @@ export class EpisodesTrackerComponent implements OnChanges, OnDestroy {
    */
   get progressBarClass(): string {
     const percentage = this.progressPercentage;
-    
+
     if (percentage >= 100) return 'progress-complete';
     if (percentage >= 75) return 'progress-high';
     if (percentage >= 50) return 'progress-medium';
     if (percentage >= 25) return 'progress-low';
-    
+
     return 'progress-start';
   }
 
@@ -81,23 +90,25 @@ export class EpisodesTrackerComponent implements OnChanges, OnDestroy {
     }
 
     if (!this.hasKnownTotal) {
-      return this.currentEpisodes === 1 ? '1 episodio visto' : `${this.currentEpisodes} episodi visti`;
+      return this.currentEpisodes === 1
+        ? '1 episodio visto'
+        : `${this.currentEpisodes} episodi visti`;
     }
 
     if (this.progressPercentage >= 100) {
       return 'Serie completata!';
     }
-    
+
     const remaining = this.totalEpisodes - this.currentEpisodes;
-    
+
     if (remaining === 1) {
       return 'Ultimo episodio!';
     }
-    
+
     if (remaining <= 3) {
       return `Solo ${remaining} episodi alla fine!`;
     }
-    
+
     return `Ancora ${remaining} episodi`;
   }
 
@@ -158,10 +169,14 @@ export class EpisodesTrackerComponent implements OnChanges, OnDestroy {
   /** Testo della riga di stato del salvataggio (annunciata ai lettori di schermo) */
   get saveStatusMessage(): string {
     switch (this.saveStatus) {
-      case 'saving': return 'Salvataggio…';
-      case 'saved': return 'Salvato';
-      case 'error': return 'Non salvato, riprova';
-      default: return '';
+      case 'saving':
+        return 'Salvataggio…';
+      case 'saved':
+        return 'Salvato';
+      case 'error':
+        return 'Non salvato, riprova';
+      default:
+        return '';
     }
   }
 
@@ -195,7 +210,7 @@ export class EpisodesTrackerComponent implements OnChanges, OnDestroy {
     if (this.disabled || this.currentEpisodes <= 0) {
       return;
     }
-    
+
     const newValue = this.currentEpisodes - 1;
     this.clearAutosave();
     this.localEpisodes = newValue;
@@ -209,7 +224,7 @@ export class EpisodesTrackerComponent implements OnChanges, OnDestroy {
     if (this.disabled || this.currentEpisodes >= this.totalEpisodes) {
       return;
     }
-    
+
     this.clearAutosave();
     this.localEpisodes = this.totalEpisodes;
     this.episodesUpdated.emit(this.totalEpisodes);
@@ -222,7 +237,7 @@ export class EpisodesTrackerComponent implements OnChanges, OnDestroy {
     if (this.disabled || this.currentEpisodes === 0) {
       return;
     }
-    
+
     this.clearAutosave();
     this.localEpisodes = 0;
     this.episodesUpdated.emit(0);

@@ -1,4 +1,8 @@
-<aside class="recommended-section" aria-labelledby="recommended-title" [attr.aria-busy]="status === 'loading'">
+<aside
+  class="recommended-section"
+  aria-labelledby="recommended-title"
+  [attr.aria-busy]="status === 'loading'"
+>
   <h2 class="section-title recommended-title" id="recommended-title">Anime consigliati</h2>
 
   @switch (status) {
@@ -17,7 +21,9 @@
     }
     @case ('error') {
       <div class="state state-compact state-error" role="status">
-        <span class="state-icon" aria-hidden="true"><i class="fas fa-exclamation-triangle"></i></span>
+        <span class="state-icon" aria-hidden="true"
+          ><i class="fas fa-exclamation-triangle"></i
+        ></span>
         <p class="state-text">I consigli non sono disponibili al momento.</p>
         <button type="button" class="btn btn-secondary btn-sm" (click)="retry.emit()">
           <i class="fas fa-redo" aria-hidden="true"></i>
@@ -34,9 +40,7 @@
       } @else {
         <div class="recommended-list">
           @for (anime of displayedAnime; track anime.mal_id) {
-            <a
-              class="recommended-card"
-              [routerLink]="'/anime/' + anime.mal_id">
+            <a class="recommended-card" [routerLink]="'/anime/' + anime.mal_id">
               <img [src]="anime.images.jpg.image_url" alt="" loading="lazy" decoding="async" />
               <h4>{{ anime.title }}</h4>
             </a>
@@ -46,7 +50,8 @@
           <button
             type="button"
             class="btn btn-secondary btn-sm btn-block load-more-btn"
-            (click)="loadMore()">
+            (click)="loadMore()"
+          >
             <i class="fas fa-plus" aria-hidden="true"></i>
             Carica altri
           </button>

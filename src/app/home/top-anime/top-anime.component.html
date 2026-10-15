@@ -2,12 +2,27 @@
   <div class="section-header">
     <h2 class="section-title">Top anime</h2>
     <div class="section-controls">
-      <app-title-language-toggle [value]="titleLanguage" (valueChange)="setTitleLanguage($event)"></app-title-language-toggle>
+      <app-title-language-toggle
+        [value]="titleLanguage"
+        (valueChange)="setTitleLanguage($event)"
+      ></app-title-language-toggle>
       <div class="segmented" role="group" aria-label="Visualizzazione">
-        <button type="button" [class.active]="isGridView" [attr.aria-pressed]="isGridView" (click)="isGridView = true" aria-label="Griglia">
+        <button
+          type="button"
+          [class.active]="isGridView"
+          [attr.aria-pressed]="isGridView"
+          (click)="isGridView = true"
+          aria-label="Griglia"
+        >
           <i class="fas fa-th-large" aria-hidden="true"></i>
         </button>
-        <button type="button" [class.active]="!isGridView" [attr.aria-pressed]="!isGridView" (click)="isGridView = false" aria-label="Lista">
+        <button
+          type="button"
+          [class.active]="!isGridView"
+          [attr.aria-pressed]="!isGridView"
+          (click)="isGridView = false"
+          aria-label="Lista"
+        >
           <i class="fas fa-list" aria-hidden="true"></i>
         </button>
       </div>
@@ -20,7 +35,8 @@
         [anime]="anime"
         [rank]="i + 1"
         [titleLanguage]="titleLanguage"
-        [viewMode]="isGridView ? 'grid' : 'list'">
+        [viewMode]="isGridView ? 'grid' : 'list'"
+      >
       </app-anime-card>
     }
   </div>

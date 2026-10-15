@@ -4,11 +4,14 @@
       <h1 class="page-hero-title">Risultati per “{{ query }}”</h1>
     } @else {
       <h1 class="page-hero-title">Cerca un anime</h1>
-      <p class="page-hero-lead">Scrivi un titolo nella barra di ricerca in alto, oppure parti da un genere.</p>
+      <p class="page-hero-lead">
+        Scrivi un titolo nella barra di ricerca in alto, oppure parti da un genere.
+      </p>
     }
     @if (!isLoading && searchResults.length > 0) {
       <p class="page-hero-lead">
-        {{ searchResults.length }} {{ searchResults.length === 1 ? 'anime trovato' : 'anime trovati' }}
+        {{ searchResults.length }}
+        {{ searchResults.length === 1 ? 'anime trovato' : 'anime trovati' }}
       </p>
     }
   </header>
@@ -21,7 +24,9 @@
         <p class="state-text">Scegli un genere per vedere gli anime migliori.</p>
         <div class="genre-suggestions">
           @for (genre of suggestedGenres; track genre.id) {
-            <a class="chip" [routerLink]="['/genres/anime-by-genre', genre.id]">{{ genre.label }}</a>
+            <a class="chip" [routerLink]="['/genres/anime-by-genre', genre.id]">{{
+              genre.label
+            }}</a>
           }
         </div>
         <a class="btn btn-secondary" routerLink="/genres">
@@ -30,79 +35,105 @@
         </a>
       </div>
     } @else {
-    <div class="section-header">
-      <h2 class="section-title">
-        Risultati
-        @if (!isLoading && searchResults.length > 0) {
-          <span class="section-count">{{ searchResults.length }}</span>
-        }
-      </h2>
-      <div class="section-controls">
-        <div class="sort-select">
-          <label for="sortCriteria">Ordina per:</label>
-          <select id="sortCriteria" class="select" (change)="onSortChange($event)" [disabled]="isLoading">
-            <option value="score">Voti</option>
-            <option value="members">Membri</option>
-            <option value="date">Novità</option>
-          </select>
+      <div class="section-header">
+        <h2 class="section-title">
+          Risultati
+          @if (!isLoading && searchResults.length > 0) {
+            <span class="section-count">{{ searchResults.length }}</span>
+          }
+        </h2>
+        <div class="section-controls">
+          <div class="sort-select">
+            <label for="sortCriteria">Ordina per:</label>
+            <select
+              id="sortCriteria"
+              class="select"
+              (change)="onSortChange($event)"
+              [disabled]="isLoading"
+            >
+              <option value="score">Voti</option>
+              <option value="members">Membri</option>
+              <option value="date">Novità</option>
+            </select>
+          </div>
+          <app-title-language-toggle
+            [value]="titleLanguage"
+            [disabled]="isLoading"
+            (valueChange)="toggleTitleLanguage()"
+          ></app-title-language-toggle>
+          <div class="segmented" role="group" aria-label="Visualizzazione">
+            <button
+              type="button"
+              [class.active]="isGridView"
+              [attr.aria-pressed]="isGridView"
+              (click)="isGridView = true"
+              aria-label="Griglia"
+              [disabled]="isLoading"
+            >
+              <i class="fas fa-th-large" aria-hidden="true"></i>
+            </button>
+            <button
+              type="button"
+              [class.active]="!isGridView"
+              [attr.aria-pressed]="!isGridView"
+              (click)="isGridView = false"
+              aria-label="Lista"
+              [disabled]="isLoading"
+            >
+              <i class="fas fa-list" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
-        <app-title-language-toggle [value]="titleLanguage" [disabled]="isLoading" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
-        <div class="segmented" role="group" aria-label="Visualizzazione">
-          <button type="button" [class.active]="isGridView" [attr.aria-pressed]="isGridView" (click)="isGridView = true" aria-label="Griglia" [disabled]="isLoading">
-            <i class="fas fa-th-large" aria-hidden="true"></i>
-          </button>
-          <button type="button" [class.active]="!isGridView" [attr.aria-pressed]="!isGridView" (click)="isGridView = false" aria-label="Lista" [disabled]="isLoading">
-            <i class="fas fa-list" aria-hidden="true"></i>
+      </div>
+
+      @if (isLoading) {
+        <div class="loading-state" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          <p>Caricamento risultati completi...</p>
+        </div>
+      }
+
+      @if (!isLoading && displayedResults.length > 0) {
+        <div [class]="isGridView ? 'anime-grid' : 'anime-list'">
+          @for (anime of displayedResults; track anime.mal_id) {
+            <app-anime-card
+              [anime]="anime"
+              [titleLanguage]="titleLanguage"
+              [viewMode]="isGridView ? 'grid' : 'list'"
+              [showSynopsis]="true"
+            >
+            </app-anime-card>
+          }
+        </div>
+      }
+
+      @if (displayedResults.length === 0 && !isLoading) {
+        <div class="state">
+          <span class="state-icon"><i class="fas fa-search" aria-hidden="true"></i></span>
+          <h3 class="state-title">Nessun risultato</h3>
+          <p class="state-text">
+            Non ci sono risultati per <strong>“{{ query }}”</strong>. Prova una ricerca diversa.
+          </p>
+          <button type="button" (click)="goBackToHome()" class="btn btn-primary">
+            <i class="fas fa-home" aria-hidden="true"></i> Torna alla home
           </button>
         </div>
-      </div>
-    </div>
+      }
 
-    @if (isLoading) {
-      <div class="loading-state" role="status">
-        <span class="spinner" aria-hidden="true"></span>
-        <p>Caricamento risultati completi...</p>
-      </div>
-    }
-
-    @if (!isLoading && displayedResults.length > 0) {
-      <div [class]="isGridView ? 'anime-grid' : 'anime-list'">
-        @for (anime of displayedResults; track anime.mal_id) {
-          <app-anime-card
-            [anime]="anime"
-            [titleLanguage]="titleLanguage"
-            [viewMode]="isGridView ? 'grid' : 'list'"
-            [showSynopsis]="true">
-          </app-anime-card>
-        }
-      </div>
-    }
-
-    @if (displayedResults.length === 0 && !isLoading) {
-      <div class="state">
-        <span class="state-icon"><i class="fas fa-search" aria-hidden="true"></i></span>
-        <h3 class="state-title">Nessun risultato</h3>
-        <p class="state-text">
-          Non ci sono risultati per <strong>“{{ query }}”</strong>. Prova una ricerca diversa.
-        </p>
-        <button type="button" (click)="goBackToHome()" class="btn btn-primary">
-          <i class="fas fa-home" aria-hidden="true"></i> Torna alla home
-        </button>
-      </div>
-    }
-
-    @if (displayedResults.length > 0 && !isLoading) {
-      <div class="results-actions">
-        @if (hasMoreResults) {
-          <button type="button" (click)="loadMoreResults()" class="btn btn-primary">
-            <i class="fas fa-plus" aria-hidden="true"></i> Carica altri risultati ({{ displayedResults.length }}/{{ searchResults.length }})
+      @if (displayedResults.length > 0 && !isLoading) {
+        <div class="results-actions">
+          @if (hasMoreResults) {
+            <button type="button" (click)="loadMoreResults()" class="btn btn-primary">
+              <i class="fas fa-plus" aria-hidden="true"></i> Carica altri risultati ({{
+                displayedResults.length
+              }}/{{ searchResults.length }})
+            </button>
+          }
+          <button type="button" (click)="goBackToHome()" class="btn btn-secondary">
+            <i class="fas fa-home" aria-hidden="true"></i> Torna alla home
           </button>
-        }
-        <button type="button" (click)="goBackToHome()" class="btn btn-secondary">
-          <i class="fas fa-home" aria-hidden="true"></i> Torna alla home
-        </button>
-      </div>
-    }
+        </div>
+      }
     }
   </section>
 </div>

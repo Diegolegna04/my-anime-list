@@ -12,7 +12,7 @@ import { LIST_STATUS_META, UserListService } from '../../services/user-list.serv
   standalone: true,
   imports: [RouterLink, DecimalPipe],
   templateUrl: './search-suggest.component.html',
-  styleUrls: ['./search-suggest.component.css']
+  styleUrls: ['./search-suggest.component.css'],
 })
 export class SearchSuggestComponent {
   /** Id della lista: serve a `aria-controls` e `aria-activedescendant` della barra */

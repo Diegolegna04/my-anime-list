@@ -1,17 +1,17 @@
 <section class="panel genres-section">
-    <div class="section-header">
-      <h2 class="section-title">Esplora per genere</h2>
-    </div>
-    <div class="genres-grid">
-      @for (genre of genres; track genre.id) {
-        <a class="genre-card" [routerLink]="['/genres/anime-by-genre', genre.id]">
-          <i class="fas genre-icon" [class]="genre.icon" aria-hidden="true"></i>
-          <h3>{{ genre.label }}</h3>
-        </a>
-      }
-      <a class="genre-card" routerLink="/genres">
-        <i class="fas fa-plus-circle genre-icon" aria-hidden="true"></i>
-        <h3>Altri generi</h3>
+  <div class="section-header">
+    <h2 class="section-title">Esplora per genere</h2>
+  </div>
+  <div class="genres-grid">
+    @for (genre of genres; track genre.id) {
+      <a class="genre-card" [routerLink]="['/genres/anime-by-genre', genre.id]">
+        <i class="fas genre-icon" [class]="genre.icon" aria-hidden="true"></i>
+        <h3>{{ genre.label }}</h3>
       </a>
-    </div>
+    }
+    <a class="genre-card" routerLink="/genres">
+      <i class="fas fa-plus-circle genre-icon" aria-hidden="true"></i>
+      <h3>Altri generi</h3>
+    </a>
+  </div>
 </section>

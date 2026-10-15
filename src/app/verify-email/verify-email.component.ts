@@ -10,7 +10,7 @@ type VerifyStatus = 'loading' | 'success' | 'error';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './verify-email.component.html',
-  styleUrl: './verify-email.component.css'
+  styleUrl: './verify-email.component.css',
 })
 export class VerifyEmailComponent implements OnInit {
   status: VerifyStatus = 'loading';
@@ -19,7 +19,7 @@ export class VerifyEmailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -40,7 +40,7 @@ export class VerifyEmailComponent implements OnInit {
       error: (err: any) => {
         this.status = 'error';
         this.message = err?.error?.error || 'Il link di verifica non è valido o è scaduto.';
-      }
+      },
     });
   }
 }

@@ -12,9 +12,8 @@ describe('HeroSectionComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HeroSectionComponent],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
-    })
-    .compileComponents();
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HeroSectionComponent);
     component = fixture.componentInstance;

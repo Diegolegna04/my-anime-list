@@ -1,4 +1,12 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SeasonRef, seasonLabel, seasonSlug } from '../../services/anime-utils';
@@ -9,7 +17,7 @@ import { LIST_STATUS_META, UserListService } from '../../services/user-list.serv
   standalone: true,
   imports: [RouterLink, DecimalPipe],
   templateUrl: './seasonal-anime.component.html',
-  styleUrl: './seasonal-anime.component.css'
+  styleUrl: './seasonal-anime.component.css',
 })
 export class SeasonalAnimeComponent implements OnInit, OnChanges {
   @Input() seasonalAnimeList: any[] = [];
@@ -32,7 +40,8 @@ export class SeasonalAnimeComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
+    this.titleLanguage =
+      (localStorage.getItem('titleLanguage') as 'english' | 'original') || 'original';
   }
 
   ngOnChanges(changes: SimpleChanges): void {

@@ -12,7 +12,8 @@
         class="slider-arrow prev-arrow"
         aria-label="Anime precedenti"
         [disabled]="!canGoPrev()"
-        (click)="prevSlide()">
+        (click)="prevSlide()"
+      >
         <i class="fas fa-chevron-left" aria-hidden="true"></i>
       </button>
       <button
@@ -20,32 +21,42 @@
         class="slider-arrow next-arrow"
         aria-label="Anime successivi"
         [disabled]="!canGoNext()"
-        (click)="nextSlide()">
+        (click)="nextSlide()"
+      >
         <i class="fas fa-chevron-right" aria-hidden="true"></i>
       </button>
     </div>
-    <div
-      class="seasonal-anime-container"
-      #track
-      (scroll)="onScroll()"
-    >
+    <div class="seasonal-anime-container" #track (scroll)="onScroll()">
       @for (anime of filteredSeasonalAnime; track anime.mal_id) {
         <a class="seasonal-anime-card" [routerLink]="['/anime', anime.mal_id]" draggable="false">
           <span class="seasonal-badge">HOT</span>
           <div class="img-wrapper">
             @if (listBadge(anime.mal_id); as badge) {
-              <span class="list-badge list-badge-start" [style.--tone]="badge.tone" [title]="'Nella tua lista: ' + badge.label">
+              <span
+                class="list-badge list-badge-start"
+                [style.--tone]="badge.tone"
+                [title]="'Nella tua lista: ' + badge.label"
+              >
                 <i class="fas" [class]="badge.icon" aria-hidden="true"></i>
                 <span class="visually-hidden">Nella tua lista: {{ badge.label }}</span>
               </span>
             }
-            <img [src]="anime.images.jpg.image_url" [alt]="getTitle(anime)" draggable="false" loading="lazy" decoding="async">
+            <img
+              [src]="anime.images.jpg.image_url"
+              [alt]="getTitle(anime)"
+              draggable="false"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
           <div class="seasonal-anime-info">
             <h3>{{ getTitle(anime) }}</h3>
             <div class="anime-stats">
               @if (anime.score) {
-                <span class="anime-stat-score"><i class="fas fa-star" aria-hidden="true"></i> {{ anime.score | number:'1.1-2' }}</span>
+                <span class="anime-stat-score"
+                  ><i class="fas fa-star" aria-hidden="true"></i>
+                  {{ anime.score | number: '1.1-2' }}</span
+                >
               }
               @if (anime.type) {
                 <span class="anime-stat-type">{{ anime.type }}</span>

@@ -9,7 +9,7 @@ export type { AnimeNews };
   standalone: true,
   imports: [CommonModule],
   templateUrl: './news-list.component.html',
-  styleUrls: ['./news-list.component.css']
+  styleUrls: ['./news-list.component.css'],
 })
 export class NewsListComponent implements OnChanges {
   @Input() news: AnimeNews[] = [];

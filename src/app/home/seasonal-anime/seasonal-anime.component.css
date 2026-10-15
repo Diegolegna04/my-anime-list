@@ -46,8 +46,11 @@
   cursor: pointer;
   pointer-events: auto;
   translate: -10px 0;
-  transition: scale var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out),
-    background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out),
+  transition:
+    scale var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
     border-color var(--dur-fast) var(--ease-out);
 }
 
@@ -157,7 +160,7 @@
 }
 
 .seasonal-anime-card .img-wrapper::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.55) 100%);

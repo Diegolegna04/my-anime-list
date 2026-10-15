@@ -3,8 +3,14 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .profile-loading {
@@ -39,8 +45,14 @@
 }
 
 @keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .overlay-profile-pic {
@@ -179,7 +191,9 @@
   border-radius: var(--radius-md);
   box-shadow: var(--card-shadow);
   cursor: pointer;
-  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .profile-pic:hover {
@@ -230,7 +244,9 @@
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .stat-item:hover {
@@ -271,7 +287,9 @@
   background-color: var(--card-bg);
   box-shadow: var(--card-shadow);
   cursor: grab;
-  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .anime-card:hover {
@@ -322,41 +340,113 @@
     align-items: center;
     gap: 2rem;
   }
-  .profile-header-details { align-items: center; }
-  .profile-pic { width: 180px; height: 180px; }
-  .username { font-size: 2rem; text-align: center; }
-  .stats-card { width: 100%; padding: 1.5rem; }
-  .stats-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
-  .anime-card img { height: 220px; }
+  .profile-header-details {
+    align-items: center;
+  }
+  .profile-pic {
+    width: 180px;
+    height: 180px;
+  }
+  .username {
+    font-size: 2rem;
+    text-align: center;
+  }
+  .stats-card {
+    width: 100%;
+    padding: 1.5rem;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+  .anime-card img {
+    height: 220px;
+  }
 }
 
 @media (max-width: 768px) {
-  .profile-pic { width: 150px; height: 150px; }
-  .username { font-size: 1.8rem; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .profile-pic {
+    width: 150px;
+    height: 150px;
+  }
+  .username {
+    font-size: 1.8rem;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
   /* Il totale sopra, a tutta larghezza: 1 + 2 + 2 invece di una voce sola in fondo */
-  .stats-grid .stat-item:first-child { grid-column: 1 / -1; }
-  .stat-item i { font-size: 1.8rem; }
-  .stat-value { font-size: 1.5rem; }
-  .stat-label { font-size: 0.9rem; }
-  .anime-card img { height: 200px; }
-  .anime-title { height: auto; font-size: 0.9rem; -webkit-line-clamp: 3; }
-  .overlay-content { padding: 1.5rem; }
-  .overlay-profile-pic { width: 100px; height: 100px; }
-  .overlay-username { font-size: 1.2rem; }
+  .stats-grid .stat-item:first-child {
+    grid-column: 1 / -1;
+  }
+  .stat-item i {
+    font-size: 1.8rem;
+  }
+  .stat-value {
+    font-size: 1.5rem;
+  }
+  .stat-label {
+    font-size: 0.9rem;
+  }
+  .anime-card img {
+    height: 200px;
+  }
+  .anime-title {
+    height: auto;
+    font-size: 0.9rem;
+    -webkit-line-clamp: 3;
+  }
+  .overlay-content {
+    padding: 1.5rem;
+  }
+  .overlay-profile-pic {
+    width: 100px;
+    height: 100px;
+  }
+  .overlay-username {
+    font-size: 1.2rem;
+  }
 }
 
 @media (max-width: 480px) {
-  .profile-header-container { gap: 1.5rem; }
-  .profile-pic { width: 120px; height: 120px; margin-bottom: 1rem; }
-  .username { font-size: 1.5rem; }
-  .stats-card { padding: 1rem; }
-  .stats-grid { gap: 0.8rem; }
-  .stat-item { padding: 0.8rem; }
-  .stat-item i { margin-bottom: 0.5rem; font-size: 1.5rem; }
-  .stat-value { font-size: 1.3rem; }
-  .stat-label { font-size: 0.85rem; }
-  .anime-card img { height: 180px; }
-  .anime-title { padding: 0 0.8rem; font-size: 0.85rem; }
-  .settings-actions { flex-direction: column; }
+  .profile-header-container {
+    gap: 1.5rem;
+  }
+  .profile-pic {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 1rem;
+  }
+  .username {
+    font-size: 1.5rem;
+  }
+  .stats-card {
+    padding: 1rem;
+  }
+  .stats-grid {
+    gap: 0.8rem;
+  }
+  .stat-item {
+    padding: 0.8rem;
+  }
+  .stat-item i {
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+  }
+  .stat-value {
+    font-size: 1.3rem;
+  }
+  .stat-label {
+    font-size: 0.85rem;
+  }
+  .anime-card img {
+    height: 180px;
+  }
+  .anime-title {
+    padding: 0 0.8rem;
+    font-size: 0.85rem;
+  }
+  .settings-actions {
+    flex-direction: column;
+  }
 }

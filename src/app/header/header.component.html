@@ -3,7 +3,7 @@
   <div class="mobile-header">
     <div class="mobile-top-row">
       <a routerLink="/" class="app-logo" (click)="goToHome()">
-        <img src="logo-circle.webp" width="60" height="60" alt="" class="logo-image">
+        <img src="logo-circle.webp" width="60" height="60" alt="" class="logo-image" />
         <span>My Anime DB</span>
       </a>
 
@@ -12,8 +12,12 @@
           type="button"
           (click)="toggleTheme()"
           class="mobile-icon-btn theme-toggle-btn"
-          [attr.aria-label]="currentTheme === 'light' ? 'Attiva tema scuro' : 'Attiva tema chiaro'">
-          <i [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'" aria-hidden="true"></i>
+          [attr.aria-label]="currentTheme === 'light' ? 'Attiva tema scuro' : 'Attiva tema chiaro'"
+        >
+          <i
+            [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'"
+            aria-hidden="true"
+          ></i>
         </button>
 
         <button
@@ -23,7 +27,8 @@
           [class.active]="showMobileMenu"
           aria-label="Apri il menu"
           aria-controls="mobile-menu"
-          [attr.aria-expanded]="showMobileMenu">
+          [attr.aria-expanded]="showMobileMenu"
+        >
           <span></span>
           <span></span>
           <span></span>
@@ -48,14 +53,18 @@
           aria-autocomplete="list"
           aria-controls="search-suggest-mobile"
           [attr.aria-expanded]="suggestOpen"
-          [attr.aria-activedescendant]="activeIndex >= 0 ? 'search-suggest-mobile-' + activeIndex : null"
+          [attr.aria-activedescendant]="
+            activeIndex >= 0 ? 'search-suggest-mobile-' + activeIndex : null
+          "
           class="search-input"
         />
         <button type="submit" class="search-btn" aria-label="Cerca">
           <i class="fas fa-search" aria-hidden="true"></i>
         </button>
       </div>
-      <ng-container *ngTemplateOutlet="suggestTpl; context: { $implicit: 'search-suggest-mobile' }"></ng-container>
+      <ng-container
+        *ngTemplateOutlet="suggestTpl; context: { $implicit: 'search-suggest-mobile' }"
+      ></ng-container>
     </form>
 
     <!-- Mobile Menu Overlay -->
@@ -63,15 +72,25 @@
     <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
     <div class="mobile-menu-overlay" [class.show]="showMobileMenu" (click)="closeMobileMenu()">
       <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
-      <nav class="mobile-menu" id="mobile-menu" aria-label="Menu" (click)="$event.stopPropagation()">
+      <nav
+        class="mobile-menu"
+        id="mobile-menu"
+        aria-label="Menu"
+        (click)="$event.stopPropagation()"
+      >
         <div class="mobile-menu-header">
           @if (accessoEffettuato) {
             <div class="mobile-profile-info">
-              <img [src]="profileImage" alt="" class="mobile-profile-pic">
+              <img [src]="profileImage" alt="" class="mobile-profile-pic" />
               <span class="mobile-username">{{ username }}</span>
             </div>
           }
-          <button type="button" (click)="closeMobileMenu()" class="close-menu-btn" aria-label="Chiudi il menu">
+          <button
+            type="button"
+            (click)="closeMobileMenu()"
+            class="close-menu-btn"
+            aria-label="Chiudi il menu"
+          >
             <i class="fas fa-times" aria-hidden="true"></i>
           </button>
         </div>
@@ -83,7 +102,11 @@
           </a>
 
           @if (!accessoEffettuato) {
-            <a class="mobile-menu-item login-item" routerLink="/register-login" (click)="closeMobileMenu()">
+            <a
+              class="mobile-menu-item login-item"
+              routerLink="/register-login"
+              (click)="closeMobileMenu()"
+            >
               <i class="fas fa-user-circle" aria-hidden="true"></i>
               <span>Accedi / Registrati</span>
             </a>
@@ -106,7 +129,7 @@
   <div class="desktop-header">
     <div class="header-left">
       <a routerLink="/" class="app-logo" (click)="goToHome()">
-        <img src="logo-circle.webp" width="60" height="60" alt="" class="logo-image">
+        <img src="logo-circle.webp" width="60" height="60" alt="" class="logo-image" />
         <span>My Anime DB</span>
       </a>
     </div>
@@ -118,7 +141,8 @@
         type="button"
         (click)="toggleTheme()"
         class="action-button secondary theme-toggle-btn"
-        [attr.aria-label]="currentTheme === 'light' ? 'Attiva tema scuro' : 'Attiva tema chiaro'">
+        [attr.aria-label]="currentTheme === 'light' ? 'Attiva tema scuro' : 'Attiva tema chiaro'"
+      >
         <i [class]="currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun'" aria-hidden="true"></i>
       </button>
 
@@ -143,14 +167,18 @@
             aria-autocomplete="list"
             aria-controls="search-suggest-desktop"
             [attr.aria-expanded]="suggestOpen"
-            [attr.aria-activedescendant]="activeIndex >= 0 ? 'search-suggest-desktop-' + activeIndex : null"
+            [attr.aria-activedescendant]="
+              activeIndex >= 0 ? 'search-suggest-desktop-' + activeIndex : null
+            "
             class="search-input"
           />
           <button type="submit" class="search-btn" aria-label="Cerca">
             <i class="fas fa-search" aria-hidden="true"></i>
           </button>
         </div>
-        <ng-container *ngTemplateOutlet="suggestTpl; context: { $implicit: 'search-suggest-desktop' }"></ng-container>
+        <ng-container
+          *ngTemplateOutlet="suggestTpl; context: { $implicit: 'search-suggest-desktop' }"
+        ></ng-container>
       </form>
 
       @if (!accessoEffettuato) {
@@ -159,21 +187,30 @@
           <span>Accedi / Registrati</span>
         </a>
       } @else {
-        <div class="profile-menu-container" [ngClass]="{'show-dropdown': showDropdown}">
+        <div class="profile-menu-container" [ngClass]="{ 'show-dropdown': showDropdown }">
           <button
             type="button"
             class="profile-pic-area"
             (click)="toggleDropdown()"
             aria-controls="profile-menu"
-            [attr.aria-expanded]="showDropdown">
-            <img [src]="profileImage" alt="" class="profile-pic-thumb">
+            [attr.aria-expanded]="showDropdown"
+          >
+            <img [src]="profileImage" alt="" class="profile-pic-thumb" />
             <span class="profile-username">{{ username }}</span>
-            <i class="fas fa-caret-down dropdown-arrow" [class.rotated]="showDropdown" aria-hidden="true"></i>
+            <i
+              class="fas fa-caret-down dropdown-arrow"
+              [class.rotated]="showDropdown"
+              aria-hidden="true"
+            ></i>
           </button>
 
           <div class="dropdown-menu" id="profile-menu">
-            <a routerLink="/profile" (click)="showDropdown = false"><i class="fas fa-user" aria-hidden="true"></i> Il mio profilo</a>
-            <button type="button" (click)="logout()"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Esci</button>
+            <a routerLink="/profile" (click)="showDropdown = false"
+              ><i class="fas fa-user" aria-hidden="true"></i> Il mio profilo</a
+            >
+            <button type="button" (click)="logout()">
+              <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Esci
+            </button>
           </div>
         </div>
       }
@@ -190,6 +227,7 @@
       [loading]="suggestLoading"
       [query]="query"
       [(activeIndex)]="activeIndex"
-      (chosen)="openSuggestion($event)" />
+      (chosen)="openSuggestion($event)"
+    />
   }
 </ng-template>

@@ -21,7 +21,12 @@
         (keydown.escape)="clearSearch(searchInput)"
       />
       @if (query()) {
-        <button type="button" class="search-clear" (click)="clearSearch(searchInput)" aria-label="Cancella la ricerca">
+        <button
+          type="button"
+          class="search-clear"
+          (click)="clearSearch(searchInput)"
+          aria-label="Cancella la ricerca"
+        >
           <i class="fas fa-times" aria-hidden="true"></i>
         </button>
       }
@@ -35,7 +40,10 @@
           [attr.aria-pressed]="activeCategory() === 'all'"
           (click)="activeCategory.set('all')"
         >
-          Tutti @if (status() === 'ready') { <span class="chip-count">{{ matchingCount() }}</span> }
+          Tutti
+          @if (status() === 'ready') {
+            <span class="chip-count">{{ matchingCount() }}</span>
+          }
         </button>
         @for (category of categories; track category.id) {
           <button
@@ -45,7 +53,10 @@
             [attr.aria-pressed]="activeCategory() === category.id"
             (click)="activeCategory.set(category.id)"
           >
-            {{ category.label }} @if (status() === 'ready') { <span class="chip-count">{{ countByCategory()[category.id] }}</span> }
+            {{ category.label }}
+            @if (status() === 'ready') {
+              <span class="chip-count">{{ countByCategory()[category.id] }}</span>
+            }
           </button>
         }
       </div>
@@ -56,13 +67,17 @@
           [class.active]="sortOrder() === 'name'"
           [attr.aria-pressed]="sortOrder() === 'name'"
           (click)="sortOrder.set('name')"
-        >A–Z</button>
+        >
+          A–Z
+        </button>
         <button
           type="button"
           [class.active]="sortOrder() === 'count'"
           [attr.aria-pressed]="sortOrder() === 'count'"
           (click)="sortOrder.set('count')"
-        >Più anime</button>
+        >
+          Più anime
+        </button>
       </div>
     </div>
 
@@ -93,9 +108,14 @@
     @case ('error') {
       <section class="panel">
         <div class="state state-error" role="alert">
-          <span class="state-icon"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></span>
+          <span class="state-icon"
+            ><i class="fas fa-exclamation-triangle" aria-hidden="true"></i
+          ></span>
           <h2 class="state-title">Non riusciamo a caricare i generi</h2>
-          <p class="state-text">Il servizio che fornisce i dati degli anime non risponde. Di solito si risolve in pochi minuti.</p>
+          <p class="state-text">
+            Il servizio che fornisce i dati degli anime non risponde. Di solito si risolve in pochi
+            minuti.
+          </p>
           <button type="button" class="btn btn-primary" (click)="loadGenres()">Riprova</button>
         </div>
       </section>
@@ -149,12 +169,21 @@
             <span class="state-icon"><i class="fas fa-search" aria-hidden="true"></i></span>
             @if (matchingCount() > 0) {
               <h2 class="state-title">Nessun risultato in questa categoria</h2>
-              <p class="state-text">“{{ query() }}” compare in {{ matchingCount() }} voci di altre categorie.</p>
-              <button type="button" class="btn btn-primary" (click)="activeCategory.set('all')">Mostra tutte le categorie</button>
+              <p class="state-text">
+                “{{ query() }}” compare in {{ matchingCount() }} voci di altre categorie.
+              </p>
+              <button type="button" class="btn btn-primary" (click)="activeCategory.set('all')">
+                Mostra tutte le categorie
+              </button>
             } @else {
               <h2 class="state-title">Nessun genere per “{{ query() }}”</h2>
-              <p class="state-text">Prova con una parola più generica, in italiano o in inglese: “amore”, “magia”, “sport”.</p>
-              <button type="button" class="btn btn-primary" (click)="clearSearch(searchInput)">Cancella la ricerca</button>
+              <p class="state-text">
+                Prova con una parola più generica, in italiano o in inglese: “amore”, “magia”,
+                “sport”.
+              </p>
+              <button type="button" class="btn btn-primary" (click)="clearSearch(searchInput)">
+                Cancella la ricerca
+              </button>
             }
           </div>
         </section>

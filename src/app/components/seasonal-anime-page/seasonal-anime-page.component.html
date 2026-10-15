@@ -7,7 +7,8 @@
         type="button"
         class="btn btn-glass btn-sm"
         (click)="goToPreviousSeason()"
-        aria-label="Stagione precedente">
+        aria-label="Stagione precedente"
+      >
         <i class="fas fa-chevron-left" aria-hidden="true"></i>
         Precedente
       </button>
@@ -17,7 +18,8 @@
         (click)="goToNextSeason()"
         [disabled]="!canGoToNextSeason()"
         [attr.title]="canGoToNextSeason() ? null : 'Non ci sono ancora abbastanza anime annunciati'"
-        aria-label="Stagione successiva">
+        aria-label="Stagione successiva"
+      >
         Successiva
         <i class="fas fa-chevron-right" aria-hidden="true"></i>
       </button>
@@ -28,12 +30,27 @@
     <div class="section-header">
       <h2 class="section-title">Anime stagionali</h2>
       <div class="section-controls">
-        <app-title-language-toggle [value]="titleLanguage" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
+        <app-title-language-toggle
+          [value]="titleLanguage"
+          (valueChange)="toggleTitleLanguage()"
+        ></app-title-language-toggle>
         <div class="segmented" role="group" aria-label="Visualizzazione">
-          <button type="button" [class.active]="isGridView" [attr.aria-pressed]="isGridView" (click)="isGridView = true" aria-label="Griglia">
+          <button
+            type="button"
+            [class.active]="isGridView"
+            [attr.aria-pressed]="isGridView"
+            (click)="isGridView = true"
+            aria-label="Griglia"
+          >
             <i class="fas fa-th-large" aria-hidden="true"></i>
           </button>
-          <button type="button" [class.active]="!isGridView" [attr.aria-pressed]="!isGridView" (click)="isGridView = false" aria-label="Lista">
+          <button
+            type="button"
+            [class.active]="!isGridView"
+            [attr.aria-pressed]="!isGridView"
+            (click)="isGridView = false"
+            aria-label="Lista"
+          >
             <i class="fas fa-list" aria-hidden="true"></i>
           </button>
         </div>
@@ -47,7 +64,8 @@
             [anime]="anime"
             [titleLanguage]="titleLanguage"
             [viewMode]="isGridView ? 'grid' : 'list'"
-            [showSynopsis]="true">
+            [showSynopsis]="true"
+          >
             @if (!isGridView && anime.genres && anime.genres.length > 0) {
               <div class="anime-genres">
                 @for (genre of anime.genres.slice(0, 3); track genre.mal_id) {
@@ -65,9 +83,7 @@
         <span class="state-icon"><i class="fas fa-calendar-times" aria-hidden="true"></i></span>
         <h3 class="state-title">Nessun anime trovato</h3>
         <p class="state-text">Non sono stati trovati anime per questa stagione.</p>
-        <a class="btn btn-primary" routerLink="/seasonal/current">
-          Vai alla stagione corrente
-        </a>
+        <a class="btn btn-primary" routerLink="/seasonal/current"> Vai alla stagione corrente </a>
       </div>
     }
 
@@ -86,5 +102,4 @@
       </div>
     }
   </section>
-
 </div>

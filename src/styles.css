@@ -36,7 +36,9 @@ body {
 /* La transizione vale solo per il cambio tema dal pulsante, non al caricamento
    (theme-ready viene aggiunta da ThemeService dopo il primo frame) */
 .theme-ready body {
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 /* I controlli dei form non ereditano il font per default */
@@ -57,8 +59,8 @@ svg {
 
 button,
 a,
-input[type="submit"],
-input[type="button"] {
+input[type='submit'],
+input[type='button'] {
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -73,7 +75,7 @@ input[type="button"] {
   --bg-quaternary: #dee2e6;
   --text-primary: #333333;
   --text-secondary: #666666;
-  --text-muted: #707070;          /* 4.75:1 su --bg-secondary, 4.95:1 su bianco (#767676 su #f8f9fa era 4.3:1) */
+  --text-muted: #707070; /* 4.75:1 su --bg-secondary, 4.95:1 su bianco (#767676 su #f8f9fa era 4.3:1) */
   --text-on-accent: #ffffff;
   --border-color: #e0e0e0;
   --card-bg: #ffffff;
@@ -87,9 +89,9 @@ input[type="button"] {
   --accent-text: #5b35d6;
   --accent-soft: rgba(124, 77, 255, 0.12);
   --accent-ring: rgba(124, 77, 255, 0.28);
-  --accent-glow: rgba(124, 77, 255, 0.25);   /* ombra colorata di pulsanti e banner */
+  --accent-glow: rgba(124, 77, 255, 0.25); /* ombra colorata di pulsanti e banner */
   --accent-bg: #f1ecff;
-  --primary-color: var(--accent-color);      /* alias storici */
+  --primary-color: var(--accent-color); /* alias storici */
   --primary-hover: var(--accent-hover);
   /* Il bianco regge almeno 4.8:1 su tutto il gradiente (con #a27aff in fondo scendeva a 3.1:1) */
   --hero-gradient: linear-gradient(135deg, #6a45e5 0%, #7c4dff 100%);
@@ -244,7 +246,9 @@ html.custom-scrollbar::-webkit-scrollbar {
      per la posizione, e animare width ricalcolerebbe il layout */
   scale: 0.67 1;
   transform-origin: right center;
-  transition: opacity var(--dur) var(--ease-out), scale var(--dur-fast) var(--ease-out);
+  transition:
+    opacity var(--dur) var(--ease-out),
+    scale var(--dur-fast) var(--ease-out);
 }
 
 .page-scrollbar.is-visible .page-scrollbar-thumb {
@@ -319,12 +323,18 @@ a {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes shimmer {
-  from { background-position: 100% 0; }
-  to { background-position: -100% 0; }
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
 }
 
 /* =====================================================================
@@ -471,7 +481,7 @@ a {
 }
 
 .section-title::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   top: 50%;
@@ -533,8 +543,11 @@ a {
   white-space: nowrap;
   text-decoration: none;
   cursor: pointer;
-  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out),
-    background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out),
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
     border-color var(--dur-fast) var(--ease-out);
 }
 
@@ -543,7 +556,7 @@ a {
 }
 
 .btn:disabled,
-.btn[aria-disabled="true"] {
+.btn[aria-disabled='true'] {
   opacity: 0.55;
   cursor: not-allowed;
   box-shadow: none;
@@ -657,13 +670,16 @@ a {
   background: var(--bg-tertiary);
   color: var(--text-primary);
   cursor: pointer;
-  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out),
-    border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
 }
 
 .btn-icon:hover:not(:disabled),
 .btn-icon.active,
-.btn-icon[aria-pressed="true"] {
+.btn-icon[aria-pressed='true'] {
   background: var(--accent-color);
   border-color: var(--accent-color);
   color: #fff;
@@ -699,7 +715,9 @@ a {
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
 }
 
 .segmented button:hover {
@@ -707,7 +725,7 @@ a {
 }
 
 .segmented button.active,
-.segmented button[aria-pressed="true"] {
+.segmented button[aria-pressed='true'] {
   background: var(--accent-color);
   color: #fff;
 }
@@ -733,7 +751,7 @@ a {
 }
 
 .page-hero .segmented button.active,
-.page-hero .segmented button[aria-pressed="true"] {
+.page-hero .segmented button[aria-pressed='true'] {
   background: #fff;
   color: var(--accent-color);
 }
@@ -769,7 +787,9 @@ a {
   color: var(--text-primary);
   font-size: 1rem;
   caret-color: var(--accent-color);
-  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .input::placeholder {
@@ -907,7 +927,12 @@ button.link:hover {
 .skeleton {
   display: block;
   border-radius: 6px;
-  background: linear-gradient(90deg, var(--bg-secondary) 0%, var(--bg-tertiary) 50%, var(--bg-secondary) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 0%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 100%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
@@ -971,10 +996,22 @@ button.link:hover {
   line-height: 1.45;
 }
 
-.alert-error { background: var(--error-bg); color: var(--error-color); }
-.alert-success { background: var(--success-bg); color: var(--success-color); }
-.alert-info { background: var(--info-bg); color: var(--info-color); }
-.alert-warning { background: var(--warning-bg); color: var(--warning-color); }
+.alert-error {
+  background: var(--error-bg);
+  color: var(--error-color);
+}
+.alert-success {
+  background: var(--success-bg);
+  color: var(--success-color);
+}
+.alert-info {
+  background: var(--info-bg);
+  color: var(--info-color);
+}
+.alert-warning {
+  background: var(--warning-bg);
+  color: var(--warning-color);
+}
 
 /* =====================================================================
    Etichette
@@ -1020,11 +1057,21 @@ a.chip:hover {
   white-space: nowrap;
 }
 
-.badge-success { --tone: var(--success-color); }
-.badge-warning { --tone: var(--warning-color); }
-.badge-error { --tone: var(--error-color); }
-.badge-info { --tone: var(--info-color); }
-.badge-accent { --tone: var(--accent-text); }
+.badge-success {
+  --tone: var(--success-color);
+}
+.badge-warning {
+  --tone: var(--warning-color);
+}
+.badge-error {
+  --tone: var(--error-color);
+}
+.badge-info {
+  --tone: var(--info-color);
+}
+.badge-accent {
+  --tone: var(--accent-text);
+}
 
 /* Segnalino "nella tua lista" sul poster: tondo chiaro con l'icona nel colore
    dello stato (--tone), leggibile su qualsiasi copertina e in entrambi i temi */
@@ -1069,8 +1116,7 @@ a.chip:hover {
   padding: 3rem 1rem;
   background:
     radial-gradient(circle at 15% 20%, var(--accent-soft), transparent 45%),
-    radial-gradient(circle at 85% 80%, var(--accent-soft), transparent 45%),
-    var(--bg-primary);
+    radial-gradient(circle at 85% 80%, var(--accent-soft), transparent 45%), var(--bg-primary);
 }
 
 /* Lo sfondo sfumato arriva fino al footer: senza questa regola il margine

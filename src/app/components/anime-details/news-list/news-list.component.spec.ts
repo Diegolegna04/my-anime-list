@@ -8,9 +8,8 @@ describe('NewsListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NewsListComponent]
-    })
-    .compileComponents();
+      imports: [NewsListComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(NewsListComponent);
     component = fixture.componentInstance;
@@ -36,7 +35,9 @@ describe('NewsListComponent', () => {
     fixture.componentRef.setInput('status', 'error');
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('MyAnimeList, che in questo momento non risponde');
+    expect(fixture.nativeElement.textContent).toContain(
+      'MyAnimeList, che in questo momento non risponde',
+    );
     (fixture.nativeElement.querySelector('.state-error button') as HTMLButtonElement).click();
     expect(retry).toHaveBeenCalled();
   });

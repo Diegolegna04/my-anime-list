@@ -18,20 +18,14 @@ const SCROLL_IDLE_MS = 120;
 
 @Component({
   selector: 'app-header',
-  imports: [
-    ReactiveFormsModule,
-    FormsModule,
-    CommonModule,
-    RouterLink,
-    SearchSuggestComponent
-  ],
+  imports: [ReactiveFormsModule, FormsModule, CommonModule, RouterLink, SearchSuggestComponent],
   templateUrl: './header.component.html',
   standalone: true,
   styleUrls: ['./header.component.css'],
   host: {
     // Con il Tab si può entrare nell'header anche quando è nascosto: ricompare
-    '(focusin)': 'reveal()'
-  }
+    '(focusin)': 'reveal()',
+  },
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   query = '';
@@ -88,7 +82,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private themeService: ThemeService,
     private elementRef: ElementRef<HTMLElement>,
-    private zone: NgZone
+    private zone: NgZone,
   ) {}
 
   ngOnInit(): void {
@@ -110,28 +104,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.authStatusSubscription = this.authService.accessoEffettuato$.subscribe(
       (isLoggedIn: boolean) => {
         this.accessoEffettuato = isLoggedIn;
-                
+
         // Se non è loggato, resetta i dati
         if (!isLoggedIn) {
           this.username = 'Username';
           this.profileImage = DEFAULT_PROFILE_IMAGE;
         }
-      }
+      },
     );
 
     // Sottoscrivi ai dati dell'utente
-    this.userDataSubscription = this.authService.userData$.subscribe(
-      (userData) => {
-        if (userData) {
-          // Aggiorna i dati dell'utente dall'Observable
-          this.username = userData.username || 'Username';
-          this.profileImage = userData.profileImage || DEFAULT_PROFILE_IMAGE;
-        } else {
-          // Se userData è null, carica dal localStorage (fallback)
-          this.loadProfileDetailsFromStorage();
-        }
+    this.userDataSubscription = this.authService.userData$.subscribe((userData) => {
+      if (userData) {
+        // Aggiorna i dati dell'utente dall'Observable
+        this.username = userData.username || 'Username';
+        this.profileImage = userData.profileImage || DEFAULT_PROFILE_IMAGE;
+      } else {
+        // Se userData è null, carica dal localStorage (fallback)
+        this.loadProfileDetailsFromStorage();
       }
-    );
+    });
   }
 
   ngOnDestroy(): void {
@@ -153,27 +145,29 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private setupSuggestions(): void {
-    this.suggestSubscription = this.query$.pipe(
-      map((q) => q.trim()),
-      // Niente distinctUntilChanged: cancellando e riscrivendo la stessa parola
-      // l'anteprima (chiusa nel frattempo) deve ricomparire
-      debounceTime(SUGGEST_DEBOUNCE_MS),
-      switchMap((q) => {
-        if (q.length < SUGGEST_MIN_CHARS) return of({ q, list: null as any[] | null });
-        this.suggestLoading = true;
-        this.suggestOpen = true;
-        return this.animeService.searchPreview(q).pipe(
-          map((list) => ({ q, list })),
-          catchError(() => of({ q, list: [] as any[] }))
-        );
-      })
-    ).subscribe(({ q, list }) => {
-      // Una risposta arrivata dopo che la parola è cambiata (o è stata inviata) non conta
-      if (list === null || q !== this.query.trim()) return;
-      this.suggestions = list;
-      this.suggestLoading = false;
-      this.activeIndex = -1;
-    });
+    this.suggestSubscription = this.query$
+      .pipe(
+        map((q) => q.trim()),
+        // Niente distinctUntilChanged: cancellando e riscrivendo la stessa parola
+        // l'anteprima (chiusa nel frattempo) deve ricomparire
+        debounceTime(SUGGEST_DEBOUNCE_MS),
+        switchMap((q) => {
+          if (q.length < SUGGEST_MIN_CHARS) return of({ q, list: null as any[] | null });
+          this.suggestLoading = true;
+          this.suggestOpen = true;
+          return this.animeService.searchPreview(q).pipe(
+            map((list) => ({ q, list })),
+            catchError(() => of({ q, list: [] as any[] })),
+          );
+        }),
+      )
+      .subscribe(({ q, list }) => {
+        // Una risposta arrivata dopo che la parola è cambiata (o è stata inviata) non conta
+        if (list === null || q !== this.query.trim()) return;
+        this.suggestions = list;
+        this.suggestLoading = false;
+        this.activeIndex = -1;
+      });
   }
 
   /** Ogni battuta: l'anteprima parte dopo una breve pausa */
@@ -308,8 +302,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Solo il focus da tastiera (o il campo di ricerca): dopo un clic su un pulsante
     // il focus resta lì, ma l'header deve potersi nascondere lo stesso
     const focused = document.activeElement;
-    const keyboardFocusInside = !!focused && this.elementRef.nativeElement.contains(focused)
-      && focused.matches(':focus-visible');
+    const keyboardFocusInside =
+      !!focused &&
+      this.elementRef.nativeElement.contains(focused) &&
+      focused.matches(':focus-visible');
     return this.showMobileMenu || this.showDropdown || this.suggestOpen || keyboardFocusInside;
   }
 
@@ -372,7 +368,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
     this.closeMobileMenu();
   }
-    
+
   goToProfile(): void {
     if (this.accessoEffettuato) {
       this.router.navigate(['/profile']);

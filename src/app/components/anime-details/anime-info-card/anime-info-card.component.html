@@ -1,6 +1,5 @@
 <div class="anime-info-card">
   <div class="info-grid">
-
     <!-- Tipo -->
     @if (animeDetails.type) {
       <div class="info-item">
@@ -63,11 +62,16 @@
         Generi:
       </span>
       <div class="genres-list">
-        @for (genre of animeDetails.genres; track trackByGenreName($index, genre); let last = $last) {
+        @for (
+          genre of animeDetails.genres;
+          track trackByGenreName($index, genre);
+          let last = $last
+        ) {
           <a
             [routerLink]="['/genres/anime-by-genre', genre.mal_id]"
-            [queryParams]="{name: genre.name}"
-            class="chip genre-tag">
+            [queryParams]="{ name: genre.name }"
+            class="chip genre-tag"
+          >
             {{ genre.name }}
           </a>
         }
@@ -89,8 +93,12 @@
       </p>
     } @else if (streamingStatus === 'error') {
       <div class="state state-compact state-error no-streaming" role="status">
-        <span class="state-icon" aria-hidden="true"><i class="fas fa-exclamation-triangle"></i></span>
-        <p class="state-text">Non riusciamo a recuperare i servizi di streaming in questo momento.</p>
+        <span class="state-icon" aria-hidden="true"
+          ><i class="fas fa-exclamation-triangle"></i
+        ></span>
+        <p class="state-text">
+          Non riusciamo a recuperare i servizi di streaming in questo momento.
+        </p>
       </div>
     } @else if (hasStreamingServices) {
       @if (italianServices.length > 0) {
@@ -100,13 +108,17 @@
               [href]="service.url"
               target="_blank"
               rel="noopener noreferrer"
-              class="btn btn-primary btn-sm streaming-link">
+              class="btn btn-primary btn-sm streaming-link"
+            >
               <i class="fas fa-video" aria-hidden="true"></i>
               {{ service.name }}
             </a>
           }
         </div>
-        <p class="streaming-note">I link sono quelli internazionali: il catalogo italiano di ogni servizio può essere diverso.</p>
+        <p class="streaming-note">
+          I link sono quelli internazionali: il catalogo italiano di ogni servizio può essere
+          diverso.
+        </p>
       } @else {
         <div class="state no-streaming">
           <span class="state-icon" aria-hidden="true"><i class="fas fa-tv"></i></span>

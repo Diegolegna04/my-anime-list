@@ -58,7 +58,9 @@
   border-radius: var(--radius-md);
   background-color: var(--card-bg);
   box-shadow: var(--card-shadow);
-  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .news-card:hover {

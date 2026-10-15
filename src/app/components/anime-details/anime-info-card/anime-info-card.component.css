@@ -56,15 +56,31 @@
   color: var(--tone);
 }
 
-.score-excellent { --tone: var(--success-color); }
-.score-good { --tone: var(--info-color); }
-.score-average { --tone: var(--warning-color); }
-.score-low { --tone: var(--text-secondary); }
+.score-excellent {
+  --tone: var(--success-color);
+}
+.score-good {
+  --tone: var(--info-color);
+}
+.score-average {
+  --tone: var(--warning-color);
+}
+.score-low {
+  --tone: var(--text-secondary);
+}
 
-.status-airing { --tone: var(--success-color); }
-.status-finished { --tone: var(--info-color); }
-.status-upcoming { --tone: var(--warning-color); }
-.status-default { --tone: var(--text-secondary); }
+.status-airing {
+  --tone: var(--success-color);
+}
+.status-finished {
+  --tone: var(--info-color);
+}
+.status-upcoming {
+  --tone: var(--warning-color);
+}
+.status-default {
+  --tone: var(--text-secondary);
+}
 
 /* Sections */
 .genres-section,
@@ -94,7 +110,9 @@
 
 .genre-tag {
   font-size: 0.85rem;
-  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
 }
 
 /* Nessuno streaming: .state globale, più compatto dentro la card */

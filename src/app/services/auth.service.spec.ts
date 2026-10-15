@@ -19,7 +19,7 @@ describe('AuthService - logout', () => {
     localStorage.setItem('userData', JSON.stringify({ username: 'diego' }));
 
     TestBed.configureTestingModule({
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -50,7 +50,7 @@ describe('AuthService - logout', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/']);
   });
 
-  it("deleteAccount manda la password e, se va a buon fine, pulisce lo stato come il logout", async () => {
+  it('deleteAccount manda la password e, se va a buon fine, pulisce lo stato come il logout', async () => {
     const deleting = firstValueFrom(service.deleteAccount('segreta1'));
     const req = httpMock.expectOne('/api/user/delete');
     expect(req.request.method).toBe('POST');
@@ -66,7 +66,9 @@ describe('AuthService - logout', () => {
 
   it('deleteAccount con un errore non tocca lo stato locale', async () => {
     const deleting = firstValueFrom(service.deleteAccount('sbagliata'));
-    httpMock.expectOne('/api/user/delete').flush({ error: 'Password attuale errata' }, { status: 403, statusText: 'Forbidden' });
+    httpMock
+      .expectOne('/api/user/delete')
+      .flush({ error: 'Password attuale errata' }, { status: 403, statusText: 'Forbidden' });
     await expectAsync(deleting).toBeRejected();
 
     expect(await firstValueFrom(service.accessoEffettuato$)).toBeTrue();
@@ -88,7 +90,7 @@ describe('AuthService - login e registrazione', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -101,11 +103,15 @@ describe('AuthService - login e registrazione', () => {
 
   it('login invia email, password e rememberMe con i cookie e aggiorna lo stato locale', async () => {
     let result: any;
-    service.login('mario@example.com', 'segreta', true).subscribe(r => (result = r));
+    service.login('mario@example.com', 'segreta', true).subscribe((r) => (result = r));
 
     const req = httpMock.expectOne('/api/auth/login');
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ email: 'mario@example.com', password: 'segreta', rememberMe: true });
+    expect(req.request.body).toEqual({
+      email: 'mario@example.com',
+      password: 'segreta',
+      rememberMe: true,
+    });
     expect(req.request.withCredentials).toBeTrue();
     req.flush({ username: 'mario', email: 'mario@example.com' });
 
@@ -124,8 +130,12 @@ describe('AuthService - login e registrazione', () => {
 
   it('login non scrive nulla e non notifica se il backend risponde con un errore', async () => {
     let status = 0;
-    service.login('mario@example.com', 'sbagliata', false).subscribe({ error: e => (status = e.status) });
-    httpMock.expectOne('/api/auth/login').flush({ error: 'no' }, { status: 401, statusText: 'Unauthorized' });
+    service
+      .login('mario@example.com', 'sbagliata', false)
+      .subscribe({ error: (e) => (status = e.status) });
+    httpMock
+      .expectOne('/api/auth/login')
+      .flush({ error: 'no' }, { status: 401, statusText: 'Unauthorized' });
 
     expect(status).toBe(401);
     expect(localStorage.length).toBe(0);
@@ -135,11 +145,15 @@ describe('AuthService - login e registrazione', () => {
 
   it('register invia username, email e password con i cookie e salva lo username', () => {
     let result: any;
-    service.register('mario', 'mario@example.com', 'segreta').subscribe(r => (result = r));
+    service.register('mario', 'mario@example.com', 'segreta').subscribe((r) => (result = r));
 
     const req = httpMock.expectOne('/api/auth/register');
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ username: 'mario', email: 'mario@example.com', password: 'segreta' });
+    expect(req.request.body).toEqual({
+      username: 'mario',
+      email: 'mario@example.com',
+      password: 'segreta',
+    });
     expect(req.request.withCredentials).toBeTrue();
     req.flush({ message: 'ok' });
 
@@ -149,8 +163,12 @@ describe('AuthService - login e registrazione', () => {
 
   it('register non scrive nulla se il backend risponde con un errore', () => {
     let status = 0;
-    service.register('mario', 'mario@example.com', 'segreta').subscribe({ error: e => (status = e.status) });
-    httpMock.expectOne('/api/auth/register').flush({ error: 'dup' }, { status: 409, statusText: 'Conflict' });
+    service
+      .register('mario', 'mario@example.com', 'segreta')
+      .subscribe({ error: (e) => (status = e.status) });
+    httpMock
+      .expectOne('/api/auth/register')
+      .flush({ error: 'dup' }, { status: 409, statusText: 'Conflict' });
 
     expect(status).toBe(409);
     expect(localStorage.getItem('username')).toBeNull();
@@ -159,7 +177,7 @@ describe('AuthService - login e registrazione', () => {
 
 describe('Route del profilo', () => {
   it('tutte le pagine del profilo richiedono il login', () => {
-    const profileRoutes = routes.filter(r => r.path?.startsWith('profile'));
+    const profileRoutes = routes.filter((r) => r.path?.startsWith('profile'));
     // profilo, libreria, preferiti, lista di un amico
     expect(profileRoutes.length).toBe(4);
     for (const route of profileRoutes) {

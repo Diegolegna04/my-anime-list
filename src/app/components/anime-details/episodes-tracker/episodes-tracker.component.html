@@ -1,5 +1,4 @@
 <div class="episodes-tracker" [class.disabled]="disabled">
-
   <!-- Header con titolo e status -->
   <div class="tracker-header">
     <label class="tracker-label" for="episodes-input">
@@ -15,7 +14,6 @@
 
   <!-- Input controls -->
   <div class="input-controls">
-
     <!-- Quick Actions: Decrement -->
     @if (showQuickActions) {
       <button
@@ -24,7 +22,8 @@
         [disabled]="isDecrementDisabled"
         (click)="decrementEpisode()"
         aria-label="Rimuovi un episodio"
-        title="Rimuovi un episodio (-1)">
+        title="Rimuovi un episodio (-1)"
+      >
         <i class="fas fa-minus" aria-hidden="true"></i>
       </button>
     }
@@ -42,7 +41,8 @@
         (input)="onInputChange($event)"
         (blur)="onInputBlur()"
         (keypress)="onInputKeyPress($event)"
-        aria-label="Numero di episodi visti" />
+        aria-label="Numero di episodi visti"
+      />
 
       <span class="input-separator" aria-hidden="true">/</span>
 
@@ -57,7 +57,8 @@
         [disabled]="isIncrementDisabled"
         (click)="incrementEpisode()"
         aria-label="Aggiungi un episodio"
-        title="Aggiungi un episodio (+1)">
+        title="Aggiungi un episodio (+1)"
+      >
         <i class="fas fa-plus" aria-hidden="true"></i>
       </button>
     }
@@ -74,8 +75,8 @@
         aria-label="Progresso episodi"
         [attr.aria-valuenow]="progressPercentage"
         [attr.aria-valuemin]="0"
-        [attr.aria-valuemax]="100">
-
+        [attr.aria-valuemax]="100"
+      >
         <!-- Shimmer effect per progress in corso -->
         @if (progressPercentage > 0 && progressPercentage < 100) {
           <div class="progress-shimmer"></div>
@@ -84,7 +85,7 @@
     </div>
 
     <div class="progress-label">
-      <span class="progress-percentage">{{ progressPercentage | number:'1.0-0' }}%</span>
+      <span class="progress-percentage">{{ progressPercentage | number: '1.0-0' }}%</span>
     </div>
   </div>
 
@@ -96,7 +97,8 @@
         class="btn btn-secondary btn-sm action-btn complete-btn"
         [disabled]="isCompleteDisabled"
         (click)="markAsComplete()"
-        title="Segna tutti gli episodi come visti">
+        title="Segna tutti gli episodi come visti"
+      >
         <i class="fas fa-check" aria-hidden="true"></i>
         <span class="btn-label">Completa</span>
       </button>
@@ -106,7 +108,8 @@
         class="btn btn-secondary btn-sm action-btn reset-btn"
         [disabled]="isResetDisabled"
         (click)="resetProgress()"
-        title="Azzera il progresso">
+        title="Azzera il progresso"
+      >
         <i class="fas fa-undo" aria-hidden="true"></i>
         <span class="btn-label">Azzera</span>
       </button>
@@ -116,9 +119,15 @@
   <!-- Esito del salvataggio: sempre presente, così il lettore di schermo annuncia i cambi -->
   <p class="save-status" [attr.data-status]="saveStatus" role="status" aria-live="polite">
     @switch (saveStatus) {
-      @case ('saving') { <span class="spinner spinner-sm" aria-hidden="true"></span> }
-      @case ('saved') { <i class="fas fa-check-circle save-icon" aria-hidden="true"></i> }
-      @case ('error') { <i class="fas fa-exclamation-circle save-icon" aria-hidden="true"></i> }
+      @case ('saving') {
+        <span class="spinner spinner-sm" aria-hidden="true"></span>
+      }
+      @case ('saved') {
+        <i class="fas fa-check-circle save-icon" aria-hidden="true"></i>
+      }
+      @case ('error') {
+        <i class="fas fa-exclamation-circle save-icon" aria-hidden="true"></i>
+      }
     }
     <span>{{ saveStatusMessage }}</span>
   </p>

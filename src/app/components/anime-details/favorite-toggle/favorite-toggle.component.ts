@@ -6,12 +6,12 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './favorite-toggle.component.html',
-  styleUrls: ['./favorite-toggle.component.css']
+  styleUrls: ['./favorite-toggle.component.css'],
 })
 export class FavoriteToggleComponent {
   @Input() isFavorite = false;
   @Input() canFavorite = true;
-  
+
   @Output() favoriteToggled = new EventEmitter<void>();
 
   onToggle(): void {

@@ -9,7 +9,7 @@ import {
   nextSeason,
   previousSeason,
   seasonSlug,
-  uniqueByMalId
+  uniqueByMalId,
 } from '../../services/anime-utils';
 import { SeasonService } from '../../services/season.service';
 import { TitleLanguageToggleComponent } from '../../services/shared/title-language-toggle.component';
@@ -20,7 +20,7 @@ import { AnimeCardComponent } from '../../services/shared/anime-card.component';
   standalone: true,
   imports: [TitleLanguageToggleComponent, AnimeCardComponent, CommonModule, RouterLink],
   templateUrl: './seasonal-anime-page.component.html',
-  styleUrls: ['./seasonal-anime-page.component.css']
+  styleUrls: ['./seasonal-anime-page.component.css'],
 })
 export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
   seasonalAnimeList: any[] = [];
@@ -43,13 +43,14 @@ export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private animeService: AnimeService,
-    private seasonService: SeasonService
+    private seasonService: SeasonService,
   ) {}
 
   ngOnInit(): void {
-    this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
+    this.titleLanguage =
+      (localStorage.getItem('titleLanguage') as 'english' | 'original') || 'original';
 
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       this.currentSeason = params['season'];
       const decodedSeason = this.currentSeason.replace(/-/g, ' ');
       if (this.parseSeason(decodedSeason)) {
@@ -73,7 +74,11 @@ export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
     const parts = seasonParam.split(' ');
     const season = parts[0]?.toLowerCase();
     const year = parseInt(parts[1], 10);
-    if (parts.length !== 2 || !['winter', 'spring', 'summer', 'fall'].includes(season) || isNaN(year)) {
+    if (
+      parts.length !== 2 ||
+      !['winter', 'spring', 'summer', 'fall'].includes(season) ||
+      isNaN(year)
+    ) {
       return false;
     }
     this.season = season;
@@ -102,28 +107,30 @@ export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     // A pagina 1 SeasonService sceglie tra seasons/now e anno/stagione;
     // le pagine successive vanno chieste allo stesso endpoint
-    this.pageSubscription = this.seasonService.getSeasonPage(this.target, this.currentPage, this.viaNow).subscribe({
-      next: (page) => {
-        this.viaNow = page.viaNow;
-        if (page.data.length > 0) {
-          const newAnime = page.data
-            .filter((anime: any) => anime.images?.jpg?.image_url)
-            .sort((a: any, b: any) => (b.score || 0) - (a.score || 0));
-          
-          this.seasonalAnimeList = uniqueByMalId([...this.seasonalAnimeList, ...newAnime]);
-          this.hasNextPage = page.hasNextPage;
-        } else {
+    this.pageSubscription = this.seasonService
+      .getSeasonPage(this.target, this.currentPage, this.viaNow)
+      .subscribe({
+        next: (page) => {
+          this.viaNow = page.viaNow;
+          if (page.data.length > 0) {
+            const newAnime = page.data
+              .filter((anime: any) => anime.images?.jpg?.image_url)
+              .sort((a: any, b: any) => (b.score || 0) - (a.score || 0));
+
+            this.seasonalAnimeList = uniqueByMalId([...this.seasonalAnimeList, ...newAnime]);
+            this.hasNextPage = page.hasNextPage;
+          } else {
+            this.hasNextPage = false;
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Errore nel caricamento degli anime stagionali:', error);
+          this.isLoading = false;
           this.hasNextPage = false;
-        }
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Errore nel caricamento degli anime stagionali:', error);
-        this.isLoading = false;
-        this.hasNextPage = false;
-        this.seasonalAnimeList = [];
-      }
-    });
+          this.seasonalAnimeList = [];
+        },
+      });
   }
 
   loadMoreAnime(): void {
@@ -155,12 +162,12 @@ export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
 
   getFormattedSeason(): string {
     const seasonNames: Record<string, string> = {
-      'spring': 'Primavera',
-      'summer': 'Estate',
-      'fall': 'Autunno',
-      'winter': 'Inverno'
+      spring: 'Primavera',
+      summer: 'Estate',
+      fall: 'Autunno',
+      winter: 'Inverno',
     };
-    
+
     return `${seasonNames[this.season] || this.season} ${this.year}`;
   }
 
@@ -189,14 +196,16 @@ export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
 
   /** Se la stagione successiva ha titoli annunciati, dalla sua prima pagina */
   private loadNextSeasonInfo(): void {
-    this.nextSeasonSubscription = this.seasonService.getSeasonPage(nextSeason(this.target), 1).subscribe({
-      next: (page) => {
-        this.nextSeasonAvailable = hasAnnouncedTitles(page.data);
-      },
-      error: () => {
-        this.nextSeasonAvailable = null;
-      }
-    });
+    this.nextSeasonSubscription = this.seasonService
+      .getSeasonPage(nextSeason(this.target), 1)
+      .subscribe({
+        next: (page) => {
+          this.nextSeasonAvailable = hasAnnouncedTitles(page.data);
+        },
+        error: () => {
+          this.nextSeasonAvailable = null;
+        },
+      });
   }
 
   private get target(): SeasonRef {

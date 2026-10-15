@@ -7,7 +7,7 @@ import { TitleLanguageToggleComponent } from '../../services/shared/title-langua
   standalone: true,
   imports: [TitleLanguageToggleComponent, AnimeCardComponent],
   templateUrl: './top-anime.component.html',
-  styleUrl: './top-anime.component.css'
+  styleUrl: './top-anime.component.css',
 })
 export class TopAnimeComponent {
   @Input() animeList: any[] = [];
@@ -21,7 +21,8 @@ export class TopAnimeComponent {
   titleLanguage: 'english' | 'original' = 'original';
 
   constructor() {
-    this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
+    this.titleLanguage =
+      (localStorage.getItem('titleLanguage') as 'english' | 'original') || 'original';
   }
 
   setTitleLanguage(language: 'english' | 'original'): void {

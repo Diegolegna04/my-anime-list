@@ -8,7 +8,7 @@ export interface RecommendedAnime {
   images: {
     jpg: {
       image_url: string;
-    }
+    };
   };
 }
 
@@ -17,7 +17,7 @@ export interface RecommendedAnime {
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './recommended-anime-sidebar.component.html',
-  styleUrls: ['./recommended-anime-sidebar.component.css']
+  styleUrls: ['./recommended-anime-sidebar.component.css'],
 })
 export class RecommendedAnimeSidebarComponent implements OnChanges {
   @Input() recommendedAnime: RecommendedAnime[] = [];

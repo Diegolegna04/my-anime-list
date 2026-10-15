@@ -17,7 +17,7 @@ const STATE_LABELS: Record<string, string> = {
   watching: 'in visione',
   plan_to_watch: 'da vedere',
   on_hold: 'in pausa',
-  dropped: 'droppato'
+  dropped: 'droppato',
 };
 
 @Component({
@@ -49,20 +49,21 @@ export class WatchedAnimeComponent implements OnInit {
     private friendService: FriendService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
-    private destroyRef: DestroyRef
+    private destroyRef: DestroyRef,
   ) {}
 
   ngOnInit(): void {
-    this.titleLanguage = localStorage.getItem('titleLanguage') as 'english' | 'original' || 'original';
+    this.titleLanguage =
+      (localStorage.getItem('titleLanguage') as 'english' | 'original') || 'original';
 
-    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       if (params['filter']) {
         this.filter = params['filter'];
       }
     });
 
     // Da un amico all'altro il componente resta lo stesso: si ricarica al cambio di username
-    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.friendUsername = params.get('username');
       this.loadWatchedAnime();
       window.scroll(0, 0);
@@ -85,70 +86,84 @@ export class WatchedAnimeComponent implements OnInit {
     }
 
     // Una sola richiesta con titoli e copertine già inclusi
-    this.userAnimeService.getLibrary().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (library) => this.showLibrary(library),
-      // Backend senza /library (es. deploy non ancora arrivato): si va per stato
-      error: () => this.loadByStatus()
-    });
+    this.userAnimeService
+      .getLibrary()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (library) => this.showLibrary(library),
+        // Backend senza /library (es. deploy non ancora arrivato): si va per stato
+        error: () => this.loadByStatus(),
+      });
   }
 
   private loadFriendLibrary(username: string): void {
     this.friendStats = null;
     // Se nel frattempo si è passati a un altro amico, la risposta vecchia si scarta
     const stillCurrent = () => this.friendUsername === username;
-    this.friendService.getStats(username).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (stats) => {
-        if (!stillCurrent()) return;
-        this.friendStats = stats;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        // Le statistiche sono un di più: senza, la lista resta comunque visibile
-      },
-    });
-    this.friendService.getLibrary(username).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (library) => {
-        if (stillCurrent()) this.showLibrary(library);
-      },
-      error: () => {
-        if (!stillCurrent()) return;
-        this.isLoading = false;
-        this.friendNotFound = true;
-        this.cdr.detectChanges();
-      }
-    });
+    this.friendService
+      .getStats(username)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (stats) => {
+          if (!stillCurrent()) return;
+          this.friendStats = stats;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          // Le statistiche sono un di più: senza, la lista resta comunque visibile
+        },
+      });
+    this.friendService
+      .getLibrary(username)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (library) => {
+          if (stillCurrent()) this.showLibrary(library);
+        },
+        error: () => {
+          if (!stillCurrent()) return;
+          this.isLoading = false;
+          this.friendNotFound = true;
+          this.cdr.detectChanges();
+        },
+      });
   }
 
   private showLibrary(library: LibraryEntry[]): void {
     this.watchedAnime = library
-      .filter(entry => STATE_LABELS[entry.status])
-      .map(entry => this.toEntry(entry, STATE_LABELS[entry.status], entry.anime ? { data: entry.anime } : null));
+      .filter((entry) => STATE_LABELS[entry.status])
+      .map((entry) =>
+        this.toEntry(entry, STATE_LABELS[entry.status], entry.anime ? { data: entry.anime } : null),
+      );
     this.showLoadedAndFetchMissing();
   }
 
   /** Vecchio caricamento: lista per stato e dettagli di ogni anime chiesti uno per uno */
   private loadByStatus(): void {
-    const byStatus = (status: string) => this.userAnimeService.getAnimeByStatus(status).pipe(
-      catchError(error => {
-        console.error(`Errore nel caricamento degli anime "${status}":`, error);
-        return of([]);
-      })
-    );
+    const byStatus = (status: string) =>
+      this.userAnimeService.getAnimeByStatus(status).pipe(
+        catchError((error) => {
+          console.error(`Errore nel caricamento degli anime "${status}":`, error);
+          return of([]);
+        }),
+      );
 
-    forkJoin(Object.keys(STATE_LABELS).map(byStatus)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (lists: any[][]) => {
-        const statuses = Object.keys(STATE_LABELS);
-        this.watchedAnime = lists.flatMap((list, index) =>
-          list.map((anime: any) => this.toEntry(anime, STATE_LABELS[statuses[index]], null))
-        );
-        this.showLoadedAndFetchMissing();
-      },
-      error: (error) => {
-        console.error('Errore nel caricamento degli anime:', error);
-        this.isLoading = false;
-        this.filteredAnime = [];
-      }
-    });
+    forkJoin(Object.keys(STATE_LABELS).map(byStatus))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (lists: any[][]) => {
+          const statuses = Object.keys(STATE_LABELS);
+          this.watchedAnime = lists.flatMap((list, index) =>
+            list.map((anime: any) => this.toEntry(anime, STATE_LABELS[statuses[index]], null)),
+          );
+          this.showLoadedAndFetchMissing();
+        },
+        error: (error) => {
+          console.error('Errore nel caricamento degli anime:', error);
+          this.isLoading = false;
+          this.filteredAnime = [];
+        },
+      });
   }
 
   private toEntry(userAnime: any, state: string, details: any): any {
@@ -157,7 +172,7 @@ export class WatchedAnimeComponent implements OnInit {
       state,
       episodiVisti: userAnime.episodesWatched || 0,
       details,
-      userAnimeData: userAnime
+      userAnimeData: userAnime,
     };
   }
 
@@ -171,23 +186,26 @@ export class WatchedAnimeComponent implements OnInit {
     this.applyFilter();
 
     const missing = this.watchedAnime
-      .filter(anime => !anime.details)
+      .filter((anime) => !anime.details)
       .sort((a, b) => Number(b.state === this.filter) - Number(a.state === this.filter));
     this.pendingDetails = missing.length;
 
-    missing.forEach(anime => {
-      this.animeService.getAnimeById(anime.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: (details) => {
-          anime.details = details;
-          this.pendingDetails--;
-          this.applyFilter();
-        },
-        error: (error) => {
-          console.error(`Errore nel recupero dettagli per ID ${anime.id}:`, error);
-          this.pendingDetails--;
-          this.cdr.detectChanges();
-        }
-      });
+    missing.forEach((anime) => {
+      this.animeService
+        .getAnimeById(anime.id)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (details) => {
+            anime.details = details;
+            this.pendingDetails--;
+            this.applyFilter();
+          },
+          error: (error) => {
+            console.error(`Errore nel recupero dettagli per ID ${anime.id}:`, error);
+            this.pendingDetails--;
+            this.cdr.detectChanges();
+          },
+        });
     });
   }
 
@@ -204,9 +222,7 @@ export class WatchedAnimeComponent implements OnInit {
       // (stesso conteggio del riquadro "Tutti gli anime" del profilo)
       this.filteredAnime = loadedAnime.filter((anime) => anime.state !== 'da vedere');
     } else {
-      this.filteredAnime = loadedAnime.filter(
-        (anime) => anime.state === this.filter
-      );
+      this.filteredAnime = loadedAnime.filter((anime) => anime.state === this.filter);
     }
 
     this.filteredAnime.sort((a, b) => {

@@ -8,9 +8,8 @@ describe('AnimeStateManagerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AnimeStateManagerComponent]
-    })
-    .compileComponents();
+      imports: [AnimeStateManagerComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AnimeStateManagerComponent);
     component = fixture.componentInstance;

@@ -97,7 +97,7 @@
   cursor: pointer;
 }
 
-.evidenza-section input[type="checkbox"] {
+.evidenza-section input[type='checkbox'] {
   width: 20px;
   height: 20px;
   accent-color: var(--accent-color);

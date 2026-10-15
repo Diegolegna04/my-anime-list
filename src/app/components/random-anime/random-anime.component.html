@@ -1,86 +1,84 @@
 <section class="panel">
-    <div class="section-header">
-        <h2 class="section-title">Non sai che anime guardare? Fai tentare la sorte per te!</h2>
+  <div class="section-header">
+    <h2 class="section-title">Non sai che anime guardare? Fai tentare la sorte per te!</h2>
+  </div>
+
+  <div class="random-actions">
+    <button type="button" class="btn btn-primary" (click)="getRandomAnime()" [disabled]="loading">
+      @if (loading) {
+        <span class="spinner spinner-sm" aria-hidden="true"></span>
+      } @else {
+        <i class="fas fa-dice" aria-hidden="true"></i>
+      }
+      {{ loading ? 'Caricamento...' : 'Genera anime casuale' }}
+    </button>
+  </div>
+
+  @if (error) {
+    <div class="alert alert-error" role="alert">
+      <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+      {{ error }}
     </div>
+  }
 
-    <div class="random-actions">
-        <button
-            type="button"
-            class="btn btn-primary"
-            (click)="getRandomAnime()"
-            [disabled]="loading">
-            @if (loading) {
-              <span class="spinner spinner-sm" aria-hidden="true"></span>
-            } @else {
-              <i class="fas fa-dice" aria-hidden="true"></i>
-            }
-            {{ loading ? 'Caricamento...' : 'Genera anime casuale' }}
-        </button>
+  @if (loading) {
+    <div class="loading-state" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <p>Caricamento anime in corso...</p>
     </div>
+  }
 
-    @if (error) {
-      <div class="alert alert-error" role="alert">
-          <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
-          {{ error }}
-      </div>
-    }
+  @if (anime && !loading) {
+    <div class="random-card">
+      <!-- Il poster porta alla stessa scheda del titolo: fuori dal tab order per non duplicare il link -->
+      <a
+        class="anime-image"
+        [routerLink]="['/anime', anime.mal_id]"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <img
+          [src]="anime.images.jpg.large_image_url || anime.images.jpg.image_url"
+          alt=""
+          loading="lazy"
+        />
+      </a>
 
-    @if (loading) {
-      <div class="loading-state" role="status">
-          <span class="spinner" aria-hidden="true"></span>
-          <p>Caricamento anime in corso...</p>
-      </div>
-    }
+      <div class="anime-info">
+        <h3 class="anime-title">
+          <a [routerLink]="['/anime', anime.mal_id]">{{ getAnimeTitle() }}</a>
+        </h3>
 
-    @if (anime && !loading) {
-      <div class="random-card">
-          <!-- Il poster porta alla stessa scheda del titolo: fuori dal tab order per non duplicare il link -->
-          <a
-              class="anime-image"
-              [routerLink]="['/anime', anime.mal_id]"
-              tabindex="-1"
-              aria-hidden="true">
-              <img
-                  [src]="anime.images.jpg.large_image_url || anime.images.jpg.image_url"
-                  alt=""
-                  loading="lazy">
-          </a>
+        <div class="anime-details">
+          @if (anime.year) {
+            <p><strong>Anno:</strong> {{ anime.year }}</p>
+          }
+          @if (anime.episodes) {
+            <p><strong>Episodi:</strong> {{ anime.episodes }}</p>
+          }
+          <p><strong>Stato:</strong> {{ anime.status }}</p>
+          @if (anime.score) {
+            <p><strong>Punteggio:</strong> {{ anime.score }}/10</p>
+          }
+          @if (getGenres()) {
+            <p><strong>Generi:</strong> {{ getGenres() }}</p>
+          }
+        </div>
 
-          <div class="anime-info">
-              <h3 class="anime-title">
-                  <a [routerLink]="['/anime', anime.mal_id]">{{ getAnimeTitle() }}</a>
-              </h3>
-
-              <div class="anime-details">
-                  @if (anime.year) {
-                    <p><strong>Anno:</strong> {{ anime.year }}</p>
-                  }
-                  @if (anime.episodes) {
-                    <p><strong>Episodi:</strong> {{ anime.episodes }}</p>
-                  }
-                  <p><strong>Stato:</strong> {{ anime.status }}</p>
-                  @if (anime.score) {
-                    <p><strong>Punteggio:</strong> {{ anime.score }}/10</p>
-                  }
-                  @if (getGenres()) {
-                    <p><strong>Generi:</strong> {{ getGenres() }}</p>
-                  }
-              </div>
-
-              @if (anime.synopsis) {
-                <div class="anime-synopsis">
-                    <h4>Sinossi:</h4>
-                    <p>{{ anime.synopsis }}</p>
-                </div>
-              }
-
-              <div class="anime-actions">
-                  <a class="btn btn-secondary" [routerLink]="['/anime', anime.mal_id]">
-                      Apri la scheda
-                      <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                  </a>
-              </div>
+        @if (anime.synopsis) {
+          <div class="anime-synopsis">
+            <h4>Sinossi:</h4>
+            <p>{{ anime.synopsis }}</p>
           </div>
+        }
+
+        <div class="anime-actions">
+          <a class="btn btn-secondary" [routerLink]="['/anime', anime.mal_id]">
+            Apri la scheda
+            <i class="fas fa-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
       </div>
-    }
+    </div>
+  }
 </section>

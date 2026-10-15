@@ -7,7 +7,7 @@ export interface Toast {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ToastService {
   toast = signal<Toast>({ message: '', type: 'info', show: false });

@@ -20,7 +20,9 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   background-color: var(--card-bg);
-  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .star-rating:not(.readonly):not(.disabled):hover {
@@ -66,13 +68,21 @@
 .star-icon {
   display: block;
   line-height: 1;
-  transition: transform var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
 }
 
 /* Star Sizes */
-.size-small .star-icon { font-size: 1.2rem; }
-.size-medium .star-icon { font-size: 1.6rem; }
-.size-large .star-icon { font-size: 2.2rem; }
+.size-small .star-icon {
+  font-size: 1.2rem;
+}
+.size-medium .star-icon {
+  font-size: 1.6rem;
+}
+.size-large .star-icon {
+  font-size: 2.2rem;
+}
 
 /* Star States */
 .star-empty .star-icon,
@@ -99,10 +109,18 @@
 }
 
 /* Star Colors (themes) */
-.color-gold { --star-fill: var(--star-color); }
-.color-red { --star-fill: var(--error-color); }
-.color-blue { --star-fill: var(--info-color); }
-.color-purple { --star-fill: var(--accent-text); }
+.color-gold {
+  --star-fill: var(--star-color);
+}
+.color-red {
+  --star-fill: var(--error-color);
+}
+.color-blue {
+  --star-fill: var(--info-color);
+}
+.color-purple {
+  --star-fill: var(--accent-text);
+}
 
 /* Hover */
 .rating-star:not(.readonly):not(.disabled):hover .star-icon,
@@ -159,11 +177,21 @@
   font-size: 0.8rem;
 }
 
-.label-none { --tone: var(--text-secondary); }
-.label-poor { --tone: var(--error-color); }
-.label-average { --tone: var(--warning-color); }
-.label-good { --tone: var(--info-color); }
-.label-excellent { --tone: var(--success-color); }
+.label-none {
+  --tone: var(--text-secondary);
+}
+.label-poor {
+  --tone: var(--error-color);
+}
+.label-average {
+  --tone: var(--warning-color);
+}
+.label-good {
+  --tone: var(--info-color);
+}
+.label-excellent {
+  --tone: var(--success-color);
+}
 
 @media (max-width: 768px) {
   .star-rating-container {
@@ -177,8 +205,12 @@
     gap: 0.2rem;
   }
 
-  .size-medium .star-icon { font-size: 1.4rem; }
-  .size-large .star-icon { font-size: 1.9rem; }
+  .size-medium .star-icon {
+    font-size: 1.4rem;
+  }
+  .size-large .star-icon {
+    font-size: 1.9rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -186,8 +218,12 @@
     padding: 0.35rem 0.5rem;
   }
 
-  .size-small .star-icon { font-size: 1rem; }
-  .size-medium .star-icon { font-size: 1.25rem; }
+  .size-small .star-icon {
+    font-size: 1rem;
+  }
+  .size-medium .star-icon {
+    font-size: 1.25rem;
+  }
 
   .rating-number {
     font-size: 1.1rem;

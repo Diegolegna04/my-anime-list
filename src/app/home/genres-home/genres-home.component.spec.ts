@@ -12,9 +12,8 @@ describe('GenresHomeComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [GenresHomeComponent],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
-    })
-    .compileComponents();
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(GenresHomeComponent);
     component = fixture.componentInstance;

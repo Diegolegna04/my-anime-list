@@ -81,9 +81,15 @@
   list-style: none;
 }
 
-.genre-list[data-category='themes'] { --cat: var(--cat-themes); }
-.genre-list[data-category='demographics'] { --cat: var(--cat-demographics); }
-.genre-list[data-category='explicit_genres'] { --cat: var(--cat-explicit); }
+.genre-list[data-category='themes'] {
+  --cat: var(--cat-themes);
+}
+.genre-list[data-category='demographics'] {
+  --cat: var(--cat-demographics);
+}
+.genre-list[data-category='explicit_genres'] {
+  --cat: var(--cat-explicit);
+}
 
 .genre-list li {
   display: grid;
@@ -101,7 +107,9 @@
   box-shadow: var(--card-shadow);
   color: inherit;
   text-decoration: none;
-  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out),
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
     transform var(--dur-fast) var(--ease-out);
 }
 
@@ -166,7 +174,9 @@
 .genre-arrow {
   font-size: 0.75rem;
   color: var(--text-muted);
-  transition: transform var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
 }
 
 .genre-card:hover .genre-arrow {

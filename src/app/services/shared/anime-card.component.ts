@@ -9,7 +9,7 @@ import { cleanSynopsis } from '../anime-utils';
   standalone: true,
   imports: [RouterLink, DecimalPipe],
   templateUrl: './anime-card.component.html',
-  styleUrl: './anime-card.component.css'
+  styleUrl: './anime-card.component.css',
 })
 export class AnimeCardComponent {
   @Input({ required: true }) anime: any;

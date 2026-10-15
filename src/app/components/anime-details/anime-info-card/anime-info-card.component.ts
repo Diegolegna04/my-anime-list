@@ -19,7 +19,16 @@ export interface StreamingService {
  * (Funimation, VRV). Né Jikan né AniList dicono in quali paesi vale un link: è una lista
  * di servizi noti, non un controllo del catalogo italiano.
  */
-const NOT_IN_ITALY = ['hulu', 'tubi', 'hoopla', 'adult swim', 'funimation', 'vrv', 'muse asia', 'ani-one'];
+const NOT_IN_ITALY = [
+  'hulu',
+  'tubi',
+  'hoopla',
+  'adult swim',
+  'funimation',
+  'vrv',
+  'muse asia',
+  'ani-one',
+];
 
 export function isAvailableInItaly(service: StreamingService): boolean {
   const name = service.name.toLowerCase();
@@ -46,7 +55,7 @@ export interface AnimeInfo {
   imports: [CommonModule, RouterLink],
   templateUrl: './anime-info-card.component.html',
   styleUrls: ['./anime-info-card.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AnimeInfoCardComponent {
   @Input({ required: true }) animeDetails!: AnimeInfo;
@@ -82,9 +91,9 @@ export class AnimeInfoCardComponent {
       'Finished Airing': 'Completato',
       'Not yet aired': 'Non ancora trasmesso',
       'On Hold': 'In pausa',
-      'Cancelled': 'Cancellato'
+      Cancelled: 'Cancellato',
     };
-    
+
     return statusMap[this.animeDetails?.status] || this.animeDetails?.status || 'N/A';
   }
 
@@ -93,11 +102,11 @@ export class AnimeInfoCardComponent {
    */
   get statusClass(): string {
     const status = this.animeDetails?.status?.toLowerCase() || '';
-    
+
     if (status.includes('airing')) return 'status-airing';
     if (status.includes('finished')) return 'status-finished';
     if (status.includes('not yet')) return 'status-upcoming';
-    
+
     return 'status-default';
   }
 
@@ -106,11 +115,11 @@ export class AnimeInfoCardComponent {
    */
   get scoreClass(): string {
     const score = this.animeDetails?.score || 0;
-    
+
     if (score >= 8) return 'score-excellent';
     if (score >= 7) return 'score-good';
     if (score >= 6) return 'score-average';
-    
+
     return 'score-low';
   }
 
@@ -159,14 +168,14 @@ export class AnimeInfoCardComponent {
    */
   get formattedType(): string {
     const typeMap: Record<string, string> = {
-      'TV': 'Serie TV',
-      'Movie': 'Film',
-      'OVA': 'OVA',
-      'ONA': 'ONA',
-      'Special': 'Speciale',
-      'Music': 'Video Musicale'
+      TV: 'Serie TV',
+      Movie: 'Film',
+      OVA: 'OVA',
+      ONA: 'ONA',
+      Special: 'Speciale',
+      Music: 'Video Musicale',
     };
-    
+
     return typeMap[this.animeDetails?.type || ''] || this.animeDetails?.type || 'N/A';
   }
 
@@ -177,8 +186,8 @@ export class AnimeInfoCardComponent {
     if (!this.animeDetails?.studios || this.animeDetails.studios.length === 0) {
       return 'N/A';
     }
-    
-    return this.animeDetails.studios.map(s => s.name).join(', ');
+
+    return this.animeDetails.studios.map((s) => s.name).join(', ');
   }
 
   /**

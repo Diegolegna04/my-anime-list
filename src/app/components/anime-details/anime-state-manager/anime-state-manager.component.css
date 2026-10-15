@@ -58,16 +58,31 @@
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out),
-    box-shadow var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
 }
 
-.state-neutral { --tone: var(--text-secondary); }
-.state-watching { --tone: var(--status-watching); }
-.state-completed { --tone: var(--status-completed); }
-.state-plan { --tone: var(--status-plan); }
-.state-on-hold { --tone: var(--status-on-hold); }
-.state-dropped { --tone: var(--status-dropped); }
+.state-neutral {
+  --tone: var(--text-secondary);
+}
+.state-watching {
+  --tone: var(--status-watching);
+}
+.state-completed {
+  --tone: var(--status-completed);
+}
+.state-plan {
+  --tone: var(--status-plan);
+}
+.state-on-hold {
+  --tone: var(--status-on-hold);
+}
+.state-dropped {
+  --tone: var(--status-dropped);
+}
 
 .button-icon {
   font-size: 1.6rem;

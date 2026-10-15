@@ -9,7 +9,7 @@ import { withCleanSynopsis } from '../../services/anime-utils';
   selector: 'app-random-anime',
   imports: [CommonModule, RouterLink],
   templateUrl: './random-anime.component.html',
-  styleUrl: './random-anime.component.css'
+  styleUrl: './random-anime.component.css',
 })
 export class RandomAnimeComponent {
   anime: AnimeData | null = null;
@@ -21,7 +21,7 @@ export class RandomAnimeComponent {
   getRandomAnime(): void {
     this.loading = true;
     this.error = null;
-    
+
     this.animeService.getRandomAnime().subscribe({
       next: (response) => {
         this.anime = withCleanSynopsis(response.data);
@@ -31,7 +31,7 @@ export class RandomAnimeComponent {
         this.error = 'Il servizio anime al momento non risponde, riprova tra qualche secondo';
         this.loading = false;
         console.error('Errore API:', err);
-      }
+      },
     });
   }
 
@@ -42,6 +42,6 @@ export class RandomAnimeComponent {
 
   getGenres(): string {
     if (!this.anime || !this.anime.genres) return '';
-    return this.anime.genres.map(genre => genre.name).join(', ');
+    return this.anime.genres.map((genre) => genre.name).join(', ');
   }
 }

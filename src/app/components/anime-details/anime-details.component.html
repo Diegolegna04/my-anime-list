@@ -10,13 +10,20 @@
         <h1 class="anime-title">{{ getDisplayedTitle() }}</h1>
 
         <div class="anime-info">
-          <img [src]="animeDetails.images.jpg.large_image_url" [alt]="animeDetails.title" class="cover-image" fetchpriority="high" />
+          <img
+            [src]="animeDetails.images.jpg.large_image_url"
+            [alt]="animeDetails.title"
+            class="cover-image"
+            fetchpriority="high"
+          />
 
           <div class="info-text">
-            <button type="button"
-                    class="btn btn-secondary btn-sm translate-btn"
-                    (click)="onTranslateRequested()"
-                    [disabled]="isTranslating">
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm translate-btn"
+              (click)="onTranslateRequested()"
+              [disabled]="isTranslating"
+            >
               @if (isTranslating) {
                 <span class="spinner spinner-sm" aria-hidden="true"></span>
               } @else {
@@ -24,14 +31,21 @@
               }
               {{ isTranslating ? 'Traduzione in corso...' : 'Traduci in italiano' }}
             </button>
-            <p class="synopsis" id="anime-synopsis" [class.collapsed]="isSynopsisLong && !synopsisExpanded">{{ animeDetails.synopsis }}</p>
+            <p
+              class="synopsis"
+              id="anime-synopsis"
+              [class.collapsed]="isSynopsisLong && !synopsisExpanded"
+            >
+              {{ animeDetails.synopsis }}
+            </p>
             @if (isSynopsisLong) {
               <button
                 type="button"
                 class="link synopsis-toggle"
                 aria-controls="anime-synopsis"
                 [attr.aria-expanded]="synopsisExpanded"
-                (click)="synopsisExpanded = !synopsisExpanded">
+                (click)="synopsisExpanded = !synopsisExpanded"
+              >
                 {{ synopsisExpanded ? 'Mostra meno' : 'Leggi tutto' }}
               </button>
             }
@@ -42,7 +56,8 @@
         <app-anime-info-card
           [animeDetails]="animeDetails"
           [streamingServices]="animeStreaming"
-          [streamingStatus]="streamingStatus">
+          [streamingStatus]="streamingStatus"
+        >
         </app-anime-info-card>
 
         <!-- La tua lista: stato, episodi, voto, preferito, evidenza -->
@@ -51,7 +66,8 @@
             [currentState]="animeState"
             [isLoading]="isLoadingUserData"
             [loggedIn]="isLoggedIn"
-            (stateChanged)="onStateChanged($event)">
+            (stateChanged)="onStateChanged($event)"
+          >
           </app-anime-state-manager>
 
           <!-- Episodes Tracker (solo se "in visione") -->
@@ -60,7 +76,8 @@
               [currentEpisodes]="episodiVisti"
               [totalEpisodes]="animeDetails.episodes"
               [saveStatus]="episodesSaveStatus"
-              (episodesUpdated)="onEpisodesUpdated($event)">
+              (episodesUpdated)="onEpisodesUpdated($event)"
+            >
             </app-episodes-tracker>
           }
 
@@ -75,7 +92,8 @@
                 [rating]="voto"
                 [maxRating]="10"
                 [readonly]="false"
-                (ratingChanged)="onRatingChanged($event)">
+                (ratingChanged)="onRatingChanged($event)"
+              >
               </app-star-rating>
             </div>
           }
@@ -85,7 +103,8 @@
             <app-favorite-toggle
               [isFavorite]="preferito"
               [canFavorite]="canFavorite"
-              (favoriteToggled)="onFavoriteToggled()">
+              (favoriteToggled)="onFavoriteToggled()"
+            >
             </app-favorite-toggle>
           }
 
@@ -96,7 +115,8 @@
                 <input
                   type="checkbox"
                   [checked]="inEvidenza"
-                  (change)="onInEvidenzaChanged($event)" />
+                  (change)="onInEvidenzaChanged($event)"
+                />
                 Mostra in evidenza sul profilo
               </label>
             </div>
@@ -104,10 +124,7 @@
         </section>
 
         <!-- News Section -->
-        <app-news-list
-          [news]="news"
-          [status]="newsStatus"
-          (retry)="loadAnimeNews()">
+        <app-news-list [news]="news" [status]="newsStatus" (retry)="loadAnimeNews()">
         </app-news-list>
       </div>
 
@@ -116,7 +133,8 @@
         [recommendedAnime]="recommendedAnime"
         [status]="recommendedStatus"
         (retry)="loadRecommendedAnime()"
-        (animeClicked)="onRecommendedAnimeClick($event)">
+        (animeClicked)="onRecommendedAnimeClick($event)"
+      >
       </app-recommended-anime-sidebar>
     </div>
   }

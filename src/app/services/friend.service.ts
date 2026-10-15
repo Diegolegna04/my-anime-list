@@ -48,11 +48,19 @@ export class FriendService {
   }
 
   sendRequest(username: string): Observable<FriendRequestEntry> {
-    return this.http.post<FriendRequestEntry>(`${this.apiUrl}/requests`, { username }, { withCredentials: true });
+    return this.http.post<FriendRequestEntry>(
+      `${this.apiUrl}/requests`,
+      { username },
+      { withCredentials: true },
+    );
   }
 
   accept(friendshipId: string): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/requests/${friendshipId}/accept`, {}, { withCredentials: true });
+    return this.http.put<void>(
+      `${this.apiUrl}/requests/${friendshipId}/accept`,
+      {},
+      { withCredentials: true },
+    );
   }
 
   /** Rifiuta, annulla o rimuove: per il backend è sempre cancellare l'amicizia */
@@ -61,10 +69,14 @@ export class FriendService {
   }
 
   getLibrary(username: string): Observable<LibraryEntry[]> {
-    return this.http.get<LibraryEntry[]>(`${this.apiUrl}/${encodeURIComponent(username)}/library`, { withCredentials: true });
+    return this.http.get<LibraryEntry[]>(`${this.apiUrl}/${encodeURIComponent(username)}/library`, {
+      withCredentials: true,
+    });
   }
 
   getStats(username: string): Observable<FriendStats> {
-    return this.http.get<FriendStats>(`${this.apiUrl}/${encodeURIComponent(username)}/stats`, { withCredentials: true });
+    return this.http.get<FriendStats>(`${this.apiUrl}/${encodeURIComponent(username)}/stats`, {
+      withCredentials: true,
+    });
   }
 }

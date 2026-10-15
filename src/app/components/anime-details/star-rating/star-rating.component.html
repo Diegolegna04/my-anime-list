@@ -1,5 +1,4 @@
 <div class="star-rating-container" [class.interactive]="isInteractive">
-
   <!-- Stars -->
   <div
     class="star-rating"
@@ -8,8 +7,8 @@
     role="radiogroup"
     [attr.aria-label]="'Valutazione da 0 a ' + maxRating"
     [attr.aria-readonly]="readonly"
-    [attr.aria-disabled]="disabled">
-
+    [attr.aria-disabled]="disabled"
+  >
     @for (star of stars; track trackByStar($index, star)) {
       <button
         type="button"
@@ -23,8 +22,8 @@
         (click)="onStarClick(star)"
         (mouseenter)="onStarHover(star)"
         (mouseleave)="onStarLeave()"
-        (keydown)="onKeyDown($event, star)">
-
+        (keydown)="onKeyDown($event, star)"
+      >
         <!-- Star Icon (Font Awesome) -->
         <span class="star-icon" aria-hidden="true">
           @if (getStarState(star) === 'half') {

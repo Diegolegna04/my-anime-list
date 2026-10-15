@@ -8,9 +8,8 @@ describe('TopAnimeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TopAnimeComponent]
-    })
-    .compileComponents();
+      imports: [TopAnimeComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TopAnimeComponent);
     component = fixture.componentInstance;

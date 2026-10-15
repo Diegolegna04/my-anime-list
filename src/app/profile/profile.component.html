@@ -20,10 +20,10 @@
         [attr.aria-label]="showSettings ? 'Impostazioni account' : 'Immagine profilo'"
         cdkTrapFocus
         [cdkTrapFocusAutoCapture]="true"
-        (click)="$event.stopPropagation()">
-
+        (click)="$event.stopPropagation()"
+      >
         @if (!showSettings) {
-          <img [src]="profileImage" class="overlay-profile-pic" alt="Profile Image">
+          <img [src]="profileImage" class="overlay-profile-pic" alt="Profile Image" />
           <p class="overlay-username">{{ username }}</p>
 
           <div class="overlay-actions">
@@ -33,7 +33,12 @@
             </button>
 
             @if (pendingProfileImage) {
-              <button type="button" class="btn btn-primary save-image-btn" (click)="saveProfileImage()" [disabled]="isSaving">
+              <button
+                type="button"
+                class="btn btn-primary save-image-btn"
+                (click)="saveProfileImage()"
+                [disabled]="isSaving"
+              >
                 @if (isSaving) {
                   <span class="spinner spinner-sm" aria-hidden="true"></span> Salvataggio...
                 } @else {
@@ -43,7 +48,12 @@
             }
 
             @if (hasCustomProfileImage) {
-              <button type="button" class="btn btn-secondary" (click)="removeProfileImage()" [disabled]="isSaving">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="removeProfileImage()"
+                [disabled]="isSaving"
+              >
                 <i class="fas fa-trash-alt" aria-hidden="true"></i>
                 Rimuovi foto
               </button>
@@ -53,7 +63,13 @@
               <i class="fas fa-cog" aria-hidden="true"></i>
               Impostazioni account
             </button>
-            <input type="file" id="profileImageInput" accept="image/*" (change)="uploadProfileImage($event)" hidden />
+            <input
+              type="file"
+              id="profileImageInput"
+              accept="image/*"
+              (change)="uploadProfileImage($event)"
+              hidden
+            />
             <button type="button" class="btn btn-secondary" (click)="requestClose()">Chiudi</button>
           </div>
         } @else {
@@ -88,7 +104,8 @@
               />
               @if (emailChanged) {
                 <p class="field-hint" id="settings-email-hint">
-                  Ti mandiamo un link al nuovo indirizzo. Finché non lo confermi non potrai rientrare dopo il logout.
+                  Ti mandiamo un link al nuovo indirizzo. Finché non lo confermi non potrai
+                  rientrare dopo il logout.
                 </p>
               }
             </div>
@@ -107,11 +124,20 @@
                   maxlength="128"
                   autocomplete="new-password"
                 />
-                <button type="button" class="input-action" (click)="showNewPassword = !showNewPassword"
+                <button
+                  type="button"
+                  class="input-action"
+                  (click)="showNewPassword = !showNewPassword"
                   [attr.aria-label]="showNewPassword ? 'Nascondi password' : 'Mostra password'"
                   [attr.aria-pressed]="showNewPassword"
-                  aria-controls="settings-password settings-confirm-password">
-                  <i class="fas" [class.fa-eye]="!showNewPassword" [class.fa-eye-slash]="showNewPassword" aria-hidden="true"></i>
+                  aria-controls="settings-password settings-confirm-password"
+                >
+                  <i
+                    class="fas"
+                    [class.fa-eye]="!showNewPassword"
+                    [class.fa-eye-slash]="showNewPassword"
+                    aria-hidden="true"
+                  ></i>
                 </button>
               </div>
             </div>
@@ -148,11 +174,22 @@
                     maxlength="128"
                     autocomplete="current-password"
                   />
-                  <button type="button" class="input-action" (click)="showCurrentPassword = !showCurrentPassword"
-                    [attr.aria-label]="showCurrentPassword ? 'Nascondi password' : 'Mostra password'"
+                  <button
+                    type="button"
+                    class="input-action"
+                    (click)="showCurrentPassword = !showCurrentPassword"
+                    [attr.aria-label]="
+                      showCurrentPassword ? 'Nascondi password' : 'Mostra password'
+                    "
                     [attr.aria-pressed]="showCurrentPassword"
-                    aria-controls="settings-current-password">
-                    <i class="fas" [class.fa-eye]="!showCurrentPassword" [class.fa-eye-slash]="showCurrentPassword" aria-hidden="true"></i>
+                    aria-controls="settings-current-password"
+                  >
+                    <i
+                      class="fas"
+                      [class.fa-eye]="!showCurrentPassword"
+                      [class.fa-eye-slash]="showCurrentPassword"
+                      aria-hidden="true"
+                    ></i>
                   </button>
                 </div>
               </div>
@@ -183,7 +220,12 @@
             <h4 class="danger-zone-title" id="danger-zone-title">Elimina account</h4>
             @if (!showDeleteAccount) {
               <p class="field-hint">Cancella per sempre il profilo, la tua lista e le amicizie.</p>
-              <button type="button" id="delete-account-open" class="btn btn-secondary btn-sm danger-zone-open" (click)="openDeleteAccount()">
+              <button
+                type="button"
+                id="delete-account-open"
+                class="btn btn-secondary btn-sm danger-zone-open"
+                (click)="openDeleteAccount()"
+              >
                 <i class="fas fa-user-slash" aria-hidden="true"></i>
                 Elimina account
               </button>
@@ -213,7 +255,9 @@
                       Elimina definitivamente
                     }
                   </button>
-                  <button type="button" class="btn btn-secondary" (click)="cancelDeleteAccount()">Annulla</button>
+                  <button type="button" class="btn btn-secondary" (click)="cancelDeleteAccount()">
+                    Annulla
+                  </button>
                 </div>
               </form>
             }
@@ -227,7 +271,12 @@
               Hai modifiche non salvate. Vuoi scartarle?
             </p>
             <div class="discard-confirm-actions">
-              <button type="button" class="btn btn-secondary btn-sm" #keepEditingButton (click)="keepEditing()">
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm"
+                #keepEditingButton
+                (click)="keepEditing()"
+              >
                 Continua a modificare
               </button>
               <button type="button" class="btn btn-danger btn-sm" (click)="discardChanges()">
@@ -253,9 +302,14 @@
           title="Cambia immagine profilo"
           (click)="openOverlay()"
           (keydown.enter)="openOverlay()"
-          (keydown.space)="$event.preventDefault(); openOverlay()">
+          (keydown.space)="$event.preventDefault(); openOverlay()"
+        />
         <h1 class="username">{{ username }}</h1>
-        <button type="button" class="btn btn-secondary btn-sm settings-shortcut" (click)="openSettings()">
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm settings-shortcut"
+          (click)="openSettings()"
+        >
           <i class="fas fa-cog" aria-hidden="true"></i>
           Impostazioni
         </button>
@@ -269,12 +323,20 @@
             <span class="stat-value">{{ totalAnimeCount }}</span>
             <span class="stat-label">Tutti gli anime</span>
           </a>
-          <a class="stat-item" routerLink="/profile/watched-anime" [queryParams]="{ filter: 'completato' }">
+          <a
+            class="stat-item"
+            routerLink="/profile/watched-anime"
+            [queryParams]="{ filter: 'completato' }"
+          >
             <i class="fas fa-tv" aria-hidden="true"></i>
             <span class="stat-value">{{ watchedAnimeCount }}</span>
             <span class="stat-label">Anime Visti</span>
           </a>
-          <a class="stat-item" routerLink="/profile/watched-anime" [queryParams]="{ filter: 'in visione' }">
+          <a
+            class="stat-item"
+            routerLink="/profile/watched-anime"
+            [queryParams]="{ filter: 'in visione' }"
+          >
             <i class="fas fa-play" aria-hidden="true"></i>
             <span class="stat-value">{{ watchingAnimeCount }}</span>
             <span class="stat-label">In Visione</span>
@@ -284,7 +346,11 @@
             <span class="stat-value">{{ animePreferiti }}</span>
             <span class="stat-label">Anime Preferiti</span>
           </a>
-          <a class="stat-item" routerLink="/profile/watched-anime" [queryParams]="{ filter: 'da vedere' }">
+          <a
+            class="stat-item"
+            routerLink="/profile/watched-anime"
+            [queryParams]="{ filter: 'da vedere' }"
+          >
             <i class="fas fa-bookmark" aria-hidden="true"></i>
             <span class="stat-value">{{ planToWatchCount }}</span>
             <span class="stat-label">Da vedere</span>
@@ -297,7 +363,10 @@
       <div class="section-header">
         <h2 class="section-title" id="inEvidenzaSection">Anime Preferiti in Evidenza</h2>
         <div class="section-controls">
-          <app-title-language-toggle [value]="titleLanguage" (valueChange)="toggleTitleLanguage()"></app-title-language-toggle>
+          <app-title-language-toggle
+            [value]="titleLanguage"
+            (valueChange)="toggleTitleLanguage()"
+          ></app-title-language-toggle>
         </div>
       </div>
 
@@ -306,7 +375,8 @@
           class="anime-grid anime-container"
           cdkDropList
           cdkDropListOrientation="horizontal"
-          (cdkDropListDropped)="drop($event)">
+          (cdkDropListDropped)="drop($event)"
+        >
           @for (anime of inEvidenza; track anime.mal_id) {
             <div
               class="anime-card"
@@ -314,8 +384,15 @@
               role="link"
               tabindex="0"
               (click)="goToDetails(anime.mal_id)"
-              (keydown.enter)="goToDetails(anime.mal_id)">
-              <img [src]="anime.images.jpg.large_image_url" alt="{{ getTitle(anime) }}" class="anime-image" loading="lazy" decoding="async"/>
+              (keydown.enter)="goToDetails(anime.mal_id)"
+            >
+              <img
+                [src]="anime.images.jpg.large_image_url"
+                alt="{{ getTitle(anime) }}"
+                class="anime-image"
+                loading="lazy"
+                decoding="async"
+              />
               <h3 class="anime-title">{{ getTitle(anime) }}</h3>
             </div>
           }

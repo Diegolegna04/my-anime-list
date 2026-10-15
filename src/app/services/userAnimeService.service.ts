@@ -37,7 +37,7 @@ export interface LibraryEntry {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserAnimeService {
   private apiUrl = '/api/user-anime';
@@ -49,7 +49,11 @@ export class UserAnimeService {
   }
 
   updateEpisodesWatched(animeId: number, episodesWatched: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${animeId}/episodes`, { episodesWatched }, { withCredentials: true });
+    return this.http.put(
+      `${this.apiUrl}/${animeId}/episodes`,
+      { episodesWatched },
+      { withCredentials: true },
+    );
   }
 
   updateRating(animeId: number, rating: number): Observable<any> {
