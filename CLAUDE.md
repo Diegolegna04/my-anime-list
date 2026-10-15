@@ -35,6 +35,7 @@ La CI (`.github/workflows/ci.yml`) lancia a ogni push lint, `format:check`, test
 - Per lavoro estetico (analisi, restyling, rifinitura, animazioni) usa la skill `/styling`.
 - Testi dell'interfaccia solo in italiano, scritti nei template (niente i18n).
 - Nuovi componenti: standalone, nella cartella della pagina che li usa; se condivisi in `src/app/services/shared/`.
+- Nuove pagine: in `app.routes.ts` con `loadComponent` (lazy), mai `component:` importato in cima. Solo la home sta nel bundle iniziale; il budget `initial` (550 kB avviso, 700 kB errore) fa fallire la CI se cresce troppo.
 - Screenshot e file di Playwright vanno in `.playwright-mcp/` (ignorata da git), mai in `src/` o `public/`.
 
 ## Git
