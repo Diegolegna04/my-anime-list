@@ -15,6 +15,8 @@
         role="dialog"
         aria-modal="true"
         [attr.aria-label]="showSettings ? 'Impostazioni account' : 'Immagine profilo'"
+        cdkTrapFocus
+        [cdkTrapFocusAutoCapture]="true"
         (click)="$event.stopPropagation()">
 
         @if (!showSettings) {
@@ -34,6 +36,13 @@
                 } @else {
                   <i class="fas fa-check" aria-hidden="true"></i> Salva immagine
                 }
+              </button>
+            }
+
+            @if (hasCustomProfileImage) {
+              <button type="button" class="btn btn-secondary" (click)="removeProfileImage()" [disabled]="isSaving">
+                <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                Rimuovi foto
               </button>
             }
 
@@ -166,6 +175,46 @@
               </button>
             </div>
           </form>
+
+          <section class="danger-zone" aria-labelledby="danger-zone-title">
+            <h4 class="danger-zone-title" id="danger-zone-title">Elimina account</h4>
+            @if (!showDeleteAccount) {
+              <p class="field-hint">Cancella per sempre il profilo, la tua lista e le amicizie.</p>
+              <button type="button" id="delete-account-open" class="btn btn-secondary btn-sm danger-zone-open" (click)="openDeleteAccount()">
+                <i class="fas fa-user-slash" aria-hidden="true"></i>
+                Elimina account
+              </button>
+            } @else {
+              <form class="danger-zone-form" (ngSubmit)="deleteAccount()">
+                <p class="alert alert-error danger-zone-warning">
+                  <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                  Verranno cancellati profilo, lista, preferiti e amicizie. Non si può annullare.
+                </p>
+                <div class="field">
+                  <label class="field-label" for="delete-current-password">Password attuale</label>
+                  <input
+                    id="delete-current-password"
+                    class="input"
+                    type="password"
+                    name="deleteCurrentPassword"
+                    [(ngModel)]="deletePassword"
+                    maxlength="128"
+                    autocomplete="current-password"
+                  />
+                </div>
+                <div class="settings-actions">
+                  <button type="submit" class="btn btn-danger" [disabled]="isDeleting">
+                    @if (isDeleting) {
+                      <span class="spinner spinner-sm" aria-hidden="true"></span> Eliminazione...
+                    } @else {
+                      Elimina definitivamente
+                    }
+                  </button>
+                  <button type="button" class="btn btn-secondary" (click)="cancelDeleteAccount()">Annulla</button>
+                </div>
+              </form>
+            }
+          </section>
         }
 
         @if (confirmDiscard) {

@@ -195,4 +195,91 @@ describe('ProfileComponent - saveSettings', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(close).not.toHaveBeenCalled();
   });
+
+  describe('togliere la foto profilo', () => {
+    it('manda profileImage vuoto e torna all avatar predefinito', async () => {
+      component.profileImage = 'data:image/jpeg;base64,vecchia';
+      const removing = component.removeProfileImage();
+      const req = httpMock.expectOne('/api/user/update');
+      expect(req.request.body).toEqual({ profileImage: '' });
+      req.flush({ username: 'diego', email: 'diego@example.com', profileImage: null });
+      await removing;
+
+      expect(component.profileImage).toBe('pfp-no-bg.webp');
+      expect(toast.show).toHaveBeenCalledWith('Foto profilo rimossa.', 'success');
+    });
+
+    it('con un errore lascia la foto com era', async () => {
+      component.profileImage = 'data:image/jpeg;base64,vecchia';
+      const removing = component.removeProfileImage();
+      httpMock.expectOne('/api/user/update').flush({}, { status: 500, statusText: 'Server Error' });
+      await removing;
+
+      expect(component.profileImage).toBe('data:image/jpeg;base64,vecchia');
+      expect(toast.show).toHaveBeenCalledWith('Impossibile rimuovere la foto. Riprova.', 'error');
+    });
+  });
+
+  describe('eliminare l account', () => {
+    beforeEach(() => {
+      component.openSettings();
+      component.openDeleteAccount();
+    });
+
+    it('senza password non chiama il backend', async () => {
+      await component.deleteAccount();
+      httpMock.expectNone('/api/user/delete');
+      expect(toast.show).toHaveBeenCalledWith('Inserisci la password attuale per confermare.', 'error');
+    });
+
+    it('con la password elimina e avvisa', async () => {
+      component.deletePassword = 'segreta1';
+      const deleting = component.deleteAccount();
+      const req = httpMock.expectOne('/api/user/delete');
+      expect(req.request.body).toEqual({ currentPassword: 'segreta1' });
+      req.flush({ message: 'Account eliminato' });
+      await deleting;
+
+      expect(toast.show).toHaveBeenCalledWith('Account eliminato. Ci dispiace vederti andare via.', 'success');
+      expect(component.showOverlay).toBeFalse();
+    });
+
+    it('con la password sbagliata resta aperto e lo dice', async () => {
+      component.deletePassword = 'sbagliata';
+      const deleting = component.deleteAccount();
+      httpMock.expectOne('/api/user/delete').flush(
+        { error: 'Password attuale errata' }, { status: 403, statusText: 'Forbidden' });
+      await deleting;
+
+      expect(toast.show).toHaveBeenCalledWith('Password attuale errata.', 'error');
+      expect(component.showDeleteAccount).toBeTrue();
+      expect(component.showOverlay).toBeTrue();
+    });
+
+    it('Esc chiude prima il pannello di eliminazione, poi il dialog', () => {
+      component.deletePassword = 'scritta-a-meta';
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+      expect(component.showDeleteAccount).toBeFalse();
+      expect(component.deletePassword).toBe('');
+      expect(component.showOverlay).toBeTrue();
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+      expect(component.showOverlay).toBeFalse();
+    });
+  });
+
+  it('aprendo le impostazioni il focus entra nel dialog', async () => {
+    fixture.detectChanges();
+    httpMock.expectOne('/api/user-anime/stats').flush({});
+    httpMock.expectOne('/api/user-anime/evidenza').flush([]);
+    await fixture.whenStable();
+
+    component.openSettings();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await new Promise((resolve) => setTimeout(resolve));
+
+    expect(document.activeElement?.id).toBe('settings-username');
+    httpMock.match('/api/friends').forEach((req) => req.flush({ friends: [], incoming: [], outgoing: [] }));
+  });
 });

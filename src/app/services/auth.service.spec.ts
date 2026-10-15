@@ -49,6 +49,36 @@ describe('AuthService - logout', () => {
     expect(localStorage.getItem('userData')).toBeNull();
     expect(router.navigate).toHaveBeenCalledWith(['/']);
   });
+
+  it("deleteAccount manda la password e, se va a buon fine, pulisce lo stato come il logout", async () => {
+    const deleting = firstValueFrom(service.deleteAccount('segreta1'));
+    const req = httpMock.expectOne('/api/user/delete');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ currentPassword: 'segreta1' });
+    expect(req.request.withCredentials).toBeTrue();
+    req.flush({ message: 'Account eliminato' });
+    await deleting;
+
+    expect(await firstValueFrom(service.accessoEffettuato$)).toBeFalse();
+    expect(localStorage.getItem('userData')).toBeNull();
+    expect(router.navigate).toHaveBeenCalledWith(['/']);
+  });
+
+  it('deleteAccount con un errore non tocca lo stato locale', async () => {
+    const deleting = firstValueFrom(service.deleteAccount('sbagliata'));
+    httpMock.expectOne('/api/user/delete').flush({ error: 'Password attuale errata' }, { status: 403, statusText: 'Forbidden' });
+    await expectAsync(deleting).toBeRejected();
+
+    expect(await firstValueFrom(service.accessoEffettuato$)).toBeTrue();
+    expect(localStorage.getItem('userData')).not.toBeNull();
+  });
+
+  it('updateLocalUserData senza foto toglie anche quella salvata', () => {
+    localStorage.setItem('profileImage', 'data:image/jpeg;base64,vecchia');
+    service.updateLocalUserData({ username: 'diego', profileImage: null });
+    expect(localStorage.getItem('profileImage')).toBeNull();
+    expect(service.getCurrentUserData().profileImage).toBeNull();
+  });
 });
 
 describe('AuthService - login e registrazione', () => {

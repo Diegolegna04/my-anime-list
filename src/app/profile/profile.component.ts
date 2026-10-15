@@ -2,9 +2,10 @@ import { ChangeDetectorRef, Component, ElementRef, HostListener, Injector, OnIni
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { AnimeService } from '../services/anime.service';
 import { UserAnimeService } from '../services/userAnimeService.service';
-import { AuthService } from '../services/auth.service';
+import { AuthService, DEFAULT_PROFILE_IMAGE } from '../services/auth.service';
 import { ToastService } from '../services/toast.service';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { TitleLanguageToggleComponent } from '../services/shared/title-language-toggle.component';
@@ -19,12 +20,13 @@ import { FriendsPanelComponent } from './friends-panel/friends-panel.component';
     RouterLink,
     DragDropModule,
     FormsModule,
-    FriendsPanelComponent
+    FriendsPanelComponent,
+    CdkTrapFocus
   ],
   standalone: true
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-  profileImage: string = 'pfp-no-bg.webp';
+  profileImage: string = DEFAULT_PROFILE_IMAGE;
   username: string = '';
   email: string = '';
   totalAnimeCount: number = 0;
@@ -44,6 +46,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   confirmDiscard: boolean = false;
   showNewPassword: boolean = false;
   showCurrentPassword: boolean = false;
+
+  /** Pannello "Elimina account" aperto dentro le impostazioni */
+  showDeleteAccount: boolean = false;
+  deletePassword: string = '';
+  isDeleting: boolean = false;
 
   @ViewChild('keepEditingButton') keepEditingButton?: ElementRef<HTMLButtonElement>;
   private focusBeforeConfirm: HTMLElement | null = null;
@@ -74,7 +81,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       if (userData) {
         this.username = userData.username || '';
         this.email = userData.email || '';
-        this.profileImage = userData.profileImage || this.profileImage;
+        this.profileImage = userData.profileImage || DEFAULT_PROFILE_IMAGE;
         this.settingsData.username = this.username;
         this.settingsData.email = this.email;
       }
@@ -170,6 +177,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   onEscape(): void {
     if (this.confirmDiscard) {
       this.keepEditing();
+    } else if (this.showDeleteAccount) {
+      this.cancelDeleteAccount();
     } else if (this.showOverlay) {
       this.requestClose();
     }
@@ -221,11 +230,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.confirmDiscard = false;
     this.showNewPassword = false;
     this.showCurrentPassword = false;
+    this.cancelDeleteAccount();
 
     // Se c'era un'anteprima non salvata, ripristina l'immagine effettivamente persistita
     if (this.pendingProfileImage) {
       const currentUserData = this.authService.getCurrentUserData();
-      this.profileImage = currentUserData?.profileImage || 'pfp-no-bg.webp';
+      this.profileImage = currentUserData?.profileImage || DEFAULT_PROFILE_IMAGE;
     }
     this.pendingProfileImage = null;
 
@@ -304,6 +314,72 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   // Salvataggio dedicato per la sola immagine profilo,
   // così non dipende dal form impostazioni per essere persistita
+  /** La foto salvata è personalizzata (non l'avatar predefinito) */
+  get hasCustomProfileImage(): boolean {
+    return !!this.authService.getCurrentUserData()?.profileImage && !this.pendingProfileImage;
+  }
+
+  /** Toglie la foto salvata e torna all'avatar predefinito */
+  async removeProfileImage(): Promise<void> {
+    this.isSaving = true;
+    try {
+      const response = await firstValueFrom(this.authService.updateProfile({ profileImage: '' }));
+      this.authService.updateLocalUserData(response);
+      this.profileImage = response.profileImage || DEFAULT_PROFILE_IMAGE;
+      this.toastService.show('Foto profilo rimossa.', 'success');
+    } catch {
+      this.toastService.show('Impossibile rimuovere la foto. Riprova.', 'error');
+    } finally {
+      this.isSaving = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  openDeleteAccount(): void {
+    this.showDeleteAccount = true;
+    this.deletePassword = '';
+    this.focusAfterRender('delete-current-password');
+  }
+
+  cancelDeleteAccount(): void {
+    if (!this.showDeleteAccount) return;
+    this.showDeleteAccount = false;
+    this.deletePassword = '';
+    if (this.showOverlay) this.focusAfterRender('delete-account-open');
+  }
+
+  private focusAfterRender(elementId: string): void {
+    afterNextRender(() => document.getElementById(elementId)?.focus(), { injector: this.injector });
+  }
+
+  /** Elimina l'account: AuthService pulisce lo stato locale e torna alla home */
+  async deleteAccount(): Promise<void> {
+    if (!this.deletePassword) {
+      this.toastService.show('Inserisci la password attuale per confermare.', 'error');
+      return;
+    }
+
+    this.isDeleting = true;
+    try {
+      await firstValueFrom(this.authService.deleteAccount(this.deletePassword));
+      this.closeOverlay();
+      this.toastService.show('Account eliminato. Ci dispiace vederti andare via.', 'success');
+    } catch (error: any) {
+      if (error.status === 403) {
+        this.toastService.show('Password attuale errata.', 'error');
+      } else if (error.status === 429) {
+        this.toastService.show('Troppi tentativi. Riprova tra qualche minuto.', 'error');
+      } else if (error.status === 401) {
+        this.toastService.show('Sessione scaduta, effettua di nuovo il login.', 'error');
+      } else {
+        this.toastService.show('Errore durante l\'eliminazione. Riprova.', 'error');
+      }
+    } finally {
+      this.isDeleting = false;
+      this.cdr.detectChanges();
+    }
+  }
+
   async saveProfileImage(): Promise<void> {
     if (!this.pendingProfileImage) return;
 
@@ -394,6 +470,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.toastService.show(error.error?.error || 'Username già in uso.', 'error');
       } else if (error.status === 403) {
         this.toastService.show('Password attuale errata.', 'error');
+      } else if (error.status === 429) {
+        this.toastService.show('Troppi tentativi. Riprova tra qualche minuto.', 'error');
       } else if (error.status === 401) {
         this.toastService.show('Sessione scaduta, effettua di nuovo il login.', 'error');
       } else if (error.status === 400) {

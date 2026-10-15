@@ -4,6 +4,9 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { LoginRequest, ProfileUpdate, RegisterRequest } from '../loginrequest';
 import { Router } from '@angular/router';
 
+/** Avatar mostrato quando l'utente non ha una foto profilo */
+export const DEFAULT_PROFILE_IMAGE = 'pfp-no-bg.webp';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -132,28 +135,37 @@ export class AuthService {
     const merged = { ...this.userDataSubject.value, ...userData };
     localStorage.setItem('userData', JSON.stringify(merged));
     if (merged.username) localStorage.setItem('username', merged.username);
+    // Foto tolta: niente copia vecchia in localStorage
     if (merged.profileImage) localStorage.setItem('profileImage', merged.profileImage);
+    else localStorage.removeItem('profileImage');
     this.userDataSubject.next(merged);
+  }
+
+  /** Elimina l'account (serve la password attuale); se riesce, lo stato locale si pulisce come al logout */
+  deleteAccount(currentPassword: string): Observable<unknown> {
+    return this.http
+      .post(`${this.userApiUrl}/delete`, { currentPassword }, { withCredentials: true })
+      .pipe(tap(() => this.clearLocalSession()));
   }
 
   onLogout(): void {
     // Lo stato locale si pulisce comunque: se il backend non risponde l'utente
     // non deve restare "loggato" nell'interfaccia (la sessione scade da sola)
-    const clearLocalSession = () => {
-      localStorage.removeItem('accessoEffettuato');
-      localStorage.removeItem('userData');
-      localStorage.removeItem('username');
-      localStorage.removeItem('profileImage');
-
-      this.accessoEffettuatoSubject.next(false);
-      this.userDataSubject.next(null);
-
-      this.route.navigate(['/']);
-    };
-
     this.http
       .delete(`${this.apiUrl}/logout`, { withCredentials: true })
-      .subscribe({ next: clearLocalSession, error: clearLocalSession });
+      .subscribe({ next: () => this.clearLocalSession(), error: () => this.clearLocalSession() });
+  }
+
+  private clearLocalSession(): void {
+    localStorage.removeItem('accessoEffettuato');
+    localStorage.removeItem('userData');
+    localStorage.removeItem('username');
+    localStorage.removeItem('profileImage');
+
+    this.accessoEffettuatoSubject.next(false);
+    this.userDataSubject.next(null);
+
+    this.route.navigate(['/']);
   }
 
   getCurrentUserData(): any {

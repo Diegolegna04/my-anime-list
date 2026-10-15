@@ -3,7 +3,7 @@ import { NavigationStart, Router, RouterLink } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AnimeService } from '../services/anime.service';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../services/auth.service';
+import { AuthService, DEFAULT_PROFILE_IMAGE } from '../services/auth.service';
 import { Theme, ThemeService } from '../services/theme.service';
 import { Subject, Subscription, of } from 'rxjs';
 import { catchError, debounceTime, filter, map, switchMap } from 'rxjs/operators';
@@ -37,7 +37,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   query: string = '';
   currentTheme: Theme = 'light';
   accessoEffettuato: boolean = false;
-  profileImage: string = 'pfp-no-bg.webp';
+  profileImage: string = DEFAULT_PROFILE_IMAGE;
   username: string = 'Username';
   showDropdown: boolean = false;
   showMobileMenu: boolean = false;
@@ -114,7 +114,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         // Se non è loggato, resetta i dati
         if (!isLoggedIn) {
           this.username = 'Username';
-          this.profileImage = this.profileImage;
+          this.profileImage = DEFAULT_PROFILE_IMAGE;
         }
       }
     );
@@ -125,7 +125,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         if (userData) {
           // Aggiorna i dati dell'utente dall'Observable
           this.username = userData.username || 'Username';
-          this.profileImage = userData.profileImage || this.profileImage;
+          this.profileImage = userData.profileImage || DEFAULT_PROFILE_IMAGE;
         } else {
           // Se userData è null, carica dal localStorage (fallback)
           this.loadProfileDetailsFromStorage();
