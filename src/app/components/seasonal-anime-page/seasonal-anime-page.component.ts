@@ -24,14 +24,14 @@ import { AnimeCardComponent } from '../../services/shared/anime-card.component';
 })
 export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
   seasonalAnimeList: any[] = [];
-  isLoading: boolean = false;
-  currentSeason: string = '';
-  year: number = 0;
-  season: string = '';
-  isGridView: boolean = true;
+  isLoading = false;
+  currentSeason = '';
+  year = 0;
+  season = '';
+  isGridView = true;
   titleLanguage: 'english' | 'original' = 'original';
-  currentPage: number = 1;
-  hasNextPage: boolean = true;
+  currentPage = 1;
+  hasNextPage = true;
   /** Endpoint scelto a pagina 1 (seasons/now o anno/stagione) */
   private viaNow: boolean | undefined;
   /** La stagione successiva ha titoli annunciati; null finché non si sa */
@@ -154,7 +154,7 @@ export class SeasonalAnimePageComponent implements OnInit, OnDestroy {
   }
 
   getFormattedSeason(): string {
-    const seasonNames: { [key: string]: string } = {
+    const seasonNames: Record<string, string> = {
       'spring': 'Primavera',
       'summer': 'Estate',
       'fall': 'Autunno',

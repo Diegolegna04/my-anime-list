@@ -15,12 +15,12 @@ import { TitleLanguageToggleComponent } from '../../services/shared/title-langua
 })
 export class FavoriteAnimeComponent implements OnInit {
   favoriteAnime: any[] = [];
-  isLoading: boolean = true;
+  isLoading = true;
   titleLanguage: 'english' | 'original' = 'original';
-  isGridView: boolean = true;
+  isGridView = true;
 
   /** Anime di cui si stanno ancora caricando i dettagli */
-  pendingDetails: number = 0;
+  pendingDetails = 0;
   /** Tutti i preferiti, anche quelli ancora senza dettagli */
   private allFavorites: any[] = [];
 

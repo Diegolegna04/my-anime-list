@@ -27,30 +27,30 @@ import { FriendsPanelComponent } from './friends-panel/friends-panel.component';
 })
 export class ProfileComponent implements OnInit, OnDestroy {
   profileImage: string = DEFAULT_PROFILE_IMAGE;
-  username: string = '';
-  email: string = '';
-  totalAnimeCount: number = 0;
-  watchedAnimeCount: number = 0;
-  watchingAnimeCount: number = 0;
-  planToWatchCount: number = 0;
+  username = '';
+  email = '';
+  totalAnimeCount = 0;
+  watchedAnimeCount = 0;
+  watchingAnimeCount = 0;
+  planToWatchCount = 0;
   inEvidenza: any[] = [];
-  animePreferiti: number = 0;
+  animePreferiti = 0;
   titleLanguage: 'english' | 'original' = 'original';
-  showOverlay: boolean = false;
-  isLoading: boolean = true;
+  showOverlay = false;
+  isLoading = true;
 
-  showSettings: boolean = false;
-  isSaving: boolean = false;
+  showSettings = false;
+  isSaving = false;
   pendingProfileImage: string | null = null;
   /** Chiusura chiesta con modifiche non salvate: si mostra la conferma */
-  confirmDiscard: boolean = false;
-  showNewPassword: boolean = false;
-  showCurrentPassword: boolean = false;
+  confirmDiscard = false;
+  showNewPassword = false;
+  showCurrentPassword = false;
 
   /** Pannello "Elimina account" aperto dentro le impostazioni */
-  showDeleteAccount: boolean = false;
-  deletePassword: string = '';
-  isDeleting: boolean = false;
+  showDeleteAccount = false;
+  deletePassword = '';
+  isDeleting = false;
 
   @ViewChild('keepEditingButton') keepEditingButton?: ElementRef<HTMLButtonElement>;
   private focusBeforeConfirm: HTMLElement | null = null;
@@ -256,7 +256,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   // Ridimensiona e comprime l'immagine via canvas prima di convertirla in Base64,
   // così il documento MongoDB resta leggero indipendentemente dalla foto originale
-  private async resizeImage(file: File, maxDimension: number = 512, quality: number = 0.8): Promise<string> {
+  private async resizeImage(file: File, maxDimension = 512, quality = 0.8): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
@@ -395,7 +395,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.pendingProfileImage = null;
 
       this.toastService.show('Immagine profilo aggiornata!', 'success');
-    } catch (error) {
+    } catch {
       this.toastService.show('Errore durante il salvataggio dell\'immagine. Riprova.', 'error');
     } finally {
       this.isSaving = false;

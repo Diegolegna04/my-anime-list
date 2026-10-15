@@ -17,17 +17,17 @@ const AUTOSAVE_DELAY_MS = 800;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EpisodesTrackerComponent implements OnChanges, OnDestroy {
-  @Input() currentEpisodes: number = 0;
+  @Input() currentEpisodes = 0;
   /** 0 = totale sconosciuto (serie in corso): niente limite superiore */
-  @Input() totalEpisodes: number = 0;
-  @Input() disabled: boolean = false;
-  @Input() showQuickActions: boolean = true;
+  @Input() totalEpisodes = 0;
+  @Input() disabled = false;
+  @Input() showQuickActions = true;
   @Input() saveStatus: EpisodesSaveStatus = 'idle';
 
   @Output() episodesUpdated = new EventEmitter<number>();
 
   // Stato interno per gestire l'input
-  localEpisodes: number = 0;
+  localEpisodes = 0;
 
   private autosaveTimer: ReturnType<typeof setTimeout> | null = null;
 

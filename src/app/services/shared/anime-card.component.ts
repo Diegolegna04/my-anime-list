@@ -16,7 +16,7 @@ export class AnimeCardComponent {
   @Input() rank: number | null = null;
   @Input() titleLanguage: 'english' | 'original' = 'original';
   @Input() viewMode: 'grid' | 'list' = 'grid';
-  @Input() showSynopsis: boolean = false;
+  @Input() showSynopsis = false;
 
   constructor(private userList: UserListService) {}
 

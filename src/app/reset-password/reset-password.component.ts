@@ -14,15 +14,15 @@ import { ToastService } from '../services/toast.service';
 })
 export class ResetPasswordComponent implements OnInit {
   token: string | null = null;
-  tokenMissing: boolean = false;
+  tokenMissing = false;
 
-  password: string = '';
-  confirmPassword: string = '';
-  passwordType: string = 'password';
+  password = '';
+  confirmPassword = '';
+  passwordType = 'password';
 
-  isLoading: boolean = false;
-  success: boolean = false;
-  errorMessage: string = '';
+  isLoading = false;
+  success = false;
+  errorMessage = '';
 
   constructor(
     private route: ActivatedRoute,

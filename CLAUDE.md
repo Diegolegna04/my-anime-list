@@ -9,7 +9,8 @@ Architettura, autenticazione e integrazione col backend: `PROJECT.md`. Sistema v
 - CSS puro per componente (`*.component.css`); token e classi globali in `src/styles.css`. Niente Tailwind, niente SCSS.
 - Icone: Font Awesome 6.0.0-beta3 da CDN (`src/index.html`). Nessun webfont: il testo usa `--font-sans` (oggi solo `sans-serif`).
 - `@angular/cdk` (drag & drop nel profilo).
-- Test: Karma + Jasmine (~95 specs: servizi core, login-register, profile, watched-anime e molti componenti).
+- Test: Karma + Jasmine (~124 specs: servizi core, login-register, profile, watched-anime e molti componenti).
+- Lint: ESLint (`angular-eslint`, `eslint.config.js`); formato: Prettier (`.prettierrc.json`).
 
 ## Comandi
 
@@ -17,10 +18,12 @@ Architettura, autenticazione e integrazione col backend: `PROJECT.md`. Sistema v
 npm start                                   # http://localhost:4200, /api proxato da proxy.conf.json
 npm run build                               # build di produzione + typecheck (dist/my-anime-list/browser)
 npx ng test --watch=false --browsers=ChromeHeadless
+npm run lint                                # ESLint: gli errori bloccano, gli avvisi (`any`, `prefer-inject`) no
+npm run format                              # Prettier su tutto il repo; `npm run format:check` per controllare
 vercel --prod                               # deploy: solo da CLI (niente integrazione Git); vedi README
 ```
 
-Non c'è lint configurato: la verifica minima è `npm run build`.
+La CI (`.github/workflows/ci.yml`) lancia a ogni push lint, `format:check`, test e build. Non fa deploy.
 
 ## Regole
 

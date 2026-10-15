@@ -36,7 +36,7 @@ export class AnimeService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  private withRetry<T>(source: Observable<T>, maxRetries: number = 2): Observable<T> {
+  private withRetry<T>(source: Observable<T>, maxRetries = 2): Observable<T> {
     let attempts = 0;
 
     const tryOnce = (obs: Observable<T>): Observable<T> =>
@@ -58,7 +58,7 @@ export class AnimeService {
     return this.withRetry(this.http.get(`${this.apiUrl}/top/anime`));
   }
 
-  searchAnime(query: string, page: number = 1): Observable<any> {
+  searchAnime(query: string, page = 1): Observable<any> {
     return this.withRetry(this.http.get(`${this.apiUrl}/anime?q=${encodeURIComponent(query)}&page=${page}`));
   }
 
@@ -67,7 +67,7 @@ export class AnimeService {
    * prima. Niente retry: se la richiesta è lenta arriva comunque la prossima
    * battitura, e l'invio porta alla ricerca completa.
    */
-  searchPreview(query: string, limit: number = 6): Observable<any[]> {
+  searchPreview(query: string, limit = 6): Observable<any[]> {
     const q = encodeURIComponent(query);
     return this.http
       .get<any>(`${this.apiUrl}/anime?q=${q}&limit=${limit}&order_by=members&sort=desc&sfw=true`)
@@ -187,7 +187,7 @@ export class AnimeService {
       let pending: (() => void) | null = null;
       let inFlight: Subscription | null = null;
 
-      const attempt = (retryCount: number = 0) => {
+      const attempt = (retryCount = 0) => {
         const job = () => {
           pending = null;
           inFlight = this.http.get<T>(`${this.apiUrl}${path}`).subscribe({

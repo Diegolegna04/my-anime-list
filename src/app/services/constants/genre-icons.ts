@@ -1,6 +1,6 @@
 // Icona Font Awesome (solid) per ogni genere di MyAnimeList (id Jikan).
 // I nomi sono quelli compatibili con Font Awesome 6.0.0-beta3 caricato in index.html.
-export const GENRE_ICONS: { [key: number]: string } = {
+export const GENRE_ICONS: Record<number, string> = {
   // Generi
   1: 'fist-raised',       // Action
   2: 'compass',           // Adventure

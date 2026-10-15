@@ -30,10 +30,10 @@ const STATE_LABELS: Record<string, string> = {
 export class WatchedAnimeComponent implements OnInit {
   watchedAnime: any[] = [];
   filteredAnime: any[] = [];
-  isLoading: boolean = true;
-  filter: string = 'all';
+  isLoading = true;
+  filter = 'all';
   /** Anime di cui si stanno ancora caricando i dettagli */
-  pendingDetails: number = 0;
+  pendingDetails = 0;
 
   titleLanguage: 'english' | 'original' = 'original';
 
@@ -102,8 +102,9 @@ export class WatchedAnimeComponent implements OnInit {
         this.friendStats = stats;
         this.cdr.detectChanges();
       },
-      // Le statistiche sono un di più: senza, la lista resta comunque visibile
-      error: () => {}
+      error: () => {
+        // Le statistiche sono un di più: senza, la lista resta comunque visibile
+      },
     });
     this.friendService.getLibrary(username).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (library) => {
@@ -196,7 +197,7 @@ export class WatchedAnimeComponent implements OnInit {
   }
 
   applyFilter(): void {
-    let loadedAnime = this.watchedAnime.filter((anime) => anime.details);
+    const loadedAnime = this.watchedAnime.filter((anime) => anime.details);
 
     if (this.filter === 'all') {
       // "Tutti" sono gli anime iniziati: i "Da vedere" hanno il loro filtro

@@ -21,14 +21,14 @@ const AUTH_PAGES = ['/register-login', '/verify-email', '/forgot-password', '/re
   styleUrl: './login-register.component.css'
 })
 export class LoginRegisterComponent implements OnInit, OnDestroy {
-  isRegistering: boolean = false;
-  accessoEffettuato: boolean = false;
-  isLoading: boolean = false;
-  passwordType: string = 'password';
+  isRegistering = false;
+  accessoEffettuato = false;
+  isLoading = false;
+  passwordType = 'password';
 
   // Mostrato quando il login fallisce perché l'email non è ancora stata verificata
-  showResendVerification: boolean = false;
-  isResending: boolean = false;
+  showResendVerification = false;
+  isResending = false;
 
   // Pagina dell'app aperta prima del login (null se si è arrivati qui direttamente)
   private readonly previousUrl: string | null;

@@ -29,12 +29,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   seasonalAnimeList: any[] = [];
   /** Stagione mostrata in home: null finché non è stata decisa */
   activeSeason: SeasonRef | null = null;
-  isLoading: boolean = false;
+  isLoading = false;
   /** Prima pagina dei top anime fallita: la sezione mostra "Riprova" */
-  topAnimeError: boolean = false;
+  topAnimeError = false;
   currentView: 'list' | 'search' = 'list';
   
-  currentPage: number = 1;
+  currentPage = 1;
 
   constructor(
     private router: Router,

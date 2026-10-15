@@ -1,4 +1,4 @@
-export const GENRE_DESCRIPTIONS: { [key: number]: string } = {
+export const GENRE_DESCRIPTIONS: Record<number, string> = {
     1: "Sequenze d’azione coinvolgenti hanno la priorità e i conflitti più importanti tra i personaggi vengono solitamente risolti attraverso la forza fisica. Sebbene la trama generale possa prevedere uno scontro tra gruppi contrapposti, la narrazione delle storie d’azione è sempre incentrata sui punti di forza e di debolezza dei singoli personaggi e sull’impegno che mettono nelle loro battaglie personali contro i membri del gruppo avversario. In contrasto con i generi Militare o Sportivo, in cui la narrazione si concentra sui successi collettivi, oppure con le storie “mostro della settimana”, dove le brevi scene d’azione rappresentano un climax prevedibile dell’episodio.",
     2: "Che si tratti di perseguire un obiettivo preciso o semplicemente di lottare per sopravvivere, il protagonista viene catapultato in situazioni o territori sconosciuti e si trova continuamente ad affrontare pericoli inattesi. La narrazione delle storie d’avventura si concentra sempre su come i personaggi reagiscono a eventi improvvisi o prove durante il viaggio, mostrando una crescita personale oppure un arretramento, in base alle azioni o alle scelte compiute. Lo sviluppo dei personaggi come risposta ai pericoli del viaggio è un elemento fondamentale delle storie d’avventura. Il semplice fatto di vivere esperienze in terre o mondi stranieri non è sufficiente a definirle come avventura.",
     4: "Il coinvolgimento del pubblico attraverso emozioni positive ha la priorità, suscitando risate, divertimento o intrattenimento in generale. Quasi sempre, le storie comiche sono episodi che oppure presentano finali felici. Quasi ogni opera utilizza la comicità come espediente narrativo per alleviare la tensione, ma affinché un’opera rientri nel genere Commedia, la narrazione nel suo insieme deve essere incentrata sull’evocare il divertimento. Dramma e Commedia non sono generi mutuamente esclusivi, ma la loro combinazione richiede che le difficoltà umane vengano affrontate con leggerezza. Slice of Life e Commedia sono incompatibili per definizione.",
@@ -19,7 +19,7 @@ export function getGenreDescription(genreId: number): string | null {
 
 // Una frase per ogni genere di MyAnimeList (id Jikan), mostrata nel catalogo
 // dei generi e in cima alla pagina del singolo genere.
-export const GENRE_SHORT_DESCRIPTIONS: { [key: number]: string } = {
+export const GENRE_SHORT_DESCRIPTIONS: Record<number, string> = {
     // Generi
     1: "Scontri e combattimenti: i conflitti si risolvono con la forza.",
     2: "Viaggi in luoghi sconosciuti, tra pericoli e scoperte.",

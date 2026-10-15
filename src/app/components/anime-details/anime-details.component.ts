@@ -39,7 +39,7 @@ export type LoadStatus = 'loading' | 'ready' | 'error';
 
 export class AnimeDetailsComponent implements OnInit, OnDestroy {
   
-  animeId: number = 0;
+  animeId = 0;
   animeDetails: any = null;
   recommendedAnime: any[] = [];
   recommendedStatus: LoadStatus = 'loading';
@@ -50,16 +50,16 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   newsStatus: LoadStatus = 'loading';
   userAnimeData: UserAnime | null = null;
   animeState: AnimeState = 'non visto';
-  voto: number = 0;
-  preferito: boolean = false;
-  episodiVisti: number = 0;
+  voto = 0;
+  preferito = false;
+  episodiVisti = 0;
   /** Esito dell'ultimo salvataggio episodi, mostrato nel tracker (niente toast a ogni +1) */
   episodesSaveStatus: EpisodesSaveStatus = 'idle';
-  inEvidenza: boolean = false;
+  inEvidenza = false;
   titleLanguage: 'english' | 'original' = 'original';
-  isTranslating: boolean = false;
-  isLoadingUserData: boolean = true;
-  isLoadingAnimeData: boolean = true;
+  isTranslating = false;
+  isLoadingUserData = true;
+  isLoadingAnimeData = true;
   /** Su telefono la sinossi parte chiusa a 6 righe */
   synopsisExpanded = false;
   private destroy$ = new Subject<void>();
@@ -237,7 +237,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const statusMap: { [key: string]: AnimeState } = {
+    const statusMap: Record<string, AnimeState> = {
       'watching': 'in visione',
       'completed': 'completato',
       'plan_to_watch': 'da vedere',
@@ -335,7 +335,7 @@ export class AnimeDetailsComponent implements OnInit, OnDestroy {
   }
 
   onStateChanged(newState: AnimeState): void {
-    const backendStatusMap: { [key in AnimeState]: string } = {
+    const backendStatusMap: Record<AnimeState, string> = {
       'in visione': 'watching',
       'completato': 'completed',
       'da vedere': 'plan_to_watch',

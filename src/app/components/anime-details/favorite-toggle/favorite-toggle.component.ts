@@ -9,8 +9,8 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./favorite-toggle.component.css']
 })
 export class FavoriteToggleComponent {
-  @Input() isFavorite: boolean = false;
-  @Input() canFavorite: boolean = true;
+  @Input() isFavorite = false;
+  @Input() canFavorite = true;
   
   @Output() favoriteToggled = new EventEmitter<void>();
 

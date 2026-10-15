@@ -34,13 +34,13 @@ const SCROLL_IDLE_MS = 120;
   }
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  query: string = '';
+  query = '';
   currentTheme: Theme = 'light';
-  accessoEffettuato: boolean = false;
+  accessoEffettuato = false;
   profileImage: string = DEFAULT_PROFILE_IMAGE;
-  username: string = 'Username';
-  showDropdown: boolean = false;
-  showMobileMenu: boolean = false;
+  username = 'Username';
+  showDropdown = false;
+  showMobileMenu = false;
 
   // Anteprima dei risultati sotto la barra di ricerca
   suggestions: any[] = [];

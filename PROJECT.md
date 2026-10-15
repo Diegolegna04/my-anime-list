@@ -63,6 +63,7 @@ npm install
 npm start                                    # http://localhost:4200, /api proxato su Railway (proxy.conf.json)
 npm run build                                # output in dist/my-anime-list/browser
 npx ng test --watch=false --browsers=ChromeHeadless
+npm run lint                                 # ESLint; npm run format / format:check per Prettier
 vercel --prod                                # deploy (da CLI, niente integrazione Git)
 ```
 

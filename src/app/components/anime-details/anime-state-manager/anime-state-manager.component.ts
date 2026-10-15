@@ -34,10 +34,10 @@ export interface StateOption {
 })
 export class AnimeStateManagerComponent {
   @Input() currentState: AnimeState = 'non visto';
-  @Input() isLoading: boolean = false;
-  @Input() disabled: boolean = false;
+  @Input() isLoading = false;
+  @Input() disabled = false;
   /** Da sloggati i pulsanti sono spenti e un avviso invita ad accedere */
-  @Input() loggedIn: boolean = true;
+  @Input() loggedIn = true;
   
   @Output() stateChanged = new EventEmitter<AnimeState>();
 

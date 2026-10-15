@@ -129,12 +129,16 @@ npm start
 Open `http://localhost:4200`. The app hot-reloads on file changes.  
 `/api` requests are proxied by `proxy.conf.json` to the **production Railway backend**, so you work on real data. To use a local backend, change the `target` in `proxy.conf.json` locally (the backend listens on port 8080).
 
-### Tests and production build
+### Tests, lint and production build
 
 ```bash
 npx ng test --watch=false --browsers=ChromeHeadless
+npm run lint            # ESLint
+npm run format:check    # Prettier (npm run format to fix)
 npm run build
 ```
+
+GitHub Actions (`.github/workflows/ci.yml`) runs the same four steps on every push.
 
 The build output goes to `dist/my-anime-list/browser`.
 

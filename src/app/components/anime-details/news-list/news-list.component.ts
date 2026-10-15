@@ -18,8 +18,8 @@ export class NewsListComponent implements OnChanges {
   @Output() retry = new EventEmitter<void>();
 
   displayedNews: AnimeNews[] = [];
-  isExpanded: boolean = false;
-  private itemsToShow: number = 3;
+  isExpanded = false;
+  private itemsToShow = 3;
   private readonly increment: number = 3;
 
   ngOnChanges(changes: SimpleChanges): void {

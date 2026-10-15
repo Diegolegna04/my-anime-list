@@ -13,22 +13,22 @@ export type RatingColor = 'default' | 'gold' | 'red' | 'blue' | 'purple';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StarRatingComponent {
-  @Input() rating: number = 0;
-  @Input() maxRating: number = 10;
-  @Input() readonly: boolean = false;
-  @Input() disabled: boolean = false;
+  @Input() rating = 0;
+  @Input() maxRating = 10;
+  @Input() readonly = false;
+  @Input() disabled = false;
   @Input() size: RatingSize = 'medium';
   @Input() color: RatingColor = 'gold';
-  @Input() showLabel: boolean = true;
-  @Input() showHalfStars: boolean = false;
-  @Input() allowClear: boolean = true;
+  @Input() showLabel = true;
+  @Input() showHalfStars = false;
+  @Input() allowClear = true;
   @Input() customLabels: string[] = [];
   
   @Output() ratingChanged = new EventEmitter<number>();
   @Output() ratingHovered = new EventEmitter<number>();
 
   // Stato interno per hover
-  hoveredRating: number = 0;
+  hoveredRating = 0;
 
   /**
    * Genera array di stelle da visualizzare
@@ -138,7 +138,7 @@ export class StarRatingComponent {
     }
 
     // Labels predefinite
-    const defaultLabels: { [key: number]: string } = {
+    const defaultLabels: Record<number, string> = {
       1: 'Pessimo',
       2: 'Molto Male',
       3: 'Male',

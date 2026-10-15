@@ -14,7 +14,7 @@ type VerifyStatus = 'loading' | 'success' | 'error';
 })
 export class VerifyEmailComponent implements OnInit {
   status: VerifyStatus = 'loading';
-  message: string = '';
+  message = '';
 
   constructor(
     private route: ActivatedRoute,

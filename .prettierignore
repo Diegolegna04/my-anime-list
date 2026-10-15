@@ -1,0 +1,9 @@
+dist
+.angular
+.vercel
+.impeccable
+.playwright-mcp
+node_modules
+public
+package-lock.json
+*.md

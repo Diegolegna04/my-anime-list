@@ -42,7 +42,7 @@ export class SeasonService {
    * sono davvero i dati e, se non è quella chiesta, si passa a
    * seasons/{anno}/{stagione} (che nel backend ha il fallback AniList).
    */
-  getSeasonPage(target: SeasonRef, page: number = 1, viaNow?: boolean, today: Date = new Date()): Observable<SeasonPage> {
+  getSeasonPage(target: SeasonRef, page = 1, viaNow?: boolean, today: Date = new Date()): Observable<SeasonPage> {
     const explicit$ = this.http
       .get<any>(`${this.baseUrl}/${target.year}/${target.season}?page=${page}`)
       .pipe(map(res => this.toPage(res, false)));

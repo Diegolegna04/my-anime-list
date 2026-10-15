@@ -50,7 +50,7 @@ export class UserListService {
   }
 
   private load(): void {
-    this.http.get<Array<{ animeId: number; status: ListStatus }>>('/api/user-anime/statuses', { withCredentials: true })
+    this.http.get<{ animeId: number; status: ListStatus }[]>('/api/user-anime/statuses', { withCredentials: true })
       .subscribe({
         next: (entries) => {
           const map = new Map<number, ListStatus>();

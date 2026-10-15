@@ -9,7 +9,10 @@
 } @else {
   <!-- Overlay per cambio immagine profilo / impostazioni -->
   @if (showOverlay) {
+    <!-- Sfondo cliccabile solo col mouse: da tastiera il dialog si chiude con Esc. -->
+    <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
     <div class="profile-overlay" (click)="requestClose()">
+      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
       <div
         class="overlay-content"
         role="dialog"

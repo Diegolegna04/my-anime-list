@@ -37,7 +37,7 @@ export interface AnimeInfo {
     to: string | null;
   };
   rating?: string;
-  studios?: Array<{ name: string }>;
+  studios?: { name: string }[];
 }
 
 @Component({
@@ -77,7 +77,7 @@ export class AnimeInfoCardComponent {
    * Traduce lo status in italiano
    */
   get translatedStatus(): string {
-    const statusMap: { [key: string]: string } = {
+    const statusMap: Record<string, string> = {
       'Currently Airing': 'In corso',
       'Finished Airing': 'Completato',
       'Not yet aired': 'Non ancora trasmesso',
@@ -158,7 +158,7 @@ export class AnimeInfoCardComponent {
    * Formatta il tipo di anime
    */
   get formattedType(): string {
-    const typeMap: { [key: string]: string } = {
+    const typeMap: Record<string, string> = {
       'TV': 'Serie TV',
       'Movie': 'Film',
       'OVA': 'OVA',

@@ -20,8 +20,8 @@ export class SeasonalAnimeComponent implements OnInit, OnChanges {
   filteredSeasonalAnime: any[] = [];
   titleLanguage: 'english' | 'original' = 'original';
 
-  canScrollPrev: boolean = false;
-  canScrollNext: boolean = true;
+  canScrollPrev = false;
+  canScrollNext = true;
 
   constructor(private userList: UserListService) {}
 

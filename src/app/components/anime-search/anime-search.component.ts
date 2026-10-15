@@ -23,7 +23,7 @@ import { TitleLanguageToggleComponent } from '../../services/shared/title-langua
 export class AnimeSearchComponent implements OnInit, OnDestroy {
   searchResults: any[] = [];
   displayedResults: any[] = [];
-  query: string = '';
+  query = '';
   /** Generi proposti quando si arriva alla ricerca senza una parola (id MyAnimeList) */
   readonly suggestedGenres = [
     { id: 1, label: 'Azione' },
@@ -35,14 +35,14 @@ export class AnimeSearchComponent implements OnInit, OnDestroy {
     { id: 24, label: 'Sci-Fi' },
     { id: 36, label: 'Slice of Life' }
   ];
-  isGridView: boolean = true;
-  selectedSortCriteria: string = 'score';
+  isGridView = true;
+  selectedSortCriteria = 'score';
   titleLanguage: 'english' | 'original' = 'original';
-  isLoading: boolean = false;
-  loadingProgress: number = 0;
+  isLoading = false;
+  loadingProgress = 0;
   
-  private itemsPerPage: number = 25;
-  private currentDisplayPage: number = 1;
+  private itemsPerPage = 25;
+  private currentDisplayPage = 1;
   private searchSubscription?: Subscription;
 
   constructor(
@@ -147,7 +147,7 @@ export class AnimeSearchComponent implements OnInit, OnDestroy {
       return [];
     }
 
-    let sortedResults = [...animeList];
+    const sortedResults = [...animeList];
 
     switch (criteria) {
       case 'score':

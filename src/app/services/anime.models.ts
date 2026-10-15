@@ -30,7 +30,7 @@ export interface AnimeData {
   episodes?: number;
   status?: string;
   year?: number;
-  genres?: Array<{ name: string }>;
+  genres?: { name: string }[];
 }
 
 /** Elemento di /anime/{id}/recommendations: l'anime consigliato sta in `entry` */

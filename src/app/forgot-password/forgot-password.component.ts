@@ -12,10 +12,10 @@ import { AuthService } from '../services/auth.service';
   styleUrl: './forgot-password.component.css'
 })
 export class ForgotPasswordComponent {
-  email: string = '';
-  isLoading: boolean = false;
-  submitted: boolean = false;
-  errorMessage: string = '';
+  email = '';
+  isLoading = false;
+  submitted = false;
+  errorMessage = '';
 
   constructor(private authService: AuthService) {}
 

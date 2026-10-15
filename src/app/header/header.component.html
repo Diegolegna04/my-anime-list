@@ -59,7 +59,10 @@
     </form>
 
     <!-- Mobile Menu Overlay -->
+    <!-- Sfondo cliccabile solo col mouse: da tastiera il menu si chiude con Esc o col pulsante. -->
+    <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
     <div class="mobile-menu-overlay" [class.show]="showMobileMenu" (click)="closeMobileMenu()">
+      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
       <nav class="mobile-menu" id="mobile-menu" aria-label="Menu" (click)="$event.stopPropagation()">
         <div class="mobile-menu-header">
           @if (accessoEffettuato) {

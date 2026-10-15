@@ -18,15 +18,15 @@ export class AnimeByGenreComponent implements OnInit {
   animeList: any[] = [];
   genreId: number | null = null;
   genreName: string | null = null;
-  isGridView: boolean = true;
-  private currentPage: number = 1;
+  isGridView = true;
+  private currentPage = 1;
   titleLanguage: 'english' | 'original' = 'original';
-  isLoading: boolean = false;
-  currentSortCriteria: string = 'score';
+  isLoading = false;
+  currentSortCriteria = 'score';
   genreDescription: string | null = null;
   genreShortDescription: string | null = null;
   genreIcon = getGenreIcon(0);
-  isDescriptionExpanded: boolean = false;
+  isDescriptionExpanded = false;
   genreMeta: { category: GenreCategory; categoryLabel: string; count: string } | null = null;
 
   private static readonly CATEGORY_LABELS: Record<GenreCategory, string> = {
