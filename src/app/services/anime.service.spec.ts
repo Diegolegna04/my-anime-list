@@ -287,6 +287,34 @@ describe('AnimeService', () => {
         tick(700);
       }));
 
+      it('le richieste prioritarie partono nell ordine in cui arrivano', fakeAsync(() => {
+        // La scheda chiede dettagli, consigli, streaming e news: i dettagli devono uscire per primi
+        const subs = [40, 41, 42].map((id) => service.getAnimeById(String(id)).subscribe());
+        http.expectOne(`${API}/anime/40`).flush({ data: {} });
+        http.expectOne(`${API}/anime/41`).flush({ data: {} });
+
+        service.getAnimeDetails(99).subscribe();
+        service.getRecommendations(99).subscribe();
+        service.getStreaming(99).subscribe();
+        service.getNews(99).subscribe();
+
+        tick(700);
+        http.expectOne(`${API}/anime/99`).flush({ data: {} });
+        http.expectOne(`${API}/anime/99/recommendations`).flush({ data: [] });
+        http.expectNone(`${API}/anime/99/streaming`);
+        http.expectNone(`${API}/anime/99/news`);
+
+        tick(700);
+        http.expectOne(`${API}/anime/99/streaming`).flush({ data: [] });
+        http.expectOne(`${API}/anime/99/news`).flush({ data: [] });
+        http.expectNone(`${API}/anime/42`);
+
+        tick(700);
+        http.expectOne(`${API}/anime/42`).flush({ data: {} });
+        subs.forEach((s) => s.unsubscribe());
+        tick(700);
+      }));
+
       it('disiscrivendo tutti i sottoscrittori i lavori in coda non partono', fakeAsync(() => {
         const subs = [20, 21, 22, 23].map((id) => service.getAnimeById(String(id)).subscribe());
         http.expectOne(`${API}/anime/20`);

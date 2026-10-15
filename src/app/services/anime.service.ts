@@ -23,6 +23,8 @@ export class AnimeService {
 
   private animeCache = new Map<string, Observable<any>>();
 
+  // Due corsie, entrambe in ordine di arrivo: la prioritaria si svuota per prima
+  private priorityQueue: (() => void)[] = [];
   private requestQueue: (() => void)[] = [];
   private activeWorkers = 0;
   private readonly MAX_CONCURRENT_WORKERS = 2;
@@ -213,8 +215,9 @@ export class AnimeService {
 
       return () => {
         if (pending) {
-          const i = this.requestQueue.indexOf(pending);
-          if (i >= 0) this.requestQueue.splice(i, 1);
+          const queue = priority ? this.priorityQueue : this.requestQueue;
+          const i = queue.indexOf(pending);
+          if (i >= 0) queue.splice(i, 1);
           pending = null;
         }
         inFlight?.unsubscribe();
@@ -251,20 +254,20 @@ export class AnimeService {
   }
 
   private enqueue(fn: () => void, priority = false): void {
-    if (priority) this.requestQueue.unshift(fn);
-    else this.requestQueue.push(fn);
+    (priority ? this.priorityQueue : this.requestQueue).push(fn);
     this.tryStartWorkers();
   }
 
   private tryStartWorkers(): void {
-    while (this.activeWorkers < this.MAX_CONCURRENT_WORKERS && this.requestQueue.length > 0) {
+    while (this.activeWorkers < this.MAX_CONCURRENT_WORKERS
+      && this.priorityQueue.length + this.requestQueue.length > 0) {
       this.activeWorkers++;
       this.runWorker();
     }
   }
 
   private runWorker(): void {
-    const next = this.requestQueue.shift();
+    const next = this.priorityQueue.shift() ?? this.requestQueue.shift();
     if (!next) {
       this.activeWorkers--;
       return;

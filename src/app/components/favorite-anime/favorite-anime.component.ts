@@ -58,7 +58,7 @@ export class FavoriteAnimeComponent implements OnInit {
   }
 
   private loadFromFavorites(): void {
-    this.userAnimeService.getFavorites().subscribe({
+    this.userAnimeService.getFavorites().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (favorites) => {
         this.showLoadedAndFetchMissing((favorites || []).map((favorite: any) => ({
           id: favorite.animeId.toString(),
