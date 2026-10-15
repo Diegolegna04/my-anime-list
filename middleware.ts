@@ -1,4 +1,4 @@
-import { next, rewrite } from '@vercel/functions';
+import { ipAddress, next, rewrite } from '@vercel/functions';
 
 // Vercel Routing Middleware (fuori da src/: non fa parte della build Angular).
 // Aggiunge l'header segreto alle chiamate /api verso Railway, così il backend si fida
@@ -24,5 +24,14 @@ export default function middleware(request: Request): Response {
   headers.delete('host');
   headers.delete('x-forwarded-host');
   headers.set('X-Proxy-Secret', secret);
+  // Nel rewrite verso un URL esterno Vercel mette in X-Forwarded-For il proprio IP di uscita:
+  // l'IP vero dell'utente va al backend in X-Client-IP. Un valore inviato dal client viene
+  // sempre sovrascritto o tolto.
+  const clientIp = ipAddress(request);
+  if (clientIp) {
+    headers.set('X-Client-IP', clientIp);
+  } else {
+    headers.delete('X-Client-IP');
+  }
   return rewrite(destination, { request: { headers } });
 }
