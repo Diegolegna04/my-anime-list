@@ -9,7 +9,7 @@ Architettura, autenticazione e integrazione col backend: `PROJECT.md`. Sistema v
 - CSS puro per componente (`*.component.css`); token e classi globali in `src/styles.css`. Niente Tailwind, niente SCSS.
 - Icone: Font Awesome 6.0.0-beta3 da CDN (`src/index.html`). Nessun webfont: il testo usa `--font-sans` (oggi solo `sans-serif`).
 - `@angular/cdk` (drag & drop nel profilo).
-- Test: Karma + Jasmine (~124 specs: servizi core, login-register, profile, watched-anime e molti componenti).
+- Test: Karma + Jasmine (~172 specs: servizi core, login-register, profile, watched-anime, header, anteprima di ricerca e molti componenti). Gli spec dei servizi HTTP controllano il contratto col backend (metodo, percorso, corpo, `withCredentials`).
 - Lint: ESLint (`angular-eslint`, `eslint.config.js`); formato: Prettier (`.prettierrc.json`).
 
 ## Comandi
