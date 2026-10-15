@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { LoginRequest, RegisterRequest } from '../loginrequest';
+import { LoginRequest, ProfileUpdate, RegisterRequest } from '../loginrequest';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -63,7 +63,7 @@ export class AuthService {
     return this.http.get(`${this.apiUrl}/profile`, { withCredentials: true });
   }
 
-  updateProfile(payload: { username?: string; password?: string; currentPassword?: string; profileImage?: string }): Observable<any> {
+  updateProfile(payload: ProfileUpdate): Observable<any> {
     return this.http.put(`${this.userApiUrl}/update`, payload, { withCredentials: true });
   }
 

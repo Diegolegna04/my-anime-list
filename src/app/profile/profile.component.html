@@ -9,7 +9,7 @@
 } @else {
   <!-- Overlay per cambio immagine profilo / impostazioni -->
   @if (showOverlay) {
-    <div class="profile-overlay" (click)="closeOverlay()">
+    <div class="profile-overlay" (click)="requestClose()">
       <div
         class="overlay-content"
         role="dialog"
@@ -42,7 +42,7 @@
               Impostazioni account
             </button>
             <input type="file" id="profileImageInput" accept="image/*" (change)="uploadProfileImage($event)" hidden />
-            <button type="button" class="btn btn-secondary" (click)="closeOverlay()">Chiudi</button>
+            <button type="button" class="btn btn-secondary" (click)="requestClose()">Chiudi</button>
           </div>
         } @else {
           <h3 class="settings-title">Impostazioni account</h3>
@@ -57,45 +57,92 @@
                 name="settingsUsername"
                 [(ngModel)]="settingsData.username"
                 minlength="2"
+                maxlength="30"
+                autocomplete="username"
               />
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="settings-email">Email</label>
+              <input
+                id="settings-email"
+                class="input"
+                type="email"
+                name="settingsEmail"
+                [(ngModel)]="settingsData.email"
+                maxlength="254"
+                autocomplete="email"
+                [attr.aria-describedby]="emailChanged ? 'settings-email-hint' : null"
+              />
+              @if (emailChanged) {
+                <p class="field-hint" id="settings-email-hint">
+                  Ti mandiamo un link al nuovo indirizzo. Finché non lo confermi non potrai rientrare dopo il logout.
+                </p>
+              }
             </div>
 
             <div class="field">
               <label class="field-label" for="settings-password">Nuova password</label>
-              <input
-                id="settings-password"
-                class="input"
-                type="password"
-                name="settingsNewPassword"
-                [(ngModel)]="settingsData.newPassword"
-                placeholder="Lascia vuoto per non cambiarla"
-              />
+              <div class="input-icon">
+                <i class="fas fa-lock" aria-hidden="true"></i>
+                <input
+                  id="settings-password"
+                  class="input"
+                  [type]="showNewPassword ? 'text' : 'password'"
+                  name="settingsNewPassword"
+                  [(ngModel)]="settingsData.newPassword"
+                  placeholder="Lascia vuoto per non cambiarla"
+                  maxlength="128"
+                  autocomplete="new-password"
+                />
+                <button type="button" class="input-action" (click)="showNewPassword = !showNewPassword"
+                  [attr.aria-label]="showNewPassword ? 'Nascondi password' : 'Mostra password'"
+                  [attr.aria-pressed]="showNewPassword"
+                  aria-controls="settings-password settings-confirm-password">
+                  <i class="fas" [class.fa-eye]="!showNewPassword" [class.fa-eye-slash]="showNewPassword" aria-hidden="true"></i>
+                </button>
+              </div>
             </div>
 
             <div class="field">
               <label class="field-label" for="settings-confirm-password">Conferma password</label>
-              <input
-                id="settings-confirm-password"
-                class="input"
-                type="password"
-                name="settingsConfirmPassword"
-                [(ngModel)]="settingsData.confirmPassword"
-                placeholder="Ripeti la nuova password"
-              />
+              <div class="input-icon">
+                <i class="fas fa-lock" aria-hidden="true"></i>
+                <input
+                  id="settings-confirm-password"
+                  class="input"
+                  [type]="showNewPassword ? 'text' : 'password'"
+                  name="settingsConfirmPassword"
+                  [(ngModel)]="settingsData.confirmPassword"
+                  placeholder="Ripeti la nuova password"
+                  maxlength="128"
+                  autocomplete="new-password"
+                />
+              </div>
             </div>
 
-            @if (settingsData.newPassword) {
+            @if (needsCurrentPassword) {
               <div class="field">
                 <label class="field-label" for="settings-current-password">Password attuale</label>
-                <input
-                  id="settings-current-password"
-                  class="input"
-                  type="password"
-                  name="settingsCurrentPassword"
-                  [(ngModel)]="settingsData.currentPassword"
-                  placeholder="Serve per confermare il cambio"
-                  autocomplete="current-password"
-                />
+                <div class="input-icon">
+                  <i class="fas fa-key" aria-hidden="true"></i>
+                  <input
+                    id="settings-current-password"
+                    class="input"
+                    [type]="showCurrentPassword ? 'text' : 'password'"
+                    name="settingsCurrentPassword"
+                    [(ngModel)]="settingsData.currentPassword"
+                    placeholder="Serve per confermare il cambio"
+                    maxlength="128"
+                    autocomplete="current-password"
+                  />
+                  <button type="button" class="input-action" (click)="showCurrentPassword = !showCurrentPassword"
+                    [attr.aria-label]="showCurrentPassword ? 'Nascondi password' : 'Mostra password'"
+                    [attr.aria-pressed]="showCurrentPassword"
+                    aria-controls="settings-current-password">
+                    <i class="fas" [class.fa-eye]="!showCurrentPassword" [class.fa-eye-slash]="showCurrentPassword" aria-hidden="true"></i>
+                  </button>
+                </div>
               </div>
             }
 
@@ -119,6 +166,23 @@
               </button>
             </div>
           </form>
+        }
+
+        @if (confirmDiscard) {
+          <div class="alert alert-warning discard-confirm" role="alert">
+            <p class="discard-confirm-text">
+              <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+              Hai modifiche non salvate. Vuoi scartarle?
+            </p>
+            <div class="discard-confirm-actions">
+              <button type="button" class="btn btn-secondary btn-sm" #keepEditingButton (click)="keepEditing()">
+                Continua a modificare
+              </button>
+              <button type="button" class="btn btn-danger btn-sm" (click)="discardChanges()">
+                Scarta modifiche
+              </button>
+            </div>
+          </div>
         }
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, Injector, OnInit, OnDestroy, ViewChild, afterNextRender } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
@@ -8,6 +8,7 @@ import { AuthService } from '../services/auth.service';
 import { ToastService } from '../services/toast.service';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { TitleLanguageToggleComponent } from '../services/shared/title-language-toggle.component';
+import { ProfileUpdate } from '../loginrequest';
 import { FriendsPanelComponent } from './friends-panel/friends-panel.component';
 
 @Component({
@@ -25,6 +26,7 @@ import { FriendsPanelComponent } from './friends-panel/friends-panel.component';
 export class ProfileComponent implements OnInit, OnDestroy {
   profileImage: string = 'pfp-no-bg.webp';
   username: string = '';
+  email: string = '';
   totalAnimeCount: number = 0;
   watchedAnimeCount: number = 0;
   watchingAnimeCount: number = 0;
@@ -38,9 +40,17 @@ export class ProfileComponent implements OnInit, OnDestroy {
   showSettings: boolean = false;
   isSaving: boolean = false;
   pendingProfileImage: string | null = null;
+  /** Chiusura chiesta con modifiche non salvate: si mostra la conferma */
+  confirmDiscard: boolean = false;
+  showNewPassword: boolean = false;
+  showCurrentPassword: boolean = false;
+
+  @ViewChild('keepEditingButton') keepEditingButton?: ElementRef<HTMLButtonElement>;
+  private focusBeforeConfirm: HTMLElement | null = null;
 
   settingsData = {
     username: '',
+    email: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
@@ -53,7 +63,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private userAnimeService: UserAnimeService,
     private authService: AuthService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private injector: Injector
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -62,8 +73,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.userDataSubscription = this.authService.userData$.subscribe(userData => {
       if (userData) {
         this.username = userData.username || '';
+        this.email = userData.email || '';
         this.profileImage = userData.profileImage || this.profileImage;
         this.settingsData.username = this.username;
+        this.settingsData.email = this.email;
       }
     });
 
@@ -152,15 +165,62 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.showSettings = false;
   }
 
-  /** Esc chiude il dialog dell'immagine e delle impostazioni, come un clic fuori */
+  /** Esc chiude il dialog come un clic fuori; con la conferma aperta torna alla modifica */
   @HostListener('document:keydown.escape')
   onEscape(): void {
-    if (this.showOverlay) this.closeOverlay();
+    if (this.confirmDiscard) {
+      this.keepEditing();
+    } else if (this.showOverlay) {
+      this.requestClose();
+    }
+  }
+
+  get emailChanged(): boolean {
+    const email = this.settingsData.email.trim();
+    return email !== '' && email !== this.email;
+  }
+
+  /** La password attuale serve per cambiare email o password */
+  get needsCurrentPassword(): boolean {
+    return !!this.settingsData.newPassword || this.emailChanged;
+  }
+
+  get hasUnsavedChanges(): boolean {
+    return !!this.pendingProfileImage
+      || this.settingsData.username.trim() !== this.username
+      || this.emailChanged
+      || !!(this.settingsData.newPassword || this.settingsData.confirmPassword || this.settingsData.currentPassword);
+  }
+
+  /** Esc, clic fuori e "Chiudi": con modifiche non salvate chiede prima conferma */
+  requestClose(): void {
+    if (!this.hasUnsavedChanges) {
+      this.closeOverlay();
+      return;
+    }
+    this.focusBeforeConfirm = document.activeElement as HTMLElement | null;
+    this.confirmDiscard = true;
+    // Il focus va su "Continua a modificare" appena la conferma è nel DOM
+    afterNextRender(() => this.keepEditingButton?.nativeElement.focus(), { injector: this.injector });
+  }
+
+  /** Chiude la conferma e riporta il focus dove era (per esempio nel campo che si stava modificando) */
+  keepEditing(): void {
+    this.confirmDiscard = false;
+    this.focusBeforeConfirm?.focus();
+    this.focusBeforeConfirm = null;
+  }
+
+  discardChanges(): void {
+    this.closeOverlay();
   }
 
   closeOverlay(): void {
     this.showOverlay = false;
     this.showSettings = false;
+    this.confirmDiscard = false;
+    this.showNewPassword = false;
+    this.showCurrentPassword = false;
 
     // Se c'era un'anteprima non salvata, ripristina l'immagine effettivamente persistita
     if (this.pendingProfileImage) {
@@ -170,6 +230,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.pendingProfileImage = null;
 
     this.settingsData.username = this.username;
+    this.settingsData.email = this.email;
     this.settingsData.currentPassword = '';
     this.settingsData.newPassword = '';
     this.settingsData.confirmPassword = '';
@@ -276,21 +337,30 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.toastService.show('La password deve avere almeno 6 caratteri.', 'error');
         return;
       }
-      if (!this.settingsData.currentPassword) {
-        this.toastService.show('Inserisci la password attuale per cambiarla.', 'error');
-        return;
-      }
     }
 
-    const payload: { username?: string; password?: string; currentPassword?: string; profileImage?: string } = {};
+    const emailChanged = this.emailChanged;
+    if (this.needsCurrentPassword && !this.settingsData.currentPassword) {
+      this.toastService.show('Inserisci la password attuale per confermare.', 'error');
+      return;
+    }
 
-    if (this.settingsData.username && this.settingsData.username !== this.username) {
-      payload.username = this.settingsData.username;
+    const payload: ProfileUpdate = {};
+
+    const username = this.settingsData.username.trim();
+    if (username && username !== this.username) {
+      payload.username = username;
+    }
+
+    if (emailChanged) {
+      payload.email = this.settingsData.email.trim();
     }
 
     // La password viaggia in chiaro su HTTPS: è il backend a fare l'hash con bcrypt
     if (this.settingsData.newPassword) {
       payload.password = this.settingsData.newPassword;
+    }
+    if (payload.email || payload.password) {
       payload.currentPassword = this.settingsData.currentPassword;
     }
 
@@ -310,10 +380,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
       this.authService.updateLocalUserData(response);
       this.username = response.username || this.username;
+      this.email = response.email || this.email;
       this.profileImage = response.profileImage || this.profileImage;
       this.pendingProfileImage = null;
 
-      this.toastService.show('Impostazioni aggiornate con successo!', 'success');
+      this.toastService.show(emailChanged
+        ? 'Impostazioni aggiornate. Ti abbiamo mandato un link per confermare la nuova email.'
+        : 'Impostazioni aggiornate con successo!', 'success');
       this.closeOverlay();
     } catch (error: any) {
       if (error.status === 409) {

@@ -58,7 +58,7 @@ describe('ProfileComponent - saveSettings', () => {
     await component.saveSettings();
 
     httpMock.expectNone('/api/user/update');
-    expect(toast.show).toHaveBeenCalledWith('Inserisci la password attuale per cambiarla.', 'error');
+    expect(toast.show).toHaveBeenCalledWith('Inserisci la password attuale per confermare.', 'error');
   });
 
   it('mostra un errore chiaro se la password attuale è sbagliata (403)', async () => {
@@ -76,14 +76,97 @@ describe('ProfileComponent - saveSettings', () => {
     expect(toast.show).toHaveBeenCalledWith('Password attuale errata.', 'error');
   });
 
-  it('Esc chiude il dialog del profilo e scarta le modifiche non salvate', () => {
-    component.openSettings();
-    component.settingsData.newPassword = 'non-salvata';
+  describe('cambio email', () => {
+    beforeEach(() => {
+      component.email = 'vecchia@example.com';
+      component.settingsData.email = 'nuova@example.com';
+    });
 
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    it('manda la nuova email insieme alla password attuale', async () => {
+      component.settingsData.currentPassword = 'password-attuale';
 
-    expect(component.showOverlay).toBeFalse();
-    expect(component.settingsData.newPassword).toBe('');
+      const saving = component.saveSettings();
+      const req = httpMock.expectOne('/api/user/update');
+      expect(req.request.body.email).toBe('nuova@example.com');
+      expect(req.request.body.currentPassword).toBe('password-attuale');
+      expect(req.request.body.password).toBeUndefined();
+
+      req.flush({ username: 'diego', email: 'nuova@example.com' });
+      await saving;
+      expect(component.email).toBe('nuova@example.com');
+      expect(toast.show).toHaveBeenCalledWith(
+        'Impostazioni aggiornate. Ti abbiamo mandato un link per confermare la nuova email.', 'success');
+    });
+
+    it('non chiama il backend senza la password attuale', async () => {
+      await component.saveSettings();
+
+      httpMock.expectNone('/api/user/update');
+      expect(toast.show).toHaveBeenCalledWith('Inserisci la password attuale per confermare.', 'error');
+    });
+
+    it("l'email uguale a quella attuale non viene mandata", async () => {
+      component.settingsData.email = ' vecchia@example.com ';
+      await component.saveSettings();
+
+      httpMock.expectNone('/api/user/update');
+      expect(toast.show).toHaveBeenCalledWith('Nessuna modifica da salvare.', 'info');
+    });
+  });
+
+  describe('modifiche non salvate', () => {
+    it('senza modifiche Esc chiude subito', () => {
+      component.openSettings();
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+      expect(component.showOverlay).toBeFalse();
+    });
+
+    it('con modifiche Esc chiede conferma e tiene i dati', () => {
+      component.openSettings();
+      component.settingsData.newPassword = 'non-salvata';
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+
+      expect(component.showOverlay).toBeTrue();
+      expect(component.confirmDiscard).toBeTrue();
+      expect(component.settingsData.newPassword).toBe('non-salvata');
+    });
+
+    it('un secondo Esc torna alla modifica', () => {
+      component.openSettings();
+      component.settingsData.username = 'altro-nome';
+      component.requestClose();
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+
+      expect(component.confirmDiscard).toBeFalse();
+      expect(component.showOverlay).toBeTrue();
+      expect(component.settingsData.username).toBe('altro-nome');
+    });
+
+    it('"Scarta modifiche" chiude e ripristina i dati salvati', () => {
+      component.username = 'diego';
+      component.email = 'diego@example.com';
+      component.openSettings();
+      component.settingsData.username = 'altro-nome';
+      component.settingsData.email = 'altra@example.com';
+      component.requestClose();
+
+      component.discardChanges();
+
+      expect(component.showOverlay).toBeFalse();
+      expect(component.confirmDiscard).toBeFalse();
+      expect(component.settingsData.username).toBe('diego');
+      expect(component.settingsData.email).toBe('diego@example.com');
+    });
+
+    it("anche un'immagine scelta e non salvata chiede conferma", () => {
+      component.openOverlay();
+      component.pendingProfileImage = 'data:image/jpeg;base64,xxx';
+      component.requestClose();
+      expect(component.confirmDiscard).toBeTrue();
+      expect(component.showOverlay).toBeTrue();
+    });
   });
 
   it('Esc premuto dentro un campo delle impostazioni chiude il dialog', async () => {
