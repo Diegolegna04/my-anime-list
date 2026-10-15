@@ -136,7 +136,8 @@
           tabindex="0"
           title="Cambia immagine profilo"
           (click)="openOverlay()"
-          (keydown.enter)="openOverlay()">
+          (keydown.enter)="openOverlay()"
+          (keydown.space)="$event.preventDefault(); openOverlay()">
         <h1 class="username">{{ username }}</h1>
         <button type="button" class="btn btn-secondary btn-sm settings-shortcut" (click)="openSettings()">
           <i class="fas fa-cog" aria-hidden="true"></i>

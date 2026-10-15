@@ -75,4 +75,20 @@ describe('ProfileComponent - saveSettings', () => {
 
     expect(toast.show).toHaveBeenCalledWith('Password attuale errata.', 'error');
   });
+
+  it('Esc chiude il dialog del profilo e scarta le modifiche non salvate', () => {
+    component.openSettings();
+    component.settingsData.newPassword = 'non-salvata';
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+
+    expect(component.showOverlay).toBeFalse();
+    expect(component.settingsData.newPassword).toBe('');
+  });
+
+  it('Esc a dialog chiuso non tocca i dati', () => {
+    const close = spyOn(component, 'closeOverlay');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(close).not.toHaveBeenCalled();
+  });
 });

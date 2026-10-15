@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
@@ -150,6 +150,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
   openOverlay(): void {
     this.showOverlay = true;
     this.showSettings = false;
+  }
+
+  /** Esc chiude il dialog dell'immagine e delle impostazioni, come un clic fuori */
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.showOverlay) this.closeOverlay();
   }
 
   closeOverlay(): void {
