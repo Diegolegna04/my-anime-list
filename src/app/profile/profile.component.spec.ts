@@ -86,6 +86,27 @@ describe('ProfileComponent - saveSettings', () => {
     expect(component.settingsData.newPassword).toBe('');
   });
 
+  it('Esc premuto dentro un campo delle impostazioni chiude il dialog', async () => {
+    fixture.detectChanges();
+    httpMock.expectOne('/api/user-anime/stats').flush({});
+    httpMock.expectOne('/api/user-anime/evidenza').flush([]);
+    await fixture.whenStable();
+
+    component.openSettings();
+    fixture.detectChanges();
+
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('#settings-password');
+    expect(input).not.toBeNull();
+    input.focus();
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    fixture.detectChanges();
+
+    expect(component.showOverlay).toBeFalse();
+    expect(fixture.nativeElement.querySelector('[role="dialog"]')).toBeNull();
+    // Pannello amici della pagina: non interessa qui
+    httpMock.match('/api/friends').forEach((req) => req.flush([]));
+  });
+
   it('Esc a dialog chiuso non tocca i dati', () => {
     const close = spyOn(component, 'closeOverlay');
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
